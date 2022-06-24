@@ -46,28 +46,35 @@ class Game {
         this.playerOn = this.playersRemaining[nextIndex]
         this.setIsOn()
     }
-
+    
     endGame(){
         console.log(this.playersRemaining[0] + " has won!")
         this.playerOn = null
         this.gameOn = false
     }
-
+    
     computerMoves(){
         // TO DO
     }
 }
+
+
 
 class Player {
     constructor(color){
         this.color = color
         this.isOn = false
         this.isComputer = false
+        console.log("A new player has been created.")
     }
 }
 
+
+
 class Board {
     constructor(players, size = 10, numThickBorders = 0){
+        const boardEl = document.getElementById("board")
+        console.log("The board: " + boardEl)
         this.fields = []
         let k = 0
         let index, row, col
@@ -76,13 +83,22 @@ class Board {
                 col = i
                 row = j
                 index = k
+                k++
+                
                 const field = new Field(index, row, col)
                 this.fields.push(field)
-                k++
+                
+                const fieldEl = document.createElement("div")
+                fieldEl.className = "field"
+                fieldEl.style.gridArea = `${row} / ${col} / span 1 / span 1`
+                boardEl.appendChild(fieldEl)
             }
         }
+        console.log("A new board has been created.")
     }
 }
+
+
 
 class Field {
     constructor(index, row, col){
@@ -94,7 +110,7 @@ class Field {
         this.neighbors = []
         this.game = null
     }
-
+    
     selectField(){
         if(this.player.isOn){
             this.player.isOn = false
@@ -103,14 +119,14 @@ class Field {
             this.game.checkRemainingPlayers()             
         }
     }
-
+    
     increaseValue(){
         this.value++
         if(this.value > this.neighbors.length){
             this.overflow()
         }
     }
-
+    
     overflow(){
         this.value = 1
         this.neighbors.forEach(neighbor => {
