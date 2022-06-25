@@ -17,9 +17,9 @@ const styles = {
     },
     fontSize: {
         1: "1rem",
-        2: "1.1rem",
-        3: "1.2rem",
-        4: "1.3rem"
+        2: "1.15rem",
+        3: "1.3rem",
+        4: "1.45rem"
     }
 }
 
@@ -31,7 +31,6 @@ class Game {
         this.players = players // array with selected players
         this.playersRemaining = this.players // array with players still on the board
         this.playerOn = null
-        this.hasOverflown = false
         this.gameOn = false
         this.board.fields.forEach(field => field.game = this)
     }
@@ -51,37 +50,33 @@ class Game {
         }
     }
 
-    checkRemainingPlayers(){
-        if(this.hasOverflown){
-            const playersOfFields = this.board.fields.map(field => field.player)
-            const playersLeft = this.playersRemaining.filter(player => playersOfFields.includes(player))
-            if(playersLeft.length !== this.playersRemaining.length){
-                this.playersRemaining = playersLeft
-                if(this.playersRemaining.length === 1){
-                    this.endGame()
-                }
+    checkRemainingPlayers(player){
+        if(player.fields.length === 0){
+            this.playersRemaining = this.playersRemaining.filter(playerRemaining => playerRemaining.color !== player.color)
+            if(this.playersRemaining.length === 1){
+                this.endGame()
             }
-        }
-        if(this.gameOn){
-            this.getNextPlayer() 
         }
     }
 
     getNextPlayer(){
-        const currentIndex = this.playersRemaining.indexOf(this.playerOn)
-        const nextIndex = (currentIndex + 1) % this.playersRemaining.length
-        this.playerOn = this.playersRemaining[nextIndex]
-        this.setIsOn()
+        if(this.gameOn){
+            const currentIndex = this.playersRemaining.indexOf(this.playerOn)
+            const nextIndex = (currentIndex + 1) % this.playersRemaining.length
+            this.playerOn = this.playersRemaining[nextIndex]
+            this.setIsOn()
+        }
     }
     
     endGame(){
-        console.log(this.playersRemaining[0] + " has won!")
+        console.log(this.playersRemaining[0].color + " has won!")
         this.playerOn = null
         this.gameOn = false
     }
     
     computerMoves(){
-        // TO DO
+        const selectedField = selectRandomElement(this.playerOn.fields)
+        selectedField.selectField()
     }
 }
 
@@ -92,15 +87,22 @@ class Player {
         this.color = color
         this.isOn = false
         this.isComputer = false
+        this.fields = []
         console.log("A new player has been created.")
+    }
+
+    appendField(field){
+        this.fields.push(field)
     }
 }
 
 
 
 class Board {
-    constructor(players, size = 10, numThickBorders = 0){
+    constructor(players, size = 6, numThickBorders = 0){
         this.boardEl = document.getElementById("board")
+        this.boardEl.style.gridTemplateColumns = `repeat(${size}, 5vw)`
+        this.boardEl.style.gridTemplateRows = `repeat(${size}, 5vw)`
         this.size = size
         this.fields = []
 
@@ -120,7 +122,6 @@ class Board {
                 this.boardEl.appendChild(fieldEl)
                 
                 fieldEl.addEventListener("click", () => {
-                    console.log("click on " + this.id)
                     field.selectField()
                 })
                 
@@ -129,7 +130,22 @@ class Board {
             }
         }
         this.fields.forEach(field => field.getNeighbors())
+
+        players.forEach(player => {
+            this.assignPlayerToField(player, 2)
+            this.assignPlayerToField(player, 1)
+            this.assignPlayerToField(player, 1)
+        })
+
         console.log(this)
+    }
+
+    assignPlayerToField(player, value){
+        let index
+        do {
+            index = Math.floor(this.fields.length * Math.random())
+        } while(this.fields[index].player)
+        this.fields[index].setField(player, value)
     }
 }
 
@@ -175,6 +191,7 @@ class Field {
 
     setField(player, value){
         this.player = player
+        this.player.fields.push(this)
         this.value = value
         this.fieldEl.textContent = this.value
         this.fieldEl.style.backgroundColor = styles.backgroundColor[this.player.color]
@@ -183,20 +200,15 @@ class Field {
     }
 
     selectField(){
-        console.log(this.player.isOn)
         if(this.player.isOn){
-            console.log(`${this.player} clicked on ${this.id}`)
             this.player.isOn = false
             this.increaseValue()
-            // Note: The next line is only executed when all fields are done with overflowing.
-            // But this will need to be embedded in a promise if setTimeout() is used.
-            this.game.checkRemainingPlayers()
+            this.game.getNextPlayer()
         }
     }
     
     increaseValue(){
         this.value++
-        console.log(this.value)
         this.fieldEl.textContent = this.value
         this.fieldEl.style.fontSize = styles.fontSize[this.value.toFixed()]
         if(this.value > this.neighbors.length){
@@ -208,19 +220,23 @@ class Field {
         this.value = 1
         this.fieldEl.textContent = 1
         this.fieldEl.style.fontSize = styles.fontSize["1"]
-        console.log(this.neighbors)
         this.neighbors.forEach(neighbor => {
-            if(neighbor.player === null || neighbor.player.color !== this.player.color){
-                neighbor.setPlayer(this.player)
+            if(!neighbor.player || neighbor.player.color !== this.player.color){
+                let oldOwner
+                if(neighbor.player){
+                    oldOwner = neighbor.player
+                    neighbor.player.fields = neighbor.player.fields.filter(field => field.id !== neighbor.id)
+                }
+                neighbor.player = this.player
+                neighbor.player.fields.push(neighbor)
+                neighbor.fieldEl.style.backgroundColor = styles.backgroundColor[this.player.color]
+                neighbor.fieldEl.style.color = styles.color[this.player.color]
+                if(oldOwner){
+                    this.game.checkRemainingPlayers(oldOwner)
+                }
             }
             neighbor.increaseValue()
         })
-    }
-
-    setPlayer(player){
-        this.player = player
-        this.fieldEl.style.backgroundColor = styles.backgroundColor[this.player.color]
-        this.fieldEl.style.color = styles.color[this.player.color]
     }
 }
 
@@ -230,13 +246,11 @@ class Field {
 // instantiating classes and starting a new game
 const red = new Player("red")
 const blue = new Player("blue")
+red.isComputer = true
 
 const players = [red, blue]
 
-const board = new Board(players)
-
-board.fields[0].setField(red, 1)
-board.fields[44].setField(blue, 2)
+const board = new Board(players, 4)
 
 const game = new Game(board, players)
 
