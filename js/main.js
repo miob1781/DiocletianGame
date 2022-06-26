@@ -80,6 +80,9 @@ class Field {
     }    
     
     increaseValue(){
+        if(!this.game.gameOn){
+            return
+        }
         this.value++
         this.fieldEl.textContent = this.value
         this.fieldEl.style.fontSize = styles.fontSize[this.value.toFixed()]
@@ -279,8 +282,14 @@ const options = {
         new Player("orange"),
         new Player("purple")
     ],
-    size: 8,
-    density: "sparse" 
+    size: 10,
+    density: "dense" 
+}
+
+for (let player of options.players){
+    if(player.color !== "red"){
+        player.isComputer = true
+    }
 }
 
 const game = new Game(options)
