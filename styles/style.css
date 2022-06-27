@@ -5,8 +5,16 @@ html, body {
     margin: 0;
 }
 
+#menu {
+    margin-bottom: 50px;
+}
+
+.player {
+    margin-bottom: 20px;
+}
+
 #board {
-    display: inline-grid;
+    display: grid;
     grid-template-columns: repeat(6, 5vw);
     grid-template-rows: repeat(6, 5vw);
     width: fit-content;

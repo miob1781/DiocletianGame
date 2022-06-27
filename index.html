@@ -14,7 +14,97 @@
         <h1>Diocletian</h1>
     </header>
     <main>
-        <div id="menu"></div>
+        <div id="menu">
+            <h2>Start a new game!</h2>
+            <div id="size">
+                <h3>Size</h3>
+                <p>Select the size (row and columns) of the board.</p>
+                <label for="size">Size</label>
+                <input type="range" name="size" min="4" max ="10">
+            </div>
+            <br>
+            <div id="players">
+                <h3>Select the players you want to play with.</h3>
+                <div class="player">
+                    <label for="red">Red</label>
+                    <input type="checkbox" name="red" checked>
+                    <div class="isComputer">
+                        <p>Played by computer?</p>
+                        <label for="red-yes">Yes</label>
+                        <input type="radio" name ="red-radio" value="yes" id="red-yes" checked>
+                        <label for="red-no">No</label>
+                        <input type="radio" name="red-radio" value ="no" id="red-no">
+                    </div>
+                </div>
+                <div class="player">
+                    <label for="blue">Blue</label>
+                    <input type="checkbox" name="blue" checked>
+                    <div class="isComputer">
+                        <p>Played by computer?</p>
+                        <label for="blue-yes">Yes</label>
+                        <input type="radio" name ="blue-radio" value="yes" id="blue-yes">
+                        <label for="blue-no">No</label>
+                        <input type="radio" name="blue-radio" value ="no" id="blue-no" checked>
+                    </div>
+                </div>
+                <div class="player">
+                    <label for="yellow">Yellow</label>
+                    <input type="checkbox" name="yellow">
+                    <div class="isComputer">
+                        <p>Played by computer?</p>
+                        <label for="yellow-yes">Yes</label>
+                        <input type="radio" name ="yellow-radio" value="yes" id="yellow-yes">
+                        <label for="yellow-no">No</label>
+                        <input type="radio" name="yellow-radio" value ="no" id="yellow-no" checked>
+                    </div>
+                </div>
+                <div class="player">
+                    <label for="green">Green</label>
+                    <input type="checkbox" name="green">
+                    <div class="isComputer">
+                        <p>Played by computer?</p>
+                        <label for="green-yes">Yes</label>
+                        <input type="radio" name ="green-radio" value="yes" id="green-yes">
+                        <label for="green-no">No</label>
+                        <input type="radio" name="green-radio" value ="no" id="green-no" checked>
+                    </div>
+                </div>
+                <div class="player">
+                    <label for="orange">Orange</label>
+                    <input type="checkbox" name="orange">
+                    <div class="isComputer">
+                        <p>Played by computer?</p>
+                        <label for="orange-yes">Yes</label>
+                        <input type="radio" name ="orange-radio" value="yes" id="orange-yes">
+                        <label for="orange-no">No</label>
+                        <input type="radio" name="orange-radio" value ="no" id="orange-no" checked>
+                    </div>
+                </div>
+                <div class="player">
+                    <label for="purple">Purple</label>
+                    <input type="checkbox" name="purple">
+                    <div class="isComputer">
+                        <p>Played by computer?</p>
+                        <label for="purple-yes">Yes</label>
+                        <input type="radio" name ="purple-radio" value="yes" id="purple-yes">
+                        <label for="purple-no">No</label>
+                        <input type="radio" name="purple-radio" value ="no" id ="purple-no" checked>
+                    </div>
+                </div>
+            </div>
+            <div id="density">
+                <h3>Density</h3>
+                <p>Select how populated the board should be at the beginning.</p>
+                <label for="sparse">Sparse</label>
+                <input type="radio" name="density" value="sparse" id="sparse" checked>
+                <br>
+                <label for="medium">Medium</label>
+                <input type="radio" name="density" value="medium" id="medium">
+                <br>
+                <label for="dense">Dense</label>
+                <input type="radio" name="density" value="dense" id="dense">
+            </label>
+        </div>
         <div id="board"></div>
     </main>
     <footer>
