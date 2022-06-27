@@ -24,7 +24,8 @@ const styles = {
 }    
 
 class Field {
-    constructor(id, row, col, board){
+    constructor(id, row, col){
+        this.fieldEl = null
         this.id = id
         this.row = row
         this.col = col
@@ -32,15 +33,13 @@ class Field {
         this.value = 0
         this.neighbors = []
         this.game = null
-        this.board = board
-        this.fieldEl = null
     }    
     
     getNeighbors(){
         const row = this.row
         const col = this.col
-        const size = this.board.size
-        const fields = this.board.fields
+        const size = this.game.size
+        const fields = this.game.fields
         let neighbor
         
         if(col > 1){
@@ -113,18 +112,42 @@ class Field {
             neighbor.increaseValue()
         })    
     }    
+}
+
+class Player {
+    constructor(color){
+        this.color = color
+        this.isOn = false
+        this.isComputer = false
+        this.fields = []
+        console.log("A new player has been created.")
+    }    
+
+    appendField(field){
+        this.fields.push(field)
+    }    
 }    
 
-class Board {
-    constructor(options){
+class Game {
+    constructor(){
+        this.boardEl = document.getElementById("board")
+        this.fields = []
+        this.size = null
+        this.players = null
+        this.density = null
+        this.playersRemaining = null
+        this.playerOn = null
+        this.gameOn = false
+        console.log("creating new game...")
+    }    
+
+    createBoard(options){
         this.size = options.size
         this.players = options.players
         this.density = options.density
-        this.boardEl = document.getElementById("board")
         this.boardEl.style.gridTemplateColumns = `repeat(${this.size}, 5vw)`
         this.boardEl.style.gridTemplateRows = `repeat(${this.size}, 5vw)`
-        this.fields = []
-
+    
         let k = 0
         for (let i = 1; i <= this.size; i++){
             for (let j = 1; j <= this.size; j++){
@@ -132,8 +155,8 @@ class Board {
                 const row = j
                 const id = k
                 k++
-
-                const field = new Field(id, row, col, this)
+                
+                const field = new Field(id, row, col)
                 const fieldEl = document.createElement("div")
                 fieldEl.className = `field row${row} col${col}`
                 fieldEl.id = "field" + id
@@ -145,21 +168,21 @@ class Board {
                 })
                 
                 field.fieldEl = fieldEl
+                field.game = this
                 this.fields.push(field)
             }
         }
         this.fields.forEach(field => field.getNeighbors())
-        
         this.addPlayers()
         
         console.log(this)
     }
-    
+
     addPlayers(){
         const size = this.size
         const players = this.players
         const density = this.density
-
+        
         players.forEach(player => {
             if(size < 7 && density === "sparse"){
                 this.assignPlayerToField(player, 2)
@@ -172,7 +195,7 @@ class Board {
                 this.assignPlayerToField(player, 1)
                 this.assignPlayerToField(player, 1)
             } else if((size < 7 && density === "dense")
-                    || (size >= 7 && density === "medium")){
+            || (size >= 7 && density === "medium")){
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 2)
                 this.assignPlayerToField(player, 2)
@@ -198,41 +221,15 @@ class Board {
             field = this.fields[index]
         } while(field.player || field.neighbors.length - value < 1)
         field.setField(player, value)
-    }
-}
-
-class Player {
-    constructor(color){
-        this.color = color
-        this.isOn = false
-        this.isComputer = false
-        this.fields = []
-        console.log("A new player has been created.")
-    }    
-
-    appendField(field){
-        this.fields.push(field)
-    }    
-}    
-
-class Game {
-    constructor(options){
-        this.board = new Board(options)
-        this.players = options.players // array with selected players
-        this.playersRemaining = this.players // array with players still on the board
-        this.playerOn = null
-        this.gameOn = false
-        this.board.fields.forEach(field => field.game = this)
-        console.log("creating new game...")
-    }    
-
+    }  
+    
     startGame(){
-        console.log(this.playersRemaining)
+        this.playersRemaining = this.players
         this.playerOn = selectRandomElement(this.playersRemaining)
         this.gameOn = true
         this.setIsOn()
         console.log("A new game has started")
-    }    
+    }
     
     setIsOn(){
         this.playerOn.isOn = true
@@ -292,7 +289,8 @@ for (let player of options.players){
     }
 }
 
-const game = new Game(options)
+const game = new Game()
+game.createBoard(options)
 game.startGame()
 
 // helper functions
