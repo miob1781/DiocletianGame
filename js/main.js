@@ -5,7 +5,8 @@ const styles = {
         blue: "blue",
         yellow: "yellow",
         orange: "orange",
-        purple: "purple"
+        purple: "purple",
+        free: "lightgrey"
     },    
     color: {
         red: "white",
@@ -68,7 +69,7 @@ class Field {
         this.fieldEl.style.backgroundColor = styles.backgroundColor[this.player.color]
         this.fieldEl.style.color = styles.color[this.player.color]
         this.fieldEl.style.fontSize = styles.fontSize[this.value.toFixed()]
-    }    
+    }
     
     selectField(){
         if(this.player.isOn){
@@ -120,7 +121,6 @@ class Player {
         this.isOn = false
         this.isComputer = false
         this.fields = []
-        console.log("A new player has been created.")
     }    
 
     appendField(field){
@@ -133,18 +133,68 @@ class Game {
         this.boardEl = document.getElementById("board")
         this.fields = []
         this.size = null
-        this.players = null
+        this.players = []
         this.density = null
         this.playersRemaining = null
         this.playerOn = null
         this.gameOn = false
-        console.log("creating new game...")
     }    
 
-    createBoard(options){
-        this.size = options.size
-        this.players = options.players
-        this.density = options.density
+    getInput(){
+        const sizeEl = document.getElementById("size-input")
+        this.selectSize(sizeEl)
+        sizeEl.addEventListener("input", () => this.selectSize(sizeEl))
+
+        const playerEls = document.querySelectorAll(".player input[type='checkbox']")
+        playerEls.forEach(playerEl => {
+            const player = new Player(playerEl.name)
+            this.selectPlayer(playerEl, player)
+            playerEl.addEventListener("input", () => this.selectPlayer(playerEl, player))
+            const isComputerEls = playerEl.parentNode.querySelectorAll("input[type='radio']")
+            isComputerEls.forEach(isComputerEl => {
+                isComputerEl.addEventListener("input", () => this.selectIsComputer(playerEl, player))
+            })
+        })
+
+        const checkedDensityEl = document.querySelector("#density input[name='density']:checked")
+        this.selectDensity(checkedDensityEl)
+        const densityEls = document.querySelectorAll("#density input[name='density']")
+        densityEls.forEach(densityEl => {
+            densityEl.addEventListener("input", () => this.selectDensity(densityEl))
+        })
+
+        const startButton = document.getElementById("start")
+        startButton.addEventListener("click", () => {
+            this.createBoard()
+            this.startGame()
+        })
+    }
+
+    selectSize(domEl){
+        this.size = parseInt(domEl.value)
+    }
+
+    selectPlayer(playerEl, player){
+        if(playerEl.checked){
+            this.selectIsComputer(playerEl, player)
+            this.players.push(player)
+        } else {
+            this.players = this.players.filter(oldPlayer => oldPlayer.color !== playerEl.name)
+        }
+    }
+    
+    selectIsComputer(playerEl, player){
+        const checkedIsComputerEl = playerEl.parentNode.querySelector("input[type='radio']:checked")
+        player.isComputer = checkedIsComputerEl.value === "yes" ? true : false
+    }
+
+    selectDensity(domEl){
+        this.density = domEl.value
+    }
+
+    createBoard(){
+        this.fields = []
+        this.players.forEach(player => player.fields = [])
         this.boardEl.style.gridTemplateColumns = `repeat(${this.size}, 5vw)`
         this.boardEl.style.gridTemplateRows = `repeat(${this.size}, 5vw)`
     
@@ -270,28 +320,9 @@ class Game {
 }    
 
 // instantiating classes and starting a new game
-const options = {
-    players: [
-        new Player("red"),
-        new Player("blue"),
-        new Player("yellow"),
-        new Player("green"),
-        new Player("orange"),
-        new Player("purple")
-    ],
-    size: 10,
-    density: "dense" 
-}
-
-for (let player of options.players){
-    if(player.color !== "red"){
-        player.isComputer = true
-    }
-}
-
 const game = new Game()
-game.createBoard(options)
-game.startGame()
+game.getInput()
+game.createBoard()
 
 // helper functions
 function selectRandomElement(arr){
