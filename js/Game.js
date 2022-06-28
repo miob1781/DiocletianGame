@@ -1,7 +1,7 @@
-import {styles} from "./styles"
-import {Field} from "./Field"
-import {Player} from "./Player"
-import {selectRandomElement} from "./helper_functions" 
+import {styles} from "./styles.js"
+import {Field} from "./Field.js"
+import {Player} from "./Player.js"
+import {selectRandomElement} from "./helper_functions.js" 
 
 export class Game {
     constructor(){
@@ -81,6 +81,7 @@ export class Game {
     }
 
     createBoard(){
+        console.log("creating a new board")
         const errorMessageEl = document.getElementById("error-message")
         let message
         if(this.selectedPlayers.length <= 1){
@@ -181,19 +182,30 @@ export class Game {
     createDisplay(){
         this.displayEl.remove()
         const displayContainer = document.getElementById("display-container")
-        const displayEl = document.getElementById("display")
+        const displayEl = document.createElement("display")
         displayEl.id = "display"
+        displayContainer.appendChild(displayEl)
+        
         this.selectedPlayers.forEach(player => {
             const playerDisplayEl = document.createElement("div")
             playerDisplayEl.className = "display-player"
-
-            playerDisplayEl.appendChild()
-            playerDisplayEl.appendChild()
-            playerDisplayEl.appendChild()
             playerDisplayEl.style.backgroundColor = styles.backgroundColor[player.color]
             playerDisplayEl.style.color = styles.color[player.color]
+
+            const playerNameEl = document.createElement("p")
+            const playerFieldsNumEl = document.createElement("p")
+            const playerFieldsValueEl = document.createElement("p")
+            playerNameEl.className = "player-name"
+            playerFieldsNumEl.className = "player-num"
+            playerFieldsValueEl.className = "player-value"
+            player.playerDisplayEl = playerDisplayEl
+            playerDisplayEl.appendChild(playerNameEl)
+            playerDisplayEl.appendChild(playerFieldsNumEl)
+            playerDisplayEl.appendChild(playerFieldsValueEl)
+            player.getPlayerValues()
+            displayEl.appendChild(playerDisplayEl)
         })
-        displayContainer.appendChild(displayEl)
+        this.displayEl = displayEl
     }
 
     assignPlayerToField(player, value){

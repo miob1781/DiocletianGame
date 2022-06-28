@@ -21,7 +21,14 @@ html, body {
 
 #display {
     display: flex;
+    max-width: 100%;
+    height: auto;
     border-radius: 50%;
+}
+
+#display .player {
+    width: 10vw;
+    height: 10vw;
 }
 
 #board {

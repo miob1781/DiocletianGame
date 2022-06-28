@@ -1,5 +1,5 @@
-import {styles} from "./styles"
-import {getField} from "./helper_functions" 
+import {styles} from "./styles.js"
+import {getField} from "./helper_functions.js" 
 
 
 export class Field {
@@ -53,6 +53,7 @@ export class Field {
         if(this.player.isOn){
             this.player.isOn = false
             this.increaseValue()
+            this.game.currentPlayers.forEach(player => player.getPlayerValues())
             this.game.getNextPlayer()
         }    
     }    
