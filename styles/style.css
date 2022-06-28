@@ -19,6 +19,11 @@ html, body {
     font-size: 1.1rem;
 }
 
+#display {
+    display: flex;
+    border-radius: 50%;
+}
+
 #board {
     display: inline-grid;
     width: fit-content;
