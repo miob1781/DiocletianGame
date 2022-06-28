@@ -16,12 +16,10 @@ export class Player {
         const playerFieldsNumEl = this.playerDisplayEl.querySelector(".player-num")
         const playerFieldsValueEl = this.playerDisplayEl.querySelector(".player-value")
         playerNameEl.textContent = this.color
-        playerFieldsNumEl.textContent = this.fields.length
-        playerFieldsValueEl.textContent = this.fields.reduce((acc, curr) => {
-            console.log(this.fields)
-            console.log("acc" + acc, typeof acc, "curr" + curr.value, typeof curr.value)
+        playerFieldsNumEl.textContent = "Fields: " + this.fields.length
+        const totalValue = this.fields.reduce((acc, curr) => {
             return acc + curr.value
         }, 0)
-
+        playerFieldsValueEl.textContent = "Value: " + totalValue
     }
 }    

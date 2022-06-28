@@ -107,8 +107,9 @@ export class Game {
         const boardContainer = document.getElementById("board-container")
         const board = document.createElement("div")
         board.id = "board"
-        board.style.gridTemplateColumns = `repeat(${this.size}, 5vw)`
-        board.style.gridTemplateRows = `repeat(${this.size}, 5vw)`
+        board.style.gridTemplateColumns = `repeat(${this.size}, 3.5vw)`
+        board.style.gridTemplateRows = `repeat(${this.size}, 3.5vw)`
+
         boardContainer.appendChild(board)
         this.boardEl = board
         
@@ -125,12 +126,12 @@ export class Game {
                 fieldEl.className = `field row${row} col${col}`
                 fieldEl.id = "field" + id
                 fieldEl.style.gridArea = `${row} / ${col} / span 1 / span 1`
-                this.boardEl.appendChild(fieldEl)
-                
+                                
                 fieldEl.addEventListener("click", () => {
                     field.selectField()
                 })
                 
+                this.boardEl.appendChild(fieldEl)
                 field.fieldEl = fieldEl
                 field.game = this
                 this.fields.push(field)
@@ -231,6 +232,7 @@ export class Game {
     setIsOn(){
         this.playerOn.isOn = true
         console.log(`It's ${this.playerOn.color}'s turn.`)
+        this.playerOn.playerDisplayEl.style.border = "4px dashed gold"
         if(this.playerOn.isComputer){
             this.computerMoves()
         }    
@@ -247,6 +249,7 @@ export class Game {
 
     getNextPlayer(){
         if(this.gameOn){
+            this.playerOn.playerDisplayEl.style.border = "none"
             const currentIndex = this.remainingPlayers.indexOf(this.playerOn)
             const nextIndex = (currentIndex + 1) % this.remainingPlayers.length
             this.playerOn = this.remainingPlayers[nextIndex]
