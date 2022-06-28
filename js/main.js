@@ -131,13 +131,15 @@ class Player {
 class Game {
     constructor(){
         this.boardEl = document.getElementById("board")
-        this.fields = []
         this.size = null
-        this.players = []
+        this.selectedPlayers = []
         this.density = null
-        this.playersRemaining = null
+        this.fields = []
+        this.currentPlayers = []
+        this.remainingPlayers = []
         this.playerOn = null
         this.gameOn = false
+        this.error = false
     }    
 
     getInput(){
@@ -172,15 +174,18 @@ class Game {
 
     selectSize(domEl){
         this.size = parseInt(domEl.value)
+        const sizeDisplay = document.getElementById("size-display")
+        sizeDisplay.textContent = this.size
     }
 
     selectPlayer(playerEl, player){
         if(playerEl.checked){
             this.selectIsComputer(playerEl, player)
-            this.players.push(player)
+            this.selectedPlayers.push(player)
         } else {
-            this.players = this.players.filter(oldPlayer => oldPlayer.color !== playerEl.name)
+            this.selectedPlayers = this.selectedPlayers.filter(oldPlayer => oldPlayer.color !== playerEl.name)
         }
+        console.log(this.selectedPlayers)
     }
     
     selectIsComputer(playerEl, player){
@@ -191,13 +196,51 @@ class Game {
     selectDensity(domEl){
         this.density = domEl.value
     }
+    
+    displayError(message){
+        const errorMessageEl = document.getElementById("error-message")
+        errorMessageEl.textContent = message
+        errorMessageEl.style.display = "block"
+        this.error = true
+    }
 
     createBoard(){
+        /*
+        combinations that must be disabled as the space on the board is limited:
+            - size 5: 6 players medium; 5 players medium
+            - size 4: 6 players sparse; 5 players medium; 4 players medium; 3 players medium
+        
+        */
+        const errorMessageEl = document.getElementById("error-message")
+        let message
+        if(this.selectedPlayers.length <= 1){
+            message = "You need to select at least two players."
+            this.displayError(message)
+            return
+        } else if(this.size === 5 && this.selectedPlayers.length >= 5 && (this.density === "dense" || this.density === "medium")
+        || (this.size === 4
+            && (this.selectedPlayers.length >= 3 && (this.density === "dense" || this.density === "medium"))
+            || this.selectedPlayers.length === 6 && this.density === "sparse")){
+            message = "The selected values are not valid. Try selecting less players, a smaller field, or less density."
+            this.displayError(message)
+            return
+        } else {
+            errorMessageEl.style.display = "none"          
+            this.error = false
+        }
+        
         this.fields = []
-        this.players.forEach(player => player.fields = [])
-        this.boardEl.style.gridTemplateColumns = `repeat(${this.size}, 5vw)`
-        this.boardEl.style.gridTemplateRows = `repeat(${this.size}, 5vw)`
-    
+        this.selectedPlayers.forEach(player => player.fields = [])
+        
+        this.boardEl.remove()
+        const boardContainer = document.getElementById("board-container")
+        const board = document.createElement("div")
+        board.id = "board"
+        board.style.gridTemplateColumns = `repeat(${this.size}, 5vw)`
+        board.style.gridTemplateRows = `repeat(${this.size}, 5vw)`
+        boardContainer.appendChild(board)
+        this.boardEl = board
+        
         let k = 0
         for (let i = 1; i <= this.size; i++){
             for (let j = 1; j <= this.size; j++){
@@ -230,28 +273,28 @@ class Game {
 
     addPlayers(){
         const size = this.size
-        const players = this.players
+        const players = this.selectedPlayers
         const density = this.density
         
         players.forEach(player => {
-            if(size < 7 && density === "sparse"){
+            if(size <= 7 && density === "sparse"){
                 this.assignPlayerToField(player, 2)
                 this.assignPlayerToField(player, 1)
                 this.assignPlayerToField(player, 1)
-            } else if((size < 7 && density === "medium")
-                    || (size >= 7 && density === "sparse")){
+            } else if((size <= 7 && density === "medium")
+                    || (size > 7 && density === "sparse")){
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 2)
                 this.assignPlayerToField(player, 1)
                 this.assignPlayerToField(player, 1)
-            } else if((size < 7 && density === "dense")
-            || (size >= 7 && density === "medium")){
+            } else if((size <= 7 && density === "dense")
+            || (size > 7 && density === "medium")){
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 2)
                 this.assignPlayerToField(player, 2)
                 this.assignPlayerToField(player, 1)
                 this.assignPlayerToField(player, 1)
-            } else if(size >= 7 && density === "dense"){
+            } else if(size > 7 && density === "dense"){
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 2)
@@ -260,6 +303,7 @@ class Game {
                 this.assignPlayerToField(player, 1)
                 this.assignPlayerToField(player, 1)
                 this.assignPlayerToField(player, 1)
+
             }
         })
     }
@@ -274,11 +318,14 @@ class Game {
     }  
     
     startGame(){
-        this.playersRemaining = this.players
-        this.playerOn = selectRandomElement(this.playersRemaining)
-        this.gameOn = true
-        this.setIsOn()
-        console.log("A new game has started")
+        if(!this.error){
+            this.currentPlayers = this.selectedPlayers
+            this.remainingPlayers = this.currentPlayers
+            this.playerOn = selectRandomElement(this.remainingPlayers)
+            this.gameOn = true
+            this.setIsOn()
+            console.log("A new game has started")
+        }
     }
     
     setIsOn(){
@@ -291,8 +338,8 @@ class Game {
 
     checkRemainingPlayers(player){
         if(player.fields.length === 0){
-            this.playersRemaining = this.playersRemaining.filter(playerRemaining => playerRemaining.color !== player.color)
-            if(this.playersRemaining.length === 1){
+            this.remainingPlayers = this.remainingPlayers.filter(playerRemaining => playerRemaining.color !== player.color)
+            if(this.remainingPlayers.length === 1){
                 this.endGame()
             }    
         }    
@@ -300,15 +347,15 @@ class Game {
 
     getNextPlayer(){
         if(this.gameOn){
-            const currentIndex = this.playersRemaining.indexOf(this.playerOn)
-            const nextIndex = (currentIndex + 1) % this.playersRemaining.length
-            this.playerOn = this.playersRemaining[nextIndex]
+            const currentIndex = this.remainingPlayers.indexOf(this.playerOn)
+            const nextIndex = (currentIndex + 1) % this.remainingPlayers.length
+            this.playerOn = this.remainingPlayers[nextIndex]
             this.setIsOn()
         }    
     }    
     
     endGame(){
-        console.log(this.playersRemaining[0].color + " has won!")
+        console.log(this.remainingPlayers[0].color + " has won!")
         this.playerOn = null
         this.gameOn = false
     }    
