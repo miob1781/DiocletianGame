@@ -16,9 +16,18 @@ export class Game {
         this.playerOn = null
         this.gameOn = false
         this.error = false
+        this.menuOpen = false
     }    
 
     getInput(){
+        const openButtonEl = document.getElementById("open-button")
+        const menuDiv = document.getElementById("menu")
+        openButtonEl.addEventListener("click", () => {
+            menuDiv.style.display = !this.menuOpen ? "block" : "none"
+            openButtonEl.textContent = !this.menuOpen ? "Open Menu" : "Close Menu"
+            this.menuOpen = !this.menuOpen
+        })
+        
         const sizeEl = document.getElementById("size-input")
         this.selectSize(sizeEl)
         sizeEl.addEventListener("input", () => this.selectSize(sizeEl))
@@ -55,11 +64,14 @@ export class Game {
     }
 
     selectPlayer(playerEl, player){
+        const isComputerDiv = playerEl.parentNode.querySelector(".is-computer")
         if(playerEl.checked){
             this.selectIsComputer(playerEl, player)
             this.selectedPlayers.push(player)
+            isComputerDiv.style.display = "block"
         } else {
             this.selectedPlayers = this.selectedPlayers.filter(oldPlayer => oldPlayer.color !== playerEl.name)
+            isComputerDiv.style.display = "none"
         }
         console.log(this.selectedPlayers)
     }
@@ -143,6 +155,7 @@ export class Game {
                 field.numEl = numEl
             }
         }
+
         this.fields.forEach(field => field.getNeighbors())
         this.addPlayers()
         this.createDisplay()
