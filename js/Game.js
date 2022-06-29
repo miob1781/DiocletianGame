@@ -23,8 +23,8 @@ export class Game {
         const openButtonEl = document.getElementById("open-button")
         const menuDiv = document.getElementById("menu")
         openButtonEl.addEventListener("click", () => {
-            menuDiv.style.display = !this.menuOpen ? "block" : "none"
-            openButtonEl.textContent = !this.menuOpen ? "Open Menu" : "Close Menu"
+            menuDiv.style.display = this.menuOpen ? "none" : "block"
+            openButtonEl.textContent = this.menuOpen ? "Open Menu" : "Close Menu"
             this.menuOpen = !this.menuOpen
         })
         
@@ -117,13 +117,15 @@ export class Game {
         
         this.boardEl.remove()
         const boardContainer = document.getElementById("board-container")
-        const board = document.createElement("div")
-        board.id = "board"
-        board.style.gridTemplateColumns = `repeat(${this.size}, 1fr)`
-        board.style.gridTemplateRows = `repeat(${this.size}, 1fr)`
+        const boardEl = document.createElement("div")
+        boardEl.id = "board"
+        boardEl.style.width = `min(${this.size * 50}px, 90vw)`
+        boardEl.style.height = `min(${this.size * 50}px, 90vw)`
+        boardEl.style.gridTemplateColumns = `repeat(${this.size}, 1fr)`
+        boardEl.style.gridTemplateRows = `repeat(${this.size}, 1fr)`
 
-        boardContainer.appendChild(board)
-        this.boardEl = board
+        boardContainer.appendChild(boardEl)
+        this.boardEl = boardEl
         
         let k = 0
         for (let i = 1; i <= this.size; i++){
