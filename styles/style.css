@@ -1,9 +1,9 @@
-body {
+html {
     background-color: white;
     box-sizing: border-box;
     padding: 0;
-    margin: 0;
-    margin-left: 50px;
+    margin: 0 min(10px, 5vw);
+    font-size: min(4vw, 18px);
 }
 
 #menu {
@@ -23,19 +23,17 @@ body {
 #display {
     display: flex;
     flex-wrap: wrap;
-    max-width: 50vw;
+    max-width: 100%;
     margin: 20px;
-    margin-left: 15px;
     height: auto;
 }
 
 .display-player {
-    width: 6vw;
-    height: 7vw;
     border-radius: 13%;
     text-align: center;
     line-height: 0.7;
-    margin: 5px;
+    padding: 0 15px;
+    margin: 10px;
     box-sizing: border-box;
 }
 
@@ -47,17 +45,17 @@ body {
 
 #board {
     display: inline-grid;
-    width: fit-content;
-    height: auto;
+    width: min(90vw, 500px);
+    height: min(90vw, 500px);
     border: 3px solid black;
-    margin-left: 20px;
     z-index: 1;
 }
 
 .field {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background-color: lightgrey;
-    text-align: center;
-    line-height: 3vw;
     border: 1px solid whitesmoke;
     z-index: 2;
     cursor:cell;

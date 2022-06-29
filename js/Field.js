@@ -5,6 +5,7 @@ import {getField} from "./helper_functions.js"
 export class Field {
     constructor(id, row, col){
         this.fieldEl = null
+        this.numEl = null
         this.id = id
         this.row = row
         this.col = col
@@ -43,10 +44,10 @@ export class Field {
         this.player = player
         this.player.fields.push(this)
         this.value = value
-        this.fieldEl.textContent = this.value
+        this.numEl.textContent = this.value
         this.fieldEl.style.backgroundColor = styles.backgroundColor[this.player.color]
         this.fieldEl.style.color = styles.color[this.player.color]
-        this.fieldEl.style.fontSize = styles.fontSize[this.value.toFixed()]
+        this.numEl.style.fontSize = styles.fontSize[this.value.toFixed()]
     }
     
     selectField(){
@@ -63,8 +64,8 @@ export class Field {
             return
         }
         this.value++
-        this.fieldEl.textContent = this.value
-        this.fieldEl.style.fontSize = styles.fontSize[this.value.toFixed()]
+        this.numEl.textContent = this.value
+        this.numEl.style.fontSize = styles.fontSize[this.value.toFixed()]
         if(this.value > this.neighbors.length){
             this.overflow()
         }    
@@ -72,8 +73,8 @@ export class Field {
     
     overflow(){
         this.value = 1
-        this.fieldEl.textContent = 1
-        this.fieldEl.style.fontSize = styles.fontSize["1"]
+        this.numEl.textContent = 1
+        this.numEl.style.fontSize = styles.fontSize["1"]
         this.neighbors.forEach(neighbor => {
             if(!neighbor.player || neighbor.player.color !== this.player.color){
                 let oldOwner

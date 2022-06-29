@@ -107,8 +107,8 @@ export class Game {
         const boardContainer = document.getElementById("board-container")
         const board = document.createElement("div")
         board.id = "board"
-        board.style.gridTemplateColumns = `repeat(${this.size}, 3.5vw)`
-        board.style.gridTemplateRows = `repeat(${this.size}, 3.5vw)`
+        board.style.gridTemplateColumns = `repeat(${this.size}, 1fr)`
+        board.style.gridTemplateRows = `repeat(${this.size}, 1fr)`
 
         boardContainer.appendChild(board)
         this.boardEl = board
@@ -132,9 +132,15 @@ export class Game {
                 })
                 
                 this.boardEl.appendChild(fieldEl)
-                field.fieldEl = fieldEl
+
+                const numEl = document.createElement("span")
+                numEl.className = "num"
+                fieldEl.appendChild(numEl)
+                
                 field.game = this
                 this.fields.push(field)
+                field.fieldEl = fieldEl
+                field.numEl = numEl
             }
         }
         this.fields.forEach(field => field.getNeighbors())

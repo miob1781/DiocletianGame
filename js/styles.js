@@ -18,8 +18,8 @@ export const styles = {
     },    
     fontSize: {
         1: "1rem",
-        2: "1.15rem",
-        3: "1.3rem",
-        4: "1.45rem"
+        2: "1.2rem",
+        3: "1.4rem",
+        4: "1.6rem"
     }    
 }
