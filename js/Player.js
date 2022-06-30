@@ -4,6 +4,7 @@ export class Player {
         this.isOn = false
         this.isComputer = false
         this.fields = []
+        this.totalValue = 0
         this.playerDisplayEl = null
     }    
 
@@ -21,5 +22,7 @@ export class Player {
             return acc + curr.value
         }, 0)
         playerFieldsValueEl.textContent = "Value: " + totalValue
+        this.totalValue = totalValue
+        console.log(this.totalValue)
     }
 }    

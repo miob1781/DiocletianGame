@@ -2,7 +2,7 @@ html {
     background-color: white;
     box-sizing: border-box;
     padding: 0;
-    margin: 15px min(10px, 5vw);
+    margin: clamp(10px, 4vw, 50px);
     font-size: min(4vw, 18px);
 }
 
@@ -12,20 +12,21 @@ h1 {
 
 header, #rules {
     max-width: min(90vw, 450px);
-    margin: 0 clamp(10px, 4vw, 30px);
 }
 
 #rules {
-    line-height: 1.3;
+    line-height: 1.4;
     text-align: justify;
+    margin-bottom: 60px;
 }
 
-#open-menu {
-    margin: 20px 0 20px 10px;
-}
-
-#start-button-container {
+#button-container {
+    display: block;
     margin-top: 20px;
+}
+
+#button-container button {
+    margin: 20px 20px 20px 0;
 }
 
 #open-button, #start {
@@ -38,7 +39,7 @@ header, #rules {
 }
 
 #open-button {
-    background-color: turquoise;
+    background-color: rgb(189, 224, 64);
 }
 
 #start {
@@ -49,24 +50,80 @@ header, #rules {
     display: none;
 }
 
+#players {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 50px;
+}
+
+#players h3 {
+    margin-bottom: 25px;
+}
+
+.player {
+    margin-bottom: 30px;
+}
+
+.player-label {
+    padding: 7px;
+    border-radius: 10%;
+}
+
+#red .player-label {
+    color: white;
+    background-color: red;
+}
+
+#blue .player-label {
+    color: white;
+    background-color: blue;
+}
+
+#yellow .player-label {
+    color: black;
+    background-color: yellow;
+}
+
+#green .player-label {
+    color: white;
+    background-color: green;
+}
+
+#orange .player-label {
+    color: black;
+    background-color: orange;
+}
+
+#purple .player-label {
+    color: white;
+    background-color: purple;
+}
+
 .player input[type="checkbox"] {
     position: relative;
     top: 3px;
-}
+    width: 16px;
+    height: 16px;
+    margin-right: 20px;
+}    
 
 .is-computer {
     display: none;
-    margin-left: 20px;
-}
+}    
 
 .is-computer input {
     position: relative;
     top: 3px;
     margin-right: 10px;
+}    
+
+.density-container {
+    margin-bottom: 10px;
 }
 
-.player {
-    margin-bottom: 20px;
+.density-container input {
+    position: relative;
+    top: 3px;
 }
 
 #error-message {
@@ -79,7 +136,7 @@ header, #rules {
     display: flex;
     flex-wrap: wrap;
     max-width: 100%;
-    margin: 30px 0;
+    margin: 50px 0;
     height: auto;
 }
 
@@ -90,6 +147,10 @@ header, #rules {
     padding: 0 15px;
     margin: 10px 5px;
     box-sizing: border-box;
+}
+
+.display-player:first-child {
+    margin-left: 0;
 }
 
 .player-name {
@@ -107,7 +168,7 @@ header, #rules {
     display: grid;
     max-width: 100%;
     height: auto;
-    border: 3px solid black;
+    border: 4px solid black;
     z-index: 1;
 }
 
@@ -119,4 +180,11 @@ header, #rules {
     border: 1px solid whitesmoke;
     z-index: 2;
     cursor: cell;
+}
+
+footer {
+    margin-top: 30px;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: grey;
 }

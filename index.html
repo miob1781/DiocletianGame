@@ -14,10 +14,7 @@
         <h1>Diocletian</h1>
     </header>
     <main>
-        <p id="rules">Diocletian is a board-game like game for 2-6 players. When it's their turn, the player can click on a field that is occupied by their own color. This will increase the value of the field by 1. If the value is greater than the number of the neighboring fields, the value of the field will be set to 1 and the value of the neighboring fields will be increased by 1. All the neighboring fields now belong to the player. If the value of one of these fields is greater than the number of the neighboring fields, they will again overflow to the neighboring fields until no further field overflows. Then it's the next player's turn. The winner is the last player on the board.</p>
-        <div id="open-menu">
-            <button type="button" id="open-button">New Game</button>
-        </div>
+        <p id="rules">Diocletian is a game for 2-6 players. When it's their turn, the player can click on a field that is occupied by their own color. This will increase the value of the field by 1. If the value is greater than the number of the neighboring fields, the value of the field will be set to 1 and the value of the neighboring fields will be increased by 1. All the neighboring fields now belong to the player. If the value of one of these fields is greater than the number of the neighboring fields, they will again overflow to the neighboring fields until no further field overflows. Then it's the next player's turn. The winner is the last player on the board.</p>
         <div id="menu">
             <h2>Start a new game!</h2>
             <div id="size">
@@ -25,74 +22,68 @@
                 <p>Select the size (row and columns) of the board.</p>
                 <label for="size">Size</label>
                 <input type="range" name="size" min="4" max ="10" value="6" id="size-input">
-                <p id="size-display">The selected size will be displayed here.</p>
+                <span id="size-display">The selected size will be displayed here.</span>
             </div>
             <br>
             <div id="players">
-                <h3>Select the players you want to play with.</h3>
+                <h3>Players</h3>
                 <div class="player" id="red">
-                    <label for="red">Red</label>
+                    <label for="red" class="player-label">Red</label>
                     <input type="checkbox" name="red" id="red-checkbox" checked>
                     <div class="is-computer">
-                        <p>Played by computer?</p>
-                        <label for="red-yes">Yes</label>
+                        <label for="red-yes">Computer</label>
                         <input type="radio" name ="red-radio" value="yes" id="red-yes">
-                        <label for="red-no">No</label>
+                        <label for="red-no">Human</label>
                         <input type="radio" name="red-radio" value ="no" id="red-no" checked>
                     </div>
                 </div>
                 <div class="player" id="blue">
-                    <label for="blue">Blue</label>
+                    <label for="blue" class="player-label">Blue</label>
                     <input type="checkbox" name="blue" id="blue-checkbox" checked>
                     <div class="is-computer">
-                        <p>Played by computer?</p>
-                        <label for="blue-yes">Yes</label>
+                        <label for="blue-yes">Computer</label>
                         <input type="radio" name ="blue-radio" value="yes" id="blue-yes" checked>
-                        <label for="blue-no">No</label>
+                        <label for="blue-no">Human</label>
                         <input type="radio" name="blue-radio" value ="no" id="blue-no">
                     </div>
                 </div>
                 <div class="player" id="yellow">
-                    <label for="yellow">Yellow</label>
+                    <label for="yellow" class="player-label">Yellow</label>
                     <input type="checkbox" name="yellow" id="yellow-checkbox">
                     <div class="is-computer">
-                        <p>Played by computer?</p>
-                        <label for="yellow-yes">Yes</label>
+                        <label for="yellow-yes">Computer</label>
                         <input type="radio" name ="yellow-radio" value="yes" id="yellow-yes" checked>
-                        <label for="yellow-no">No</label>
+                        <label for="yellow-no">Human</label>
                         <input type="radio" name="yellow-radio" value ="no" id="yellow-no">
                     </div>
                 </div>
                 <div class="player" id="green">
-                    <label for="green">Green</label>
+                    <label for="green" class="player-label">Green</label>
                     <input type="checkbox" name="green" id="green-checkbox">
                     <div class="is-computer">
-                        <p>Played by computer?</p>
-                        <label for="green-yes">Yes</label>
+                        <label for="green-yes">Computer</label>
                         <input type="radio" name ="green-radio" value="yes" id="green-yes" checked>
-                        <label for="green-no">No</label>
+                        <label for="green-no">Human</label>
                         <input type="radio" name="green-radio" value ="no" id="green-no">
                     </div>
                 </div>
                 <div class="player" id="orange">
-                    <label for="orange">Orange</label>
+                    <label for="orange" class="player-label">Orange</label>
                     <input type="checkbox" name="orange" id="orange-checkbox">
                     <div class="is-computer">
-                        <p>Played by computer?</p>
-                        <label for="orange-yes">Yes</label>
+                        <label for="orange-yes">Computer</label>
                         <input type="radio" name ="orange-radio" value="yes" id="orange-yes" checked>
-                        <label for="orange-no">No</label>
+                        <label for="orange-no">Human</label>
                         <input type="radio" name="orange-radio" value ="no" id="orange-no">
                     </div>
                 </div>
                 <div class="player" id="purple">
-                    <label for="purple">Purple</label>
+                    <label for="purple" class="player-label">Purple</label>
                     <input type="checkbox" name="purple" id="purple-checkbox">
                     <div class="is-computer">
-                        <p>Played by computer?</p>
-                        <label for="purple-yes">Yes</label>
+                        <label for="purple-yes">Computer</label>
                         <input type="radio" name ="purple-radio" value="yes" id="purple-yes" checked>
-                        <label for="purple-no">No</label>
+                        <label for="purple-no">Human</label>
                         <input type="radio" name="purple-radio" value ="no" id ="purple-no">
                     </div>
                 </div>
@@ -100,20 +91,25 @@
             <div id="density">
                 <h3>Density</h3>
                 <p>Select how populated the board should be at the beginning.</p>
-                <label for="sparse">Sparse</label>
-                <input type="radio" name="density" value="sparse" id="sparse" checked>
-                <br>
-                <label for="medium">Medium</label>
-                <input type="radio" name="density" value="medium" id="medium">
-                <br>
-                <label for="dense">Dense</label>
-                <input type="radio" name="density" value="dense" id="dense">
+                <div class="density-container">
+                    <label for="sparse">Sparse</label>
+                    <input type="radio" name="density" value="sparse" id="sparse" checked>
+                </div>
+                <div class="density-container">
+                    <label for="medium">Medium</label>
+                    <input type="radio" name="density" value="medium" id="medium">
+                </div>
+                <div class="density-container">
+                    <label for="dense">Dense</label>
+                    <input type="radio" name="density" value="dense" id="dense">
+                </div>
             </div>
-            <div id="start-button-container">
-                <button type="button" id="start">Start!</button>
-            </div>
-            <p id="error-message"></p>
         </div>
+        <div id="button-container">
+            <button type="button" id="start">Start!</button>
+            <button type="button" id="open-button">Menu</button>
+        </div>
+        <p id="error-message"></p>
         <div id="display-container">
             <div id="display"></div>
         </div>

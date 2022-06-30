@@ -58,7 +58,7 @@ export class Game {
         const openButtonEl = document.getElementById("open-button")
         const menuDiv = document.getElementById("menu")
         menuDiv.style.display = this.menuOpen ? "none" : "block"
-        openButtonEl.textContent = this.menuOpen ? "New Game" : "Close Menu"
+        openButtonEl.textContent = this.menuOpen ? "Menu" : "Close Menu"
         this.menuOpen = !this.menuOpen
     }
 
@@ -73,7 +73,7 @@ export class Game {
         if(playerEl.checked){
             this.selectIsComputer(playerEl, player)
             this.selectedPlayers.push(player)
-            isComputerDiv.style.display = "block"
+            isComputerDiv.style.display = "inline-block"
         } else {
             this.selectedPlayers = this.selectedPlayers.filter(oldPlayer => oldPlayer.color !== playerEl.name)
             isComputerDiv.style.display = "none"
@@ -248,8 +248,6 @@ export class Game {
         if(!this.error){
             const winnerMessageEl = document.getElementById("winner-message")
             winnerMessageEl.style.display = "none"
-
-            this.toggleMenuDisplay()
             this.currentPlayers = this.selectedPlayers
             this.remainingPlayers = this.currentPlayers
             this.playerOn = selectRandomElement(this.remainingPlayers)
