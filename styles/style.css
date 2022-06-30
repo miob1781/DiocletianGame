@@ -21,7 +21,7 @@ header, #rules {
 }
 
 #open-menu {
-    margin: 10px 0 20px 10px;
+    margin: 20px 0 20px 10px;
 }
 
 #start-button-container {
@@ -97,8 +97,15 @@ header, #rules {
     text-decoration: underline;
 }
 
+#winner-message {
+    font-size: 1.2rem;
+    font-style: italic;
+}
+
 #board {
-    display: inline-grid;
+    display: grid;
+    max-width: 100%;
+    height: auto;
     border: 3px solid black;
     z-index: 1;
 }

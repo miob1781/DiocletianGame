@@ -124,14 +124,14 @@ export class Game {
         const boardContainer = document.getElementById("board-container")
         const boardEl = document.createElement("div")
         boardEl.id = "board"
+        boardContainer.appendChild(boardEl)
+        this.boardEl = boardEl
+
         boardEl.style.width = `min(${this.size * 50}px, 90vw)`
         boardEl.style.height = `min(${this.size * 50}px, 90vw)`
         boardEl.style.gridTemplateColumns = `repeat(${this.size}, 1fr)`
         boardEl.style.gridTemplateRows = `repeat(${this.size}, 1fr)`
 
-        boardContainer.appendChild(boardEl)
-        this.boardEl = boardEl
-        
         let k = 0
         for (let i = 1; i <= this.size; i++){
             for (let j = 1; j <= this.size; j++){
@@ -246,6 +246,9 @@ export class Game {
 
     startGame(){
         if(!this.error){
+            const winnerMessageEl = document.getElementById("winner-message")
+            winnerMessageEl.display = "none"
+
             this.toggleMenuDisplay()
             this.currentPlayers = this.selectedPlayers
             this.remainingPlayers = this.currentPlayers
@@ -285,7 +288,12 @@ export class Game {
     }    
 
     endGame(){
-        console.log(this.remainingPlayers[0].color + " has won!")
+        const winnerMessageEl = document.getElementById("winner-message")
+        winnerMessageEl.display = "block"
+        const winner = this.remainingPlayers[0].color
+        const winnerString = winner[0].toUpperCase() + winner.slice(1)
+        winnerMessageEl.textContent = winnerString + " has won!"
+
         this.playerOn = null
         this.gameOn = false
     }    
