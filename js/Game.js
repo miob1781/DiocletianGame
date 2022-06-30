@@ -21,11 +21,8 @@ export class Game {
 
     getInput(){
         const openButtonEl = document.getElementById("open-button")
-        const menuDiv = document.getElementById("menu")
         openButtonEl.addEventListener("click", () => {
-            menuDiv.style.display = this.menuOpen ? "none" : "block"
-            openButtonEl.textContent = this.menuOpen ? "Open Menu" : "Close Menu"
-            this.menuOpen = !this.menuOpen
+            this.toggleMenuDisplay()
         })
         
         const sizeEl = document.getElementById("size-input")
@@ -55,6 +52,14 @@ export class Game {
             this.createBoard()
             this.startGame()
         })
+    }
+
+    toggleMenuDisplay(){
+        const openButtonEl = document.getElementById("open-button")
+        const menuDiv = document.getElementById("menu")
+        menuDiv.style.display = this.menuOpen ? "none" : "block"
+        openButtonEl.textContent = this.menuOpen ? "New Game" : "Close Menu"
+        this.menuOpen = !this.menuOpen
     }
 
     selectSize(domEl){
@@ -241,6 +246,7 @@ export class Game {
 
     startGame(){
         if(!this.error){
+            this.toggleMenuDisplay()
             this.currentPlayers = this.selectedPlayers
             this.remainingPlayers = this.currentPlayers
             this.playerOn = selectRandomElement(this.remainingPlayers)
