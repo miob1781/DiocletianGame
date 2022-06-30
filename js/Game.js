@@ -247,7 +247,7 @@ export class Game {
     startGame(){
         if(!this.error){
             const winnerMessageEl = document.getElementById("winner-message")
-            winnerMessageEl.display = "none"
+            winnerMessageEl.style.display = "none"
 
             this.toggleMenuDisplay()
             this.currentPlayers = this.selectedPlayers
@@ -289,7 +289,7 @@ export class Game {
 
     endGame(){
         const winnerMessageEl = document.getElementById("winner-message")
-        winnerMessageEl.display = "block"
+        winnerMessageEl.style.display = "block"
         const winner = this.remainingPlayers[0].color
         const winnerString = winner[0].toUpperCase() + winner.slice(1)
         winnerMessageEl.textContent = winnerString + " has won!"
