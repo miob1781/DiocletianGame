@@ -17,14 +17,33 @@ export class Game {
         this.gameOn = false
         this.error = false
         this.menuOpen = false
+        this.rulesOpen = false
     }    
-
+    
     getInput(){
         const openButtonEl = document.getElementById("open-button")
         openButtonEl.addEventListener("click", () => {
-            this.toggleMenuDisplay()
+            const openButton = document.getElementById("open-button")
+            const menuDiv = document.getElementById("menu")
+            menuDiv.style.display = this.menuOpen ? "none" : "block"
+            openButton.textContent = this.menuOpen ? "Menu" : "Close Menu"
+            this.menuOpen = !this.menuOpen
         })
         
+        const startButton = document.getElementById("start")
+        startButton.addEventListener("click", () => {
+            this.createBoard()
+            this.startGame()
+        })
+
+        const rulesButton = document.getElementById("rules-button")
+        rulesButton.addEventListener("click", () => {
+            const rules = document.getElementById("rules")
+            rules.style.display = this.rulesOpen ? "none" : "block"
+            rulesButton.textContent = this.rulesOpen ? "Rules" : "Close Rules"
+            this.rulesOpen = !this.rulesOpen
+        })
+
         const sizeEl = document.getElementById("size-input")
         this.selectSize(sizeEl)
         sizeEl.addEventListener("input", () => this.selectSize(sizeEl))
@@ -46,20 +65,6 @@ export class Game {
         densityEls.forEach(densityEl => {
             densityEl.addEventListener("input", () => this.selectDensity(densityEl))
         })
-
-        const startButton = document.getElementById("start")
-        startButton.addEventListener("click", () => {
-            this.createBoard()
-            this.startGame()
-        })
-    }
-
-    toggleMenuDisplay(){
-        const openButtonEl = document.getElementById("open-button")
-        const menuDiv = document.getElementById("menu")
-        menuDiv.style.display = this.menuOpen ? "none" : "block"
-        openButtonEl.textContent = this.menuOpen ? "Menu" : "Close Menu"
-        this.menuOpen = !this.menuOpen
     }
 
     selectSize(domEl){

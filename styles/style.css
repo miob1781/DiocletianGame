@@ -8,6 +8,9 @@ html {
 
 h1 {
     text-align: center;
+    font-family: "Gideon Roman";
+    font-size: 2.5rem;
+    text-transform: uppercase;
 }
 
 header, #rules {
@@ -15,35 +18,39 @@ header, #rules {
 }
 
 #rules {
+    display: none;
     line-height: 1.4;
     text-align: justify;
-    margin-bottom: 60px;
+    margin-bottom: 40px;
 }
 
 #button-container {
-    display: block;
+    display: flex;
+    max-width: 450px;
     margin-top: 20px;
+    justify-content: center;
 }
 
 #button-container button {
-    margin: 20px 20px 20px 0;
-}
-
-#open-button, #start {
     color: white;
     font-size: 1.2rem;
     padding: 10px;
+    margin: 20px 20px 20px 0;
     border-radius: 7%;
     box-shadow: 3px 5px 9px grey;
     cursor: pointer;
 }
 
-#open-button {
-    background-color: rgb(189, 224, 64);
+#start {
+    background-color: rgb(24, 172, 24);
 }
 
-#start {
-    background-color: limegreen;
+#open-button {
+    background-color: rgb(116, 118, 33);
+}
+
+#rules-button {
+    background-color: chocolate;
 }
 
 #menu {
@@ -101,9 +108,10 @@ header, #rules {
 
 .player input[type="checkbox"] {
     position: relative;
-    top: 3px;
-    width: 16px;
-    height: 16px;
+    top: 5px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
     margin-right: 20px;
 }    
 
@@ -136,7 +144,7 @@ header, #rules {
     display: flex;
     flex-wrap: wrap;
     max-width: 100%;
-    margin: 50px 0;
+    margin: 50px 0 30px -5px;
     height: auto;
 }
 
@@ -149,10 +157,6 @@ header, #rules {
     box-sizing: border-box;
 }
 
-.display-player:first-child {
-    margin-left: 0;
-}
-
 .player-name {
     font-size: 1.1rem;
     text-transform: capitalize;
@@ -160,8 +164,10 @@ header, #rules {
 }
 
 #winner-message {
-    font-size: 1.2rem;
-    font-style: italic;
+    font-size: 1.4rem;
+    font-family: "Gideon Roman";
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
 #board {

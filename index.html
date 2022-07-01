@@ -5,6 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diocletian</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gideon+Roman&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./styles/style.css">
     <script src="./js/main.js" type="module" defer></script>
 </head>
@@ -14,7 +17,9 @@
         <h1>Diocletian</h1>
     </header>
     <main>
-        <p id="rules">Diocletian is a game for 2-6 players. When it's their turn, the player can click on a field that is occupied by their own color. This will increase the value of the field by 1. If the value is greater than the number of the neighboring fields, the value of the field will be set to 1 and the value of the neighboring fields will be increased by 1. All the neighboring fields now belong to the player. If the value of one of these fields is greater than the number of the neighboring fields, they will again overflow to the neighboring fields until no further field overflows. Then it's the next player's turn. The winner is the last player on the board.</p>
+        <div id="rules">
+            <p>Diocletian is a game for 2-6 players. When it's their turn, the player can click on a field that is occupied by their own color. This will increase the value of the field by 1. If the value is greater than the number of the neighboring fields, the value of the field will be set to 1 and the value of the neighboring fields will be increased by 1. All the neighboring fields now belong to the player. If the value of one of these fields is greater than the number of the neighboring fields, they will again overflow to the neighboring fields until no further field overflows. Then it's the next player's turn. The winner is the last player on the board.</p>
+        </div>
         <div id="menu">
             <h2>Start a new game!</h2>
             <div id="size">
@@ -108,6 +113,7 @@
         <div id="button-container">
             <button type="button" id="start">Start!</button>
             <button type="button" id="open-button">Menu</button>
+            <button type="button" id="rules-button">Rules</button>
         </div>
         <p id="error-message"></p>
         <div id="display-container">
