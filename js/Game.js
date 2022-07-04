@@ -83,7 +83,6 @@ export class Game {
             this.selectedPlayers = this.selectedPlayers.filter(oldPlayer => oldPlayer.color !== playerEl.name)
             isComputerDiv.style.display = "none"
         }
-        console.log(this.selectedPlayers)
     }
     
     selectIsComputer(playerEl, player){
@@ -103,7 +102,6 @@ export class Game {
     }
 
     createBoard(){
-        console.log("creating a new board")
         const errorMessageEl = document.getElementById("error-message")
         let message
         if(this.selectedPlayers.length <= 1){
@@ -171,8 +169,6 @@ export class Game {
         this.fields.forEach(field => field.getNeighbors())
         this.addPlayers()
         this.createDisplay()
-        
-        console.log(this)
     }
 
     addPlayers(){
@@ -258,13 +254,11 @@ export class Game {
             this.playerOn = selectRandomElement(this.remainingPlayers)
             this.gameOn = true
             this.setIsOn()
-            console.log("A new game has started")
         }
     }
 
     setIsOn(){
         this.playerOn.isOn = true
-        console.log(`It's ${this.playerOn.color}'s turn.`)
         this.playerOn.playerDisplayEl.style.border = "4px dashed gold"
         if(this.playerOn.isComputer){
             this.computerMoves()

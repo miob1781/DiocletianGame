@@ -23,6 +23,5 @@ export class Player {
         }, 0)
         playerFieldsValueEl.textContent = "Value: " + totalValue
         this.totalValue = totalValue
-        console.log(this.totalValue)
     }
 }    
