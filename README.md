@@ -7,4 +7,4 @@ The game has a menu in which the number of players can be set as well as which p
 The game has been built with vanilla JavaScript.
 
 # Demo
-https://miob1781.github.io/Diocletian/
+Go to the demo [here](https://miob1781.github.io/Diocletian/).
