@@ -3,7 +3,7 @@ html {
     box-sizing: border-box;
     padding: 0;
     margin: auto;
-    width: 50%;
+    width: max(300px, 90vw);
     font-size: min(4vw, 18px);
 }
 
@@ -192,4 +192,10 @@ footer {
     font-size: 1.1rem;
     font-style: italic;
     color: grey;
+}
+
+@media screen and (min-width: 380px) {
+    html {
+        margin-left: 10vw;
+    }
 }
