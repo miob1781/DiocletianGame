@@ -2,12 +2,12 @@ html {
     background-color: white;
     box-sizing: border-box;
     padding: 0;
-    margin: clamp(10px, 4vw, 50px);
+    margin: auto;
+    width: 50%;
     font-size: min(4vw, 18px);
 }
 
 h1 {
-    text-align: center;
     font-family: "Gideon Roman";
     font-size: 2.5rem;
     text-transform: uppercase;
@@ -28,7 +28,6 @@ header, #rules {
     display: flex;
     max-width: 450px;
     margin-top: 20px;
-    justify-content: center;
 }
 
 #button-container button {
