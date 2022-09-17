@@ -17,9 +17,87 @@
         <h1>Diocletian</h1>
     </header>
     <main>
+        <div id="account">
+            <div id="login">
+                <form id="login-form">
+                    <p>Please enter your username or email and your password.</p>
+                    <label>Username: <input type="text"></label><br>
+                    <label>Email: <input type="email"></label><br>
+                    <label>Password: <input type="password" required></label><br>
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+            <div id="signup">
+                <p>Not registered yet?</p>
+                <button id="open-signup-form" type="button">Create new account</button>
+                <form id="signup-form">
+                    <p>Please enter a username, your email and a password.</p>
+                    <label>Username: <input type="text" required></label><br>
+                    <label>Email: <input type="email" required></label><br>
+                    <label>Password: <input type="password" required></label><br>
+                    <input type="submit" value="Submit">
+                </form>
+            </div>
+            <h3 id="player-name">Player name goes here</h3>
+
+            <form id="create-game">
+                <div id="players-web">
+                    <h3>Players</h3>
+                    <p>Select the number of players.</p>
+                    <div id="2-web-container">
+                        <input type="radio" name="num-players-web" value="2" id="2-web"><label for="2-web">2</label>
+                    </div>
+                    <div id="3-web-container">
+                        <input type="radio" name="num-players-web" value="3" id="3-web"><label for="3-web">3</label>
+                    </div>
+                    <div id="4-web-container">
+                        <input type="radio" name="num-players-web" value="4" id="4-web"><label for="4-web">4</label>
+                    </div>
+                    <div id="5-web-container">
+                        <input type="radio" name="num-players-web" value="5" id="5-web"><label for="5-web">5</label>
+                    </div>
+                    <div id="6-web-container">
+                        <input type="radio" name="num-players-web" value="6" id="6-web"><label for="6-web">6</label>
+                    </div>
+                </div>
+                <div id="size-web">
+                    <h3>Size</h3>
+                    <p>Select the size (row and columns) of the board.</p>
+                    <label for="size">Size</label>
+                    <input type="range" name="size" min="4" max ="10" value="6" id="size-input-web">
+                    <span id="size-display-web">The selected size will be displayed here.</span>
+                </div>
+                <div id="density">
+                    <h3>Density</h3>
+                    <p>Select how populated the board should be at the beginning.</p>
+                    <div class="density-container">
+                        <label for="sparse">Sparse</label>
+                        <input type="radio" name="density" value="sparse" id="sparse-web" checked>
+                    </div>
+                    <div class="density-container">
+                        <label for="medium">Medium</label>
+                        <input type="radio" name="density" value="medium" id="medium-web">
+                    </div>
+                    <div class="density-container">
+                        <label for="dense">Dense</label>
+                        <input type="radio" name="density" value="dense" id="dense-web">
+                    </div>
+                </div>
+                <input type="text" placeholder="Search player">
+                <div id="all-players">List of all players goes here</div>
+                <div id="invited-players">List of invited players goes here</div>
+                <input type="submit" value="Create new game">
+            </form>
+            
+            <div id="game-created"></div>
+            <div id="games-invited"></div>
+            <div id="old-games"></div>
+        </div>
+
         <div id="rules">
             <p>Diocletian is a game for 2-6 players. When it's their turn, the player can click on a field that is occupied by their own color. This will increase the value of the field by 1. If the value is greater than the number of the neighboring fields, the value of the field will be set to 1 and the value of the neighboring fields will be increased by 1. All the neighboring fields now belong to the player. If the value of one of these fields is greater than the number of the neighboring fields, they will again overflow to the neighboring fields until no further field overflows. Then it's the next player's turn. The winner is the last player on the board.</p>
         </div>
+
         <div id="menu">
             <h2>Start a new game!</h2>
             <div id="size">
@@ -110,6 +188,7 @@
                 </div>
             </div>
         </div>
+
         <div id="button-container">
             <button type="button" id="start">Start!</button>
             <button type="button" id="open-button">Menu</button>
@@ -119,6 +198,7 @@
         <div id="display-container">
             <div id="display"></div>
         </div>
+
         <div id="board-container">
             <p id="winner-message"></p>
             <div id="board"></div>
