@@ -1,4 +1,5 @@
 import {WebGame} from "./WebGame"
+import axios from "axios"
 
 export class Account {
     constructor(){
@@ -13,7 +14,7 @@ export class Account {
 
     }
     login(){
-        
+
     }
     createGame(){
 
