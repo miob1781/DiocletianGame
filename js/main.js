@@ -1,13 +1,13 @@
 import {Game} from "./Game.js"
 import {Account} from "./Account.js"
 
-// instantiating classes, running listeners and starting a new game
+// instantiating classes
 const account = new Account()
 const game = new Game()
 
-account.listenToSignup()
-account.listenToLogin()
-account.listentToLogout()
+// running event listeners
+account.addListeners()
 
+// starting a new game
 game.getInput()
 game.createBoard()

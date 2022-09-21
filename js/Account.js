@@ -1,6 +1,16 @@
 import {WebGame} from "./WebGame.js"
 import {BASE_URL} from "./consts.js"
 
+// elements in #account
+const signupContainer = document.getElementById("signup")
+const submitSignupEl = signupContainer.querySelector("button")
+const openSignupEl = document.getElementById("open-signup")
+const loginContainer = document.getElementById("login")
+const submitLoginEl = loginContainer.querySelector("button")
+const logoutContainer = document.getElementById("logout")
+const logoutEl = logoutContainer.querySelector("button")
+const playerNameEl = document.getElementById("player-name")
+
 export class Account {
     constructor(){
         this.id = null
@@ -25,7 +35,7 @@ export class Account {
         if(storedToken){
             const headers = this.getHeaders(storedToken)
             axios.get(BASE_URL + "/player/verify", headers)
-                .then(response => {
+            .then(response => {
                     const {id, username, email, createdGame, invitedGames, oldGames} = response.data
                     this.id = id
                     this.username = username
@@ -35,72 +45,71 @@ export class Account {
                     this.oldGames = oldGames
                     this.isLoggedIn = true
                     
+                    loginContainer.style.display = "none"
+                    signupContainer.style.display = "none"
+                    logoutContainer.style.display = "block"
+                    playerNameEl.style.display = this.isLoggedIn ? "block" : "none"
+                    playerNameEl.textContent = `Welcome, ${this.username}!`
+            
                     console.log(this);
                 })
                 .catch(err => console.log("error during authentication: ", err))
             }
         }
-        
-        listenToSignup(){
-            const signupEl = document.getElementById("signup")
-            const usernameEl = document.getElementById("signup-username")
-            const emailEl = document.getElementById("signup-email")
-            const passwordEl = document.getElementById("signup-password")
-            const submitEl = signupEl.querySelector("input[type='submit']")
-            const openSignup = document.getElementById("open-signup")
+    
+    addListeners(){
+        // make display of login, logout and name dependent on whether player is logged in
+        loginContainer.style.display = this.isLoggedIn ? "none" : "block"
+        logoutContainer.style.display = this.isLoggedIn ? "block" : "none"
+        playerNameEl.style.display = this.isLoggedIn ? "block" : "none"
+        playerNameEl.textContent = `Welcome, ${this.username}!`
+
+        // add listener to open the signup form
+        openSignupEl.addEventListener("click", () => {
+            signupContainer.style.display = "block"
+        })
+
+        // add listener to signup
+        submitSignupEl.addEventListener("click", () => {
+            const username = document.getElementById("signup-username").value
+            const email = document.getElementById("signup-email").value
+            const password = document.getElementById("signup-password").value
             
-            openSignup.addEventListener("click", () => {
-                signupEl.style.display = "block"
-            })
+            const data = {username, email, password}
             
-            submitEl.addEventListener("click", () => {
-                const username = usernameEl.value
-                const email = emailEl.value
-                const password = passwordEl.value
-                
-                const data = {username, email, password}
-                
-                axios.post(BASE_URL + "/player/signup", data)
-                .then(response => {
-                    this.storeToken(response.data.authToken)
-                    this.authenticateUser()
-                })
-                .catch(err => console.log("Error during signup: ", err))
+            axios.post(BASE_URL + "/player/signup", data)
+            .then(response => {
+                this.storeToken(response.data.authToken)
+                this.authenticateUser()
             })
-        }
-        
-        listenToLogin(){
-            const submitEl = document.querySelector("#login-form button")
-        
-            submitEl.addEventListener("click", () => {
-                const username = document.getElementById("login-username").value
-                const password = document.getElementById("login-password").value
-                
-                const data = {username, password}
-                
-                axios.post(BASE_URL + "/player/login", data)
-                .then(response => {
-                    this.storeToken(response.data.authToken)
-                    this.authenticateUser()
-                })
-                .catch(err => console.log("error during login: ", err))
-            })
-        }
-        
-        listentToLogout(){
-            const logoutEl = document.querySelector("#logout button")
+            .catch(err => console.log("Error during signup: ", err))
+        })
+
+        // add listener to login
+        submitLoginEl.addEventListener("click", () => {
+            const username = document.getElementById("login-username").value
+            const password = document.getElementById("login-password").value
             
-            logoutEl.addEventListener("click", () => {
+            const data = {username, password}
+            
+            axios.post(BASE_URL + "/player/login", data)
+            .then(response => {
+                this.storeToken(response.data.authToken)
+                this.authenticateUser()
+            })
+            .catch(err => console.log("error during login: ", err))
+        })
+
+        // add listener to logout
+        logoutEl.addEventListener("click", () => {
             localStorage.removeItem("authToken")
             this.isLoggedIn = false
+
+            logoutContainer.style.display = "none"
+            loginContainer.style.display = "block"
+            loginContainer.style.display = "block"
+            playerNameEl.style.display = "none"
         })
     }
 
-    listenToCreateGame(){
-
-    }
-    
-    listenToAcceptGame(){
-        
-    }
 }
