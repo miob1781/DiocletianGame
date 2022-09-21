@@ -24,6 +24,10 @@ header, #rules {
     margin-bottom: 40px;
 }
 
+#signup {
+    display: none;
+}
+
 #button-container {
     display: flex;
     max-width: 450px;
