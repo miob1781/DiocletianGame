@@ -6,6 +6,7 @@ const account = new Account()
 const game = new Game()
 
 // running event listeners
+account.hideOrOpen()
 account.addListeners()
 
 // starting a new game

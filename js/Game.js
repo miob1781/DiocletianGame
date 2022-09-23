@@ -59,8 +59,11 @@ export class Game {
             })
         })
 
+        // selects density when the page is rendered
         const checkedDensityEl = document.querySelector("#density input[name='density']:checked")
         this.selectDensity(checkedDensityEl)
+
+        // adds listeners for density
         const densityEls = document.querySelectorAll("#density input[name='density']")
         densityEls.forEach(densityEl => {
             densityEl.addEventListener("input", () => this.selectDensity(densityEl))

@@ -10,6 +10,8 @@ const submitLoginEl = loginContainer.querySelector("button")
 const logoutContainer = document.getElementById("logout")
 const logoutEl = logoutContainer.querySelector("button")
 const playerNameEl = document.getElementById("player-name")
+const createGameContainer = document.getElementById("create-game")
+const submitGameEl = createGameContainer.querySelector("button")
 
 export class Account {
     constructor(){
@@ -20,6 +22,22 @@ export class Account {
         this.invitedGames = null
         this.oldGames = null
         this.isLoggedIn = localStorage.getItem("authToken") ? true : false
+    }
+
+    hideOrOpen(){
+        if(this.isLoggedIn){
+            loginContainer.style.display = "none"
+            signupContainer.style.display = "none"
+            logoutContainer.style.display = "block"
+            playerNameEl.style.display = "block"
+            playerNameEl.textContent = `Welcome, ${this.username}!`
+            createGameContainer.style.display = "block"
+        } else {
+            loginContainer.style.display = "block"
+            logoutContainer.style.display = "none"
+            playerNameEl.style.display = "none"
+            createGameContainer.style.display = "none"
+        }
     }
 
     storeToken(token){
@@ -45,12 +63,8 @@ export class Account {
                     this.oldGames = oldGames
                     this.isLoggedIn = true
                     
-                    loginContainer.style.display = "none"
-                    signupContainer.style.display = "none"
-                    logoutContainer.style.display = "block"
-                    playerNameEl.style.display = this.isLoggedIn ? "block" : "none"
-                    playerNameEl.textContent = `Welcome, ${this.username}!`
-            
+                    this.hideOrOpen()
+
                     console.log(this);
                 })
                 .catch(err => console.log("error during authentication: ", err))
@@ -58,11 +72,6 @@ export class Account {
         }
     
     addListeners(){
-        // make display of login, logout and name dependent on whether player is logged in
-        loginContainer.style.display = this.isLoggedIn ? "none" : "block"
-        logoutContainer.style.display = this.isLoggedIn ? "block" : "none"
-        playerNameEl.style.display = this.isLoggedIn ? "block" : "none"
-        playerNameEl.textContent = `Welcome, ${this.username}!`
 
         // add listener to open the signup form
         openSignupEl.addEventListener("click", () => {
@@ -104,11 +113,12 @@ export class Account {
         logoutEl.addEventListener("click", () => {
             localStorage.removeItem("authToken")
             this.isLoggedIn = false
+            this.hideOrOpen()
+        })
 
-            logoutContainer.style.display = "none"
-            loginContainer.style.display = "block"
-            loginContainer.style.display = "block"
-            playerNameEl.style.display = "none"
+        // add listener to create game
+        submitGameEl.addEventListener("click", () => {
+            
         })
     }
 
