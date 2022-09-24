@@ -1,7 +1,7 @@
 import {styles} from "./styles.js"
 import {Field} from "./Field.js"
 import {Player} from "./Player.js"
-import {selectRandomElement} from "./helper_functions.js" 
+import {selectRandomElement, shuffleArray} from "./helper_functions.js" 
 
 export class Game {
     constructor(){
@@ -123,6 +123,9 @@ export class Game {
             this.error = false
         }
         
+        // shuffles the selected players by the Fisher-Yates algorithm
+        this.selectedPlayers = shuffleArray(this.selectedPlayers)
+
         this.fields = []
         this.selectedPlayers.forEach(player => player.fields = [])
         
@@ -216,7 +219,7 @@ export class Game {
         const displayEl = document.createElement("display")
         displayEl.id = "display"
         displayContainer.appendChild(displayEl)
-        
+
         this.selectedPlayers.forEach(player => {
             const playerDisplayEl = document.createElement("div")
             playerDisplayEl.className = "display-player"
@@ -252,9 +255,10 @@ export class Game {
         if(!this.error){
             const winnerMessageEl = document.getElementById("winner-message")
             winnerMessageEl.style.display = "none"
+
             this.currentPlayers = this.selectedPlayers
             this.remainingPlayers = this.currentPlayers
-            this.playerOn = selectRandomElement(this.remainingPlayers)
+            this.playerOn = this.remainingPlayers[0]
             this.gameOn = true
             this.setIsOn()
         }

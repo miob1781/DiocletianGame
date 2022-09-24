@@ -121,7 +121,7 @@ export class Account {
             this.hideOrOpen()
         })
 
-        // get input for names of players and loads them from DB
+        // adds listener to get input for names of players and loads them from DB
         submitPlayerEl.addEventListener("click", () => {
             const playerToInvite = document.getElementById("player-input").value
             const headers = this.getHeaders(localStorage.getItem("authToken"))
