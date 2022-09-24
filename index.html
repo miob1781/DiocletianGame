@@ -41,6 +41,7 @@
             <div id="logout">
                 <button type="button">Logout</button>
             </div>
+
             <h3 id="player-name">Player name goes here</h3>
 
             <form id="create-game">
@@ -68,9 +69,9 @@
                     <input type="text" placeholder="Search player" id="player-input">
                     <button type="button">Add player to game</button>
                     <p id="error-message-get-player"></p>
+                    <div id="invited-players"></div>
                 </div>
-                <div id="invited-players"></div>
-                <button type="button">Send request to join the game</button>
+                <button type="button" id="submit-game">Start Solo Game</button>
             </form>
             
             <div id="game-created"></div>
@@ -177,6 +178,7 @@
             <button type="button" id="start">Start!</button>
             <button type="button" id="open-button">Menu</button>
             <button type="button" id="rules-button">Rules</button>
+            <button type="button" id="game-type-button">Solo</button>
         </div>
         <p id="error-message"></p>
         <div id="display-container">

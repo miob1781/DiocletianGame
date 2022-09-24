@@ -3,25 +3,26 @@ import {BASE_URL} from "./consts.js"
 
 // elements in #account
 const signupContainer = document.getElementById("signup")
-const submitSignupEl = signupContainer.querySelector("button")
-const openSignupEl = document.getElementById("open-signup")
+const submitSignupButton = signupContainer.querySelector("button")
+const openSignupButton = document.getElementById("open-signup")
 const loginContainer = document.getElementById("login")
-const submitLoginEl = loginContainer.querySelector("button")
+const submitLoginButton = loginContainer.querySelector("button")
 const logoutContainer = document.getElementById("logout")
-const logoutEl = logoutContainer.querySelector("button")
-const playerNameEl = document.getElementById("player-name")
-const createGameContainer = document.getElementById("create-game")
-const submitPlayerEl = document.querySelector("#get-player button")
+const logoutButton = logoutContainer.querySelector("button")
+const gameTypeButton = document.getElementById("game-type-button")
+const playerNameHeading = document.getElementById("player-name")
+const getPlayerContainer = document.getElementById("get-player")
+const submitPlayerButton = getPlayerContainer.querySelector("button")
 const errorMessagePlayerEl = document.getElementById("error-message-get-player")
 const invitedPlayersContainer = document.getElementById("invited-players")
-const submitGameEl = createGameContainer.querySelector("button")
+const submitGameButton = document.getElementById("submit-game")
 
 export class Account {
     constructor(){
         this.id = null
         this.username = null
         this.email = null
-        this.playersToInvite = []
+        this.invitedPlayers = []
         this.createdGame = null
         this.invitedGames = null
         this.oldGames = null
@@ -33,14 +34,20 @@ export class Account {
             loginContainer.style.display = "none"
             signupContainer.style.display = "none"
             logoutContainer.style.display = "block"
-            playerNameEl.style.display = "block"
-            playerNameEl.textContent = `Welcome, ${this.username}!`
-            createGameContainer.style.display = "block"
+            playerNameHeading.style.display = "block"
+            playerNameHeading.textContent = `Welcome, ${this.username}!`
+            getPlayerContainer.style.display = "block"
+            gameTypeButton.style.display = "unset"
+            submitGameButton.textContent = "Send Invitation"
+            this.gameType = "web"
         } else {
             loginContainer.style.display = "block"
             logoutContainer.style.display = "none"
-            playerNameEl.style.display = "none"
-            createGameContainer.style.display = "none"
+            playerNameHeading.style.display = "none"
+            getPlayerContainer.style.display = "none"
+            gameTypeButton.style.display = "none"
+            submitGameButton.textContent = "Start Solo Game"
+            this.gameType = "solo"
         }
     }
 
@@ -79,12 +86,12 @@ export class Account {
     addListeners(){
 
         // adds listener to open the signup form
-        openSignupEl.addEventListener("click", () => {
+        openSignupButton.addEventListener("click", () => {
             signupContainer.style.display = "block"
         })
 
         // adds listener to signup
-        submitSignupEl.addEventListener("click", () => {
+        submitSignupButton.addEventListener("click", () => {
             const username = document.getElementById("signup-username").value
             const email = document.getElementById("signup-email").value
             const password = document.getElementById("signup-password").value
@@ -100,7 +107,7 @@ export class Account {
         })
 
         // adds listener to login
-        submitLoginEl.addEventListener("click", () => {
+        submitLoginButton.addEventListener("click", () => {
             const username = document.getElementById("login-username").value
             const password = document.getElementById("login-password").value
             
@@ -115,14 +122,29 @@ export class Account {
         })
 
         // adds listener to logout
-        logoutEl.addEventListener("click", () => {
+        logoutButton.addEventListener("click", () => {
             localStorage.removeItem("authToken")
             this.isLoggedIn = false
             this.hideOrOpen()
         })
 
-        // adds listener to get input for names of players and loads them from DB
-        submitPlayerEl.addEventListener("click", () => {
+        // adds listener to open or close the input element to add players
+        gameTypeButton.addEventListener("click", () => {
+            if (this.gameType === "solo") {
+                this.gameType = "web"
+                gameTypeButton.textContent = "Solo"
+                getPlayerContainer.style.display = "block"
+                submitGameButton.textContent = "Send Invitation"
+            } else {        
+                this.gameType = "solo"
+                gameTypeButton.textContent = "Web"
+                getPlayerContainer.style.display = "none"
+                submitGameButton.textContent = "Start Solo Game"
+            }
+        })
+
+        // adds listener to get input for names of players and load them from DB
+        submitPlayerButton.addEventListener("click", () => {
             const playerToInvite = document.getElementById("player-input").value
             const headers = this.getHeaders(localStorage.getItem("authToken"))
 
@@ -133,11 +155,11 @@ export class Account {
             axios.get(BASE_URL + "/player", { headers, params: { username: playerToInvite }})
                 .then(response => {
                     if (response.data.id) {
-                        this.playersToInvite.push([response.data.id, playerToInvite])
+                        this.invitedPlayers.push([response.data.id, playerToInvite])
                         const invitedPlayersHeading = document.createElement("h3")
                         invitedPlayersHeading.textContent = "Invited Players"
                         invitedPlayersContainer.appendChild(invitedPlayersHeading)
-                        this.playersToInvite.forEach(player => {
+                        this.invitedPlayers.forEach(player => {
                             const playerToInviteContainer = document.createElement("div")
                             playerToInviteContainer.className = "player-to-invite"
                             const playerNameEl = document.createElement("p")
@@ -157,7 +179,7 @@ export class Account {
         })
 
         // adds listener to create game
-        submitGameEl.addEventListener("click", () => {
+        submitGameButton.addEventListener("click", () => {
             const numPlayers = document.getElementById("num-players-input-web")
             const size = document.getElementById("size-input-web")
             const density = document.getElementById("density-input-web")
