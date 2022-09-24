@@ -1,7 +1,7 @@
 
 
 export class WebGame {
-    constructor(player, numPlayers, invitedPlayers, size, density){
+    constructor(player, numPlayers, size, density, invitedPlayers){
         this.status = "created"
         this.player = player
         this.numPlayers = numPlayers

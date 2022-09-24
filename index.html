@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Gideon+Roman&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./styles/style.css">
-    <script src="https://unpkg.com/axios/dist/axios.min.js" async></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js" defer></script>
     <script src="./js/main.js" type="module" defer></script>
 </head>
 
@@ -47,48 +47,29 @@
                 <div id="players-web">
                     <h3>Players</h3>
                     <p>Select the number of players.</p>
-                    <div id="2-web-container">
-                        <input type="radio" name="num-players-web" value="2" id="2-web"><label for="2-web">2</label>
-                    </div>
-                    <div id="3-web-container">
-                        <input type="radio" name="num-players-web" value="3" id="3-web"><label for="3-web">3</label>
-                    </div>
-                    <div id="4-web-container">
-                        <input type="radio" name="num-players-web" value="4" id="4-web"><label for="4-web">4</label>
-                    </div>
-                    <div id="5-web-container">
-                        <input type="radio" name="num-players-web" value="5" id="5-web"><label for="5-web">5</label>
-                    </div>
-                    <div id="6-web-container">
-                        <input type="radio" name="num-players-web" value="6" id="6-web"><label for="6-web">6</label>
-                    </div>
+                    <input type="range" min="2" max="6" value="2" id="num-players-input-web">
+                    <span id="num-players-display-web">The selected number of players will be displayed here.</span>
                 </div>
                 <div id="size-web">
                     <h3>Size</h3>
-                    <p>Select the size (row and columns) of the board.</p>
+                    <p>Select the size (rows and columns) of the board.</p>
                     <label for="size">Size</label>
-                    <input type="range" name="size" min="4" max ="10" value="6" id="size-input-web">
+                    <input type="range" min="4" max ="10" value="6" id="size-input-web">
                     <span id="size-display-web">The selected size will be displayed here.</span>
                 </div>
                 <div id="density">
                     <h3>Density</h3>
                     <p>Select how populated the board should be at the beginning.</p>
-                    <div class="density-container">
-                        <label for="sparse">Sparse</label>
-                        <input type="radio" name="density" value="sparse" id="sparse-web" checked>
-                    </div>
-                    <div class="density-container">
-                        <label for="medium">Medium</label>
-                        <input type="radio" name="density" value="medium" id="medium-web">
-                    </div>
-                    <div class="density-container">
-                        <label for="dense">Dense</label>
-                        <input type="radio" name="density" value="dense" id="dense-web">
-                    </div>
+                    <input type="range" min="1" max="3" value="1" id="density-input-web">
+                    <span id="density-display-web">The selected density will be displayed here.</span>
                 </div>
-                <input type="text" placeholder="Search player">
-                <div id="all-players">List of all players goes here</div>
-                <div id="invited-players">List of invited players goes here</div>
+                <p>Invite player from list</p>
+                <div id="get-player">
+                    <input type="text" placeholder="Search player" id="player-input">
+                    <button type="button">Add player to game</button>
+                    <p id="error-message-get-player"></p>
+                </div>
+                <div id="invited-players"></div>
                 <button type="button">Send request to join the game</button>
             </form>
             
@@ -105,7 +86,7 @@
             <h2>Start a new game!</h2>
             <div id="size">
                 <h3>Size</h3>
-                <p>Select the size (row and columns) of the board.</p>
+                <p>Select the size (rows and columns) of the board.</p>
                 <label for="size">Size</label>
                 <input type="range" name="size" min="4" max ="10" value="6" id="size-input">
                 <span id="size-display">The selected size will be displayed here.</span>

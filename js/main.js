@@ -5,7 +5,8 @@ import {Account} from "./Account.js"
 const account = new Account()
 const game = new Game()
 
-// running event listeners
+// initial scripts when the page is rendered: authentication, controlling display and running event listeners
+account.authenticateUser()
 account.hideOrOpen()
 account.addListeners()
 

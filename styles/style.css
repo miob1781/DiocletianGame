@@ -28,6 +28,10 @@ header, #rules {
     display: none;
 }
 
+#error-message-get-player {
+    color: red;
+}
+
 #button-container {
     display: flex;
     max-width: 450px;
