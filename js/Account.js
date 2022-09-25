@@ -22,6 +22,8 @@ const getPlayerContainer = document.getElementById("get-player")
 const submitPlayerButton = getPlayerContainer.querySelector("button")
 const errorMessagePlayerEl = document.getElementById("error-message-get-player")
 const humanPlayersContainer = document.getElementById("human-players")
+const redCheckboxContainer = document.getElementById("red")
+const blueCheckboxContainer = document.getElementById("blue")
 const yellowCheckboxContainer = document.getElementById("yellow")
 const greenCheckboxContainer = document.getElementById("green")
 const orangeCheckboxContainer = document.getElementById("orange")
@@ -285,10 +287,27 @@ export class Account {
                 message = "The selected values are not valid. Try selecting less players, a smaller field, or less density."
                 return this.displayError(message)
             } else {
-                errorMessageEl.style.display = "none"          
+                errorMessageEl.style.display = "none"
             }
 
             if (this.gameType === "solo") {
+                const humanPlayers = []
+                const checkboxContainers = [
+                    redCheckboxContainer,
+                    blueCheckboxContainer,
+                    yellowCheckboxContainer,
+                    greenCheckboxContainer,
+                    orangeCheckboxContainer,
+                    purpleCheckboxContainer
+                ]
+
+                checkboxContainers.forEach(cont => {
+                    const checkbox = cont.querySelector("input")
+                    if (checkbox.checked) {
+                        humanPlayers.push(checkbox.name)
+                    }
+                })
+
                 const game = new Game()
                 game.createBoard()
                 game.startGame()
