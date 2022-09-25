@@ -12,4 +12,4 @@ account.addListeners()
 
 // starting a new game
 // game.getInput()
-game.createBoard()
+// game.createBoard()

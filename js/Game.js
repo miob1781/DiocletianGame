@@ -4,12 +4,12 @@ import {Player} from "./Player.js"
 import {selectRandomElement, shuffleArray} from "./helper_functions.js" 
 
 export class Game {
-    constructor(){
+    constructor(numPlayers, size, density){
         this.boardEl = document.getElementById("board")
         this.displayEl = document.getElementById("display")
-        this.size = null
+        this.size = size
         this.selectedPlayers = []
-        this.density = null
+        this.density = density
         this.fields = []
         this.currentPlayers = []
         this.remainingPlayers = []
@@ -96,32 +96,8 @@ export class Game {
     // selectDensity(domEl){
     //     this.density = domEl.value
     // }
-    
-    displayError(message){
-        const errorMessageEl = document.getElementById("error-message")
-        errorMessageEl.textContent = message
-        errorMessageEl.style.display = "block"
-        this.error = true
-    }
 
     createBoard(){
-        const errorMessageEl = document.getElementById("error-message")
-        let message
-        if(this.selectedPlayers.length <= 1){
-            message = "You need to select at least two players."
-            this.displayError(message)
-            return
-        } else if((this.size === 5 && this.selectedPlayers.length >= 5 && (this.density === "dense" || this.density === "medium"))
-        || (this.size === 4
-            && ((this.selectedPlayers.length >= 3 && (this.density === "dense" || this.density === "medium"))
-            || this.selectedPlayers.length === 6))){
-            message = "The selected values are not valid. Try selecting less players, a smaller field, or less density."
-            this.displayError(message)
-            return
-        } else {
-            errorMessageEl.style.display = "none"          
-            this.error = false
-        }
         
         // shuffles the selected players by the Fisher-Yates algorithm
         this.selectedPlayers = shuffleArray(this.selectedPlayers)

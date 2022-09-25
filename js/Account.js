@@ -1,3 +1,4 @@
+import {Game} from "./Game.js"
 import {WebGame} from "./WebGame.js"
 import {BASE_URL} from "./consts.js"
 
@@ -19,6 +20,7 @@ const submitPlayerButton = getPlayerContainer.querySelector("button")
 const errorMessagePlayerEl = document.getElementById("error-message-get-player")
 const humanPlayersContainer = document.getElementById("human-players")
 const submitGameButton = document.getElementById("submit-game")
+const errorMessageEl = document.getElementById("error-message")
 
 export class Account {
     constructor(){
@@ -66,6 +68,7 @@ export class Account {
     logout(){
         localStorage.removeItem("authToken")
         this.isLoggedIn = false
+        console.log(this);
         this.hideOrOpen()
     }
 
@@ -93,9 +96,14 @@ export class Account {
                     console.log("Error during authentication: ", err)
                     this.logout()
                 })
-            }
         }
+    }
     
+    displayError(message){
+        errorMessageEl.textContent = message
+        errorMessageEl.style.display = "block"
+    }
+
     addListeners(){
 
         // adds listener to open the signup form
@@ -135,7 +143,7 @@ export class Account {
         })
 
         // adds listener to logout
-        logoutButton.addEventListener("click", this.logout)
+        logoutButton.addEventListener("click", () => this.logout())
 
         // adds listener to open or close the input element to add players
         gameTypeButton.addEventListener("click", () => {
@@ -208,13 +216,41 @@ export class Account {
 
         // adds listener to create game
         submitGameButton.addEventListener("click", () => {
-            const numPlayers = numPlayersInput.value
-            const size = sizeInput.value
-            const density = densityInput.value
+            const numPlayers = Number(numPlayersInput.value)
+            const size = Number(sizeInput.value)
+
+            let density
+            if (densityInput.value === "1") {
+                density = "sparse"
+            } else if (densityInput.value === "2") {
+                density = "medium"
+            } else {
+                density = "dense"
+            }
+
             const invitedPlayers = this.invitedPlayers.map(player => player[0])
 
-            this.createdGame = new WebGame(this.id, numPlayers, size, density, invitedPlayers)
-            // functionality to invite players (websockets, nodemailer)
+            // check if provided values are valid
+            let message
+            if (numPlayers <= 1){
+                message = "You need to select at least two players."
+                return this.displayError(message)
+            } else if ((size === 5 && numPlayers >= 5 && (density === "dense" || density === "medium"))
+                || (size === 4 && ((numPlayers >= 3 && (density === "dense" || density === "medium")) || numPlayers === 6))) {
+                message = "The selected values are not valid. Try selecting less players, a smaller field, or less density."
+                return this.displayError(message)
+            } else {
+                errorMessageEl.style.display = "none"          
+            }
+
+            if (this.gameType === "solo") {
+                const game = new Game()
+                game.createBoard()
+                game.startGame()
+            } else {
+                this.createdGame = new WebGame(this.id, numPlayers, size, density, invitedPlayers)
+                // functionality to invite players (websockets, nodemailer)
+            }
         })
     }
 
