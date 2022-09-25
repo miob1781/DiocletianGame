@@ -11,5 +11,5 @@ account.hideOrOpen()
 account.addListeners()
 
 // starting a new game
-game.getInput()
+// game.getInput()
 game.createBoard()

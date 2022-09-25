@@ -45,31 +45,33 @@
             <h3 id="player-name">Player name goes here</h3>
 
             <form id="create-game">
-                <div id="players-web">
+                <div id="num-players">
                     <h3>Players</h3>
                     <p>Select the number of players.</p>
-                    <input type="range" min="2" max="6" value="2" id="num-players-input-web">
-                    <span id="num-players-display-web">The selected number of players will be displayed here.</span>
+                    <label for="num-players-input">Number of players</label>
+                    <input type="range" min="2" max="6" value="2" id="num-players-input">
+                    <span id="num-players-display">2</span>
                 </div>
-                <div id="size-web">
+                <div id="size">
                     <h3>Size</h3>
                     <p>Select the size (rows and columns) of the board.</p>
                     <label for="size">Size</label>
-                    <input type="range" min="4" max ="10" value="6" id="size-input-web">
-                    <span id="size-display-web">The selected size will be displayed here.</span>
+                    <input type="range" min="4" max="10" value="6" id="size-input">
+                    <span id="size-display">6</span>
                 </div>
                 <div id="density">
                     <h3>Density</h3>
                     <p>Select how populated the board should be at the beginning.</p>
-                    <input type="range" min="1" max="3" value="1" id="density-input-web">
-                    <span id="density-display-web">The selected density will be displayed here.</span>
+                    <label for="density-input">Density</label>
+                    <input type="range" min="1" max="3" value="1" id="density-input">
+                    <span id="density-display">Sparse</span>
                 </div>
                 <p>Invite player from list</p>
                 <div id="get-player">
-                    <input type="text" placeholder="Search player" id="player-input">
+                    <input type="text" placeholder="Player" id="player-input">
                     <button type="button">Add player to game</button>
                     <p id="error-message-get-player"></p>
-                    <div id="invited-players"></div>
+                    <div id="human-players"></div>
                 </div>
                 <button type="button" id="submit-game">Start Solo Game</button>
             </form>
@@ -83,7 +85,7 @@
             <p>Diocletian is a game for 2-6 players. When it's their turn, the player can click on a field that is occupied by their own color. This will increase the value of the field by 1. If the value is greater than the number of the neighboring fields, the value of the field will be set to 1 and the value of the neighboring fields will be increased by 1. All the neighboring fields now belong to the player. If the value of one of these fields is greater than the number of the neighboring fields, they will again overflow to the neighboring fields until no further field overflows. Then it's the next player's turn. The winner is the last player on the board.</p>
         </div>
 
-        <div id="menu">
+        <!-- <div id="menu">
             <h2>Start a new game!</h2>
             <div id="size">
                 <h3>Size</h3>
@@ -172,7 +174,7 @@
                     <input type="radio" name="density" value="dense" id="dense">
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <div id="button-container">
             <button type="button" id="start">Start!</button>

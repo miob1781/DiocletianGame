@@ -11,10 +11,13 @@ const logoutContainer = document.getElementById("logout")
 const logoutButton = logoutContainer.querySelector("button")
 const gameTypeButton = document.getElementById("game-type-button")
 const playerNameHeading = document.getElementById("player-name")
+const numPlayersInput = document.getElementById("num-players-input")
+const sizeInput = document.getElementById("size-input")
+const densityInput = document.getElementById("density-input")
 const getPlayerContainer = document.getElementById("get-player")
 const submitPlayerButton = getPlayerContainer.querySelector("button")
 const errorMessagePlayerEl = document.getElementById("error-message-get-player")
-const invitedPlayersContainer = document.getElementById("invited-players")
+const humanPlayersContainer = document.getElementById("human-players")
 const submitGameButton = document.getElementById("submit-game")
 
 export class Account {
@@ -27,6 +30,7 @@ export class Account {
         this.invitedGames = null
         this.oldGames = null
         this.isLoggedIn = localStorage.getItem("authToken") ? true : false
+        this.gameType = null
     }
 
     hideOrOpen(){
@@ -59,12 +63,18 @@ export class Account {
         return {Authorization: `Bearer ${storedToken}`}
     }
 
+    logout(){
+        localStorage.removeItem("authToken")
+        this.isLoggedIn = false
+        this.hideOrOpen()
+    }
+
     authenticateUser(){
         const storedToken = localStorage.getItem("authToken")
         if(storedToken){
             const headers = this.getHeaders(storedToken)
             axios.get(BASE_URL + "/player/verify", { headers })
-            .then(response => {
+                .then(response => {
                     const {id, username, email, createdGame, invitedGames, oldGames} = response.data
                     this.id = id
                     this.username = username
@@ -79,7 +89,10 @@ export class Account {
 
                     console.log(this);
                 })
-                .catch(err => console.log("Error during authentication: ", err))
+                .catch(err => {
+                    console.log("Error during authentication: ", err)
+                    this.logout()
+                })
             }
         }
     
@@ -122,11 +135,7 @@ export class Account {
         })
 
         // adds listener to logout
-        logoutButton.addEventListener("click", () => {
-            localStorage.removeItem("authToken")
-            this.isLoggedIn = false
-            this.hideOrOpen()
-        })
+        logoutButton.addEventListener("click", this.logout)
 
         // adds listener to open or close the input element to add players
         gameTypeButton.addEventListener("click", () => {
@@ -140,6 +149,25 @@ export class Account {
                 gameTypeButton.textContent = "Web"
                 getPlayerContainer.style.display = "none"
                 submitGameButton.textContent = "Start Solo Game"
+            }
+        })
+
+        // adds listeners to display selected values of range inputs
+        numPlayersInput.addEventListener("input", () => {
+            document.getElementById("num-players-display").textContent = numPlayersInput.value
+        })
+
+        sizeInput.addEventListener("input", () => {
+            document.getElementById("size-display").textContent = sizeInput.value
+        })
+
+        densityInput.addEventListener("input", () => {
+            if (densityInput.value === "1") {
+                document.getElementById("density-display").textContent = "Sparse"
+            } else if (densityInput.value === "2") {
+                document.getElementById("density-display").textContent = "Medium"
+            } else {
+                document.getElementById("density-display").textContent = "Dense"
             }
         })
 
@@ -158,14 +186,14 @@ export class Account {
                         this.invitedPlayers.push([response.data.id, playerToInvite])
                         const invitedPlayersHeading = document.createElement("h3")
                         invitedPlayersHeading.textContent = "Invited Players"
-                        invitedPlayersContainer.appendChild(invitedPlayersHeading)
+                        humanPlayersContainer.appendChild(invitedPlayersHeading)
                         this.invitedPlayers.forEach(player => {
                             const playerToInviteContainer = document.createElement("div")
                             playerToInviteContainer.className = "player-to-invite"
                             const playerNameEl = document.createElement("p")
                             playerNameEl.textContent = player[1]
                             playerToInviteContainer.appendChild(playerNameEl)
-                            invitedPlayersContainer.appendChild(playerToInviteContainer)
+                            humanPlayersContainer.appendChild(playerToInviteContainer)
                         })
                         errorMessagePlayerEl.textContent = ""
                     } else if (response.data.errorMessage) {
@@ -180,9 +208,9 @@ export class Account {
 
         // adds listener to create game
         submitGameButton.addEventListener("click", () => {
-            const numPlayers = document.getElementById("num-players-input-web")
-            const size = document.getElementById("size-input-web")
-            const density = document.getElementById("density-input-web")
+            const numPlayers = numPlayersInput.value
+            const size = sizeInput.value
+            const density = densityInput.value
             const invitedPlayers = this.invitedPlayers.map(player => player[0])
 
             this.createdGame = new WebGame(this.id, numPlayers, size, density, invitedPlayers)
