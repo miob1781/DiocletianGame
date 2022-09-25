@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,8 +23,10 @@
             <div id="login">
                 <form id="login-form" action="">
                     <p>Please enter your username or email and your password.</p>
-                    <label>Username: <input type="text" id="login-username" autocomplete="username" required></label><br>
-                    <label>Password: <input type="password" id="login-password" autocomplete="current-password" required></label><br>
+                    <label>Username: <input type="text" id="login-username" autocomplete="username"
+                            required></label><br>
+                    <label>Password: <input type="password" id="login-password" autocomplete="current-password"
+                            required></label><br>
                     <button type="button">Login</button>
                 </form>
                 <p>Not registered yet?</p>
@@ -32,9 +35,11 @@
             <div id="signup">
                 <form id="signup-form">
                     <p>Please enter a username, your email and a password.</p>
-                    <label>Username: <input type="text" id="signup-username" autocomplete="username" required></label><br>
+                    <label>Username: <input type="text" id="signup-username" autocomplete="username"
+                            required></label><br>
                     <label>Email: <input type="email" id="signup-email" autocomplete="email" required></label><br>
-                    <label>Password: <input type="password" id="signup-password" autocomplete="new-password" required></label><br>
+                    <label>Password: <input type="password" id="signup-password" autocomplete="new-password"
+                            required></label><br>
                     <button type="button">Signup</button>
                 </form>
             </div>
@@ -66,115 +71,58 @@
                     <input type="range" min="1" max="3" value="1" id="density-input">
                     <span id="density-display">Sparse</span>
                 </div>
-                <p>Invite player from list</p>
                 <div id="get-player">
+                    <p>Invite player from list</p>
                     <input type="text" placeholder="Player" id="player-input">
                     <button type="button">Add player to game</button>
                     <p id="error-message-get-player"></p>
                     <div id="human-players"></div>
                 </div>
+                <div id="colors">
+                    <h3>Players</h3>
+                    <div class="player" id="red">
+                        <label for="red" class="player-label">Red</label>
+                        <input type="checkbox" name="red" id="red-checkbox" checked>
+                    </div>
+                    <div class="player" id="blue">
+                        <label for="blue" class="player-label">Blue</label>
+                        <input type="checkbox" name="blue" id="blue-checkbox">
+                    </div>
+                    <div class="player" id="yellow">
+                        <label for="yellow" class="player-label">Yellow</label>
+                        <input type="checkbox" name="yellow" id="yellow-checkbox">
+                    </div>
+                    <div class="player" id="green">
+                        <label for="green" class="player-label">Green</label>
+                        <input type="checkbox" name="green" id="green-checkbox">
+                    </div>
+                    <div class="player" id="orange">
+                        <label for="orange" class="player-label">Orange</label>
+                        <input type="checkbox" name="orange" id="orange-checkbox">
+                    </div>
+                    <div class="player" id="purple">
+                        <label for="purple" class="player-label">Purple</label>
+                        <input type="checkbox" name="purple" id="purple-checkbox">
+                    </div>
+                </div>
                 <button type="button" id="submit-game">Start Solo Game</button>
             </form>
-            
+
             <div id="game-created"></div>
             <div id="games-invited"></div>
             <div id="old-games"></div>
         </div>
 
         <div id="rules">
-            <p>Diocletian is a game for 2-6 players. When it's their turn, the player can click on a field that is occupied by their own color. This will increase the value of the field by 1. If the value is greater than the number of the neighboring fields, the value of the field will be set to 1 and the value of the neighboring fields will be increased by 1. All the neighboring fields now belong to the player. If the value of one of these fields is greater than the number of the neighboring fields, they will again overflow to the neighboring fields until no further field overflows. Then it's the next player's turn. The winner is the last player on the board.</p>
+            <p>Diocletian is a game for 2-6 players. When it's their turn, the player can click on a field that is
+                occupied by their own color. This will increase the value of the field by 1. If the value is greater
+                than the number of the neighboring fields, the value of the field will be set to 1 and the value of the
+                neighboring fields will be increased by 1. All the neighboring fields now belong to the player. If the
+                value of one of these fields is greater than the number of the neighboring fields, they will again
+                overflow to the neighboring fields until no further field overflows. Then it's the next player's turn.
+                The winner is the last player on the board.</p>
         </div>
 
-        <!-- <div id="menu">
-            <h2>Start a new game!</h2>
-            <div id="size">
-                <h3>Size</h3>
-                <p>Select the size (rows and columns) of the board.</p>
-                <label for="size">Size</label>
-                <input type="range" name="size" min="4" max ="10" value="6" id="size-input">
-                <span id="size-display">The selected size will be displayed here.</span>
-            </div>
-            <br>
-            <div id="players">
-                <h3>Players</h3>
-                <div class="player" id="red">
-                    <label for="red" class="player-label">Red</label>
-                    <input type="checkbox" name="red" id="red-checkbox" checked>
-                    <div class="is-computer">
-                        <label for="red-yes">Computer</label>
-                        <input type="radio" name ="red-radio" value="yes" id="red-yes">
-                        <label for="red-no">Human</label>
-                        <input type="radio" name="red-radio" value ="no" id="red-no" checked>
-                    </div>
-                </div>
-                <div class="player" id="blue">
-                    <label for="blue" class="player-label">Blue</label>
-                    <input type="checkbox" name="blue" id="blue-checkbox" checked>
-                    <div class="is-computer">
-                        <label for="blue-yes">Computer</label>
-                        <input type="radio" name ="blue-radio" value="yes" id="blue-yes" checked>
-                        <label for="blue-no">Human</label>
-                        <input type="radio" name="blue-radio" value ="no" id="blue-no">
-                    </div>
-                </div>
-                <div class="player" id="yellow">
-                    <label for="yellow" class="player-label">Yellow</label>
-                    <input type="checkbox" name="yellow" id="yellow-checkbox">
-                    <div class="is-computer">
-                        <label for="yellow-yes">Computer</label>
-                        <input type="radio" name ="yellow-radio" value="yes" id="yellow-yes" checked>
-                        <label for="yellow-no">Human</label>
-                        <input type="radio" name="yellow-radio" value ="no" id="yellow-no">
-                    </div>
-                </div>
-                <div class="player" id="green">
-                    <label for="green" class="player-label">Green</label>
-                    <input type="checkbox" name="green" id="green-checkbox">
-                    <div class="is-computer">
-                        <label for="green-yes">Computer</label>
-                        <input type="radio" name ="green-radio" value="yes" id="green-yes" checked>
-                        <label for="green-no">Human</label>
-                        <input type="radio" name="green-radio" value ="no" id="green-no">
-                    </div>
-                </div>
-                <div class="player" id="orange">
-                    <label for="orange" class="player-label">Orange</label>
-                    <input type="checkbox" name="orange" id="orange-checkbox">
-                    <div class="is-computer">
-                        <label for="orange-yes">Computer</label>
-                        <input type="radio" name ="orange-radio" value="yes" id="orange-yes" checked>
-                        <label for="orange-no">Human</label>
-                        <input type="radio" name="orange-radio" value ="no" id="orange-no">
-                    </div>
-                </div>
-                <div class="player" id="purple">
-                    <label for="purple" class="player-label">Purple</label>
-                    <input type="checkbox" name="purple" id="purple-checkbox">
-                    <div class="is-computer">
-                        <label for="purple-yes">Computer</label>
-                        <input type="radio" name ="purple-radio" value="yes" id="purple-yes" checked>
-                        <label for="purple-no">Human</label>
-                        <input type="radio" name="purple-radio" value ="no" id ="purple-no">
-                    </div>
-                </div>
-            </div>
-            <div id="density">
-                <h3>Density</h3>
-                <p>Select how populated the board should be at the beginning.</p>
-                <div class="density-container">
-                    <label for="sparse">Sparse</label>
-                    <input type="radio" name="density" value="sparse" id="sparse" checked>
-                </div>
-                <div class="density-container">
-                    <label for="medium">Medium</label>
-                    <input type="radio" name="density" value="medium" id="medium">
-                </div>
-                <div class="density-container">
-                    <label for="dense">Dense</label>
-                    <input type="radio" name="density" value="dense" id="dense">
-                </div>
-            </div>
-        </div> -->
 
         <div id="button-container">
             <button type="button" id="start">Start!</button>
@@ -196,4 +144,5 @@
         <p>Created by Michael Oberst</p>
     </footer>
 </body>
+
 </html>

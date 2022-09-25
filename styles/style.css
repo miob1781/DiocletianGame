@@ -141,6 +141,10 @@ header, #rules {
     top: 3px;
 }
 
+#yellow, #green, #orange, #purple {
+    display: none;
+}
+
 #error-message {
     display: none;
     color: red;

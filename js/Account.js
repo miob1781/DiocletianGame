@@ -19,6 +19,10 @@ const getPlayerContainer = document.getElementById("get-player")
 const submitPlayerButton = getPlayerContainer.querySelector("button")
 const errorMessagePlayerEl = document.getElementById("error-message-get-player")
 const humanPlayersContainer = document.getElementById("human-players")
+const yellowCheckboxContainer = document.getElementById("yellow")
+const greenCheckboxContainer = document.getElementById("green")
+const orangeCheckboxContainer = document.getElementById("orange")
+const purpleCheckboxContainer = document.getElementById("purple")
 const submitGameButton = document.getElementById("submit-game")
 const errorMessageEl = document.getElementById("error-message")
 
@@ -163,6 +167,33 @@ export class Account {
         // adds listeners to display selected values of range inputs
         numPlayersInput.addEventListener("input", () => {
             document.getElementById("num-players-display").textContent = numPlayersInput.value
+
+            if (numPlayersInput.value === "2") {
+                yellowCheckboxContainer.style.display = "none"
+                greenCheckboxContainer.style.display = "none"
+                orangeCheckboxContainer.style.display = "none"
+                purpleCheckboxContainer.style.display = "none"
+            } else if (numPlayersInput.value === "3") {
+                yellowCheckboxContainer.style.display = "block"
+                greenCheckboxContainer.style.display = "none"
+                orangeCheckboxContainer.style.display = "none"
+                purpleCheckboxContainer.style.display = "none"
+            } else if (numPlayersInput.value === "4") {
+                yellowCheckboxContainer.style.display = "block"
+                greenCheckboxContainer.style.display = "block"
+                orangeCheckboxContainer.style.display = "none"
+                purpleCheckboxContainer.style.display = "none"
+            } else if (numPlayersInput.value === "5") {
+                yellowCheckboxContainer.style.display = "block"
+                greenCheckboxContainer.style.display = "block"
+                orangeCheckboxContainer.style.display = "block"
+                purpleCheckboxContainer.style.display = "none"
+            } else if (numPlayersInput.value === "6") {
+                yellowCheckboxContainer.style.display = "block"
+                greenCheckboxContainer.style.display = "block"
+                orangeCheckboxContainer.style.display = "block"
+                purpleCheckboxContainer.style.display = "block"
+            }
         })
 
         sizeInput.addEventListener("input", () => {
