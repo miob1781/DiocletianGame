@@ -10,8 +10,11 @@ const loginContainer = document.getElementById("login")
 const submitLoginButton = loginContainer.querySelector("button")
 const logoutContainer = document.getElementById("logout")
 const logoutButton = logoutContainer.querySelector("button")
+const menuButton = document.getElementById("menu-button")
+const rulesButton = document.getElementById("rules-button")
 const gameTypeButton = document.getElementById("game-type-button")
 const playerNameHeading = document.getElementById("player-name")
+const createGameContainer = document.getElementById("create-game")
 const numPlayersInput = document.getElementById("num-players-input")
 const sizeInput = document.getElementById("size-input")
 const densityInput = document.getElementById("density-input")
@@ -25,6 +28,7 @@ const orangeCheckboxContainer = document.getElementById("orange")
 const purpleCheckboxContainer = document.getElementById("purple")
 const submitGameButton = document.getElementById("submit-game")
 const errorMessageEl = document.getElementById("error-message")
+const rulesEl = document.getElementById("rules")
 
 export class Account {
     constructor(){
@@ -149,7 +153,17 @@ export class Account {
         // adds listener to logout
         logoutButton.addEventListener("click", () => this.logout())
 
-        // adds listener to open or close the input element to add players
+        // adds listener to open or close form to create a new game
+        menuButton.addEventListener("click", () => {
+            createGameContainer.style.display = createGameContainer.style.display === "block" ? "none" : "block"
+        })
+
+        // adds listener to open or close rules
+        rulesButton.addEventListener("click", () => {
+            rulesEl.style.display = rulesEl.style.display === "block" ? "none" : "block"
+        })
+
+        // adds listener to select game type
         gameTypeButton.addEventListener("click", () => {
             if (this.gameType === "solo") {
                 this.gameType = "web"
@@ -188,7 +202,7 @@ export class Account {
                 greenCheckboxContainer.style.display = "block"
                 orangeCheckboxContainer.style.display = "block"
                 purpleCheckboxContainer.style.display = "none"
-            } else if (numPlayersInput.value === "6") {
+            } else {
                 yellowCheckboxContainer.style.display = "block"
                 greenCheckboxContainer.style.display = "block"
                 orangeCheckboxContainer.style.display = "block"
@@ -283,6 +297,8 @@ export class Account {
                 // functionality to invite players (websockets, nodemailer)
             }
         })
+
+
     }
 
 }
