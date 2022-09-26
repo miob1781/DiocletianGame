@@ -38,9 +38,9 @@ header, #rules {
     margin-top: 20px;
 }
 
-#button-container button {
+button {
     color: white;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     padding: 10px;
     margin: 20px 20px 20px 0;
     border-radius: 7%;
@@ -48,11 +48,16 @@ header, #rules {
     cursor: pointer;
 }
 
-#start {
+#get-player button {
+    background-color: bisque;
+    color: black;
+}
+
+#submit-game, #signup-form button {
     background-color: rgb(24, 172, 24);
 }
 
-#open-button {
+#login-form button, #logout, #open-signup {
     background-color: rgb(116, 118, 33);
 }
 
@@ -60,8 +65,9 @@ header, #rules {
     background-color: chocolate;
 }
 
-#menu {
-    display: none;
+#solo-game-button, #web-game-button {
+    background-color: cyan;
+    color: black;
 }
 
 #players {
@@ -122,26 +128,7 @@ header, #rules {
     margin-right: 20px;
 }    
 
-.is-computer {
-    display: none;
-}    
-
-.is-computer input {
-    position: relative;
-    top: 3px;
-    margin-right: 10px;
-}    
-
-.density-container {
-    margin-bottom: 10px;
-}
-
-.density-container input {
-    position: relative;
-    top: 3px;
-}
-
-#create-game, #yellow, #green, #orange, #purple {
+#menu, #create-game, #orange, #purple {
     display: none;
 }
 

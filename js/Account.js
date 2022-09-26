@@ -8,11 +8,10 @@ const submitSignupButton = signupContainer.querySelector("button")
 const openSignupButton = document.getElementById("open-signup")
 const loginContainer = document.getElementById("login")
 const submitLoginButton = loginContainer.querySelector("button")
-const logoutContainer = document.getElementById("logout")
-const logoutButton = logoutContainer.querySelector("button")
-const menuButton = document.getElementById("menu-button")
+const logoutButton = document.getElementById("logout")
+const soloGameButton = document.getElementById("solo-game-button")
+const webGameButton = document.getElementById("web-game-button")
 const rulesButton = document.getElementById("rules-button")
-const gameTypeButton = document.getElementById("game-type-button")
 const playerNameHeading = document.getElementById("player-name")
 const createGameContainer = document.getElementById("create-game")
 const numPlayersInput = document.getElementById("num-players-input")
@@ -22,6 +21,7 @@ const getPlayerContainer = document.getElementById("get-player")
 const submitPlayerButton = getPlayerContainer.querySelector("button")
 const errorMessagePlayerEl = document.getElementById("error-message-get-player")
 const humanPlayersContainer = document.getElementById("human-players")
+const colorsContainer = document.getElementById("colors")
 const redCheckboxContainer = document.getElementById("red")
 const blueCheckboxContainer = document.getElementById("blue")
 const yellowCheckboxContainer = document.getElementById("yellow")
@@ -49,19 +49,21 @@ export class Account {
         if(this.isLoggedIn){
             loginContainer.style.display = "none"
             signupContainer.style.display = "none"
-            logoutContainer.style.display = "block"
+            logoutButton.style.display = "unset"
+            webGameButton.style.display = "unset"
             playerNameHeading.style.display = "block"
             playerNameHeading.textContent = `Welcome, ${this.username}!`
             getPlayerContainer.style.display = "block"
-            gameTypeButton.style.display = "unset"
+            colorsContainer.style.display = "none"
             submitGameButton.textContent = "Send Invitation"
             this.gameType = "web"
         } else {
             loginContainer.style.display = "block"
-            logoutContainer.style.display = "none"
+            logoutButton.style.display = "none"
+            webGameButton.style.display = "none"
             playerNameHeading.style.display = "none"
             getPlayerContainer.style.display = "none"
-            gameTypeButton.style.display = "none"
+            colorsContainer.style.display = "block"
             submitGameButton.textContent = "Start Solo Game"
             this.gameType = "solo"
         }
@@ -154,36 +156,35 @@ export class Account {
 
         // adds listener to logout
         logoutButton.addEventListener("click", () => this.logout())
-
-        // adds listener to open or close form to create a new game
-        menuButton.addEventListener("click", () => {
-            createGameContainer.style.display = createGameContainer.style.display === "block" ? "none" : "block"
-        })
-
+        
         // adds listener to open or close rules
         rulesButton.addEventListener("click", () => {
+            rulesButton.textContent = rulesEl.style.display === "block" ? "Rules" : "Close Rules"
             rulesEl.style.display = rulesEl.style.display === "block" ? "none" : "block"
         })
-
-        // adds listener to select game type
-        gameTypeButton.addEventListener("click", () => {
-            if (this.gameType === "solo") {
-                this.gameType = "web"
-                gameTypeButton.textContent = "Solo"
-                getPlayerContainer.style.display = "block"
-                submitGameButton.textContent = "Send Invitation"
-            } else {        
-                this.gameType = "solo"
-                gameTypeButton.textContent = "Web"
-                getPlayerContainer.style.display = "none"
-                submitGameButton.textContent = "Start Solo Game"
-            }
+        
+        // adds listener to create new solo game
+        soloGameButton.addEventListener("click", () => {
+            this.gameType = "web"
+            createGameContainer.style.display = "block"
+            getPlayerContainer.style.display = "none"
+            colorsContainer.style.display = "block"
+            submitGameButton.textContent = "Start Solo Game"
         })
-
+        
+        // adds listener to create new web game
+        webGameButton.addEventListener("click", () => {
+            this.gameType = "solo"
+            createGameContainer.style.display = "block"
+            getPlayerContainer.style.display = "block"
+            colorsContainer.style.display = "none"
+            submitGameButton.textContent = "Send Invitation"
+        })
+        
         // adds listeners to display selected values of range inputs
         numPlayersInput.addEventListener("input", () => {
             document.getElementById("num-players-display").textContent = numPlayersInput.value
-
+            
             if (numPlayersInput.value === "2") {
                 yellowCheckboxContainer.style.display = "none"
                 greenCheckboxContainer.style.display = "none"
@@ -274,9 +275,7 @@ export class Account {
             } else {
                 density = "dense"
             }
-
-            const invitedPlayers = this.invitedPlayers.map(player => player[0])
-
+            
             // check if provided values are valid
             let message
             if (numPlayers <= 1){
@@ -307,11 +306,12 @@ export class Account {
                         humanPlayers.push(checkbox.name)
                     }
                 })
-
-                const game = new Game()
+                
+                const game = new Game("solo", numPlayers, size, density, humanPlayers)
                 game.createBoard()
                 game.startGame()
             } else {
+                const invitedPlayers = this.invitedPlayers.map(player => player[0])
                 this.createdGame = new WebGame(this.id, numPlayers, size, density, invitedPlayers)
                 // functionality to invite players (websockets, nodemailer)
             }

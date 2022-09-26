@@ -1,7 +1,6 @@
 import {styles} from "./styles.js"
 import {getField} from "./helper_functions.js" 
 
-
 export class Field {
     constructor(id, row, col){
         this.fieldEl = null
@@ -37,7 +36,7 @@ export class Field {
         if(row < size){
             neighbor = getField(fields, row+1, col)
             this.neighbors.push(neighbor)
-        }    
+        }
     }    
     
     setField(player, value){

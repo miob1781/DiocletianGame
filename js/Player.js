@@ -2,7 +2,7 @@ export class Player {
     constructor(color){
         this.color = color
         this.isOn = false
-        this.isComputer = false
+        this.isComputer = true
         this.fields = []
         this.totalValue = 0
         this.playerDisplayEl = null

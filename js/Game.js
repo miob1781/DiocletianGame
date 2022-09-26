@@ -1,13 +1,17 @@
+import {playerColors} from "./consts.js"
 import {styles} from "./styles.js"
 import {Field} from "./Field.js"
 import {Player} from "./Player.js"
 import {selectRandomElement, shuffleArray} from "./helper_functions.js" 
 
 export class Game {
-    constructor(numPlayers, size, density){
+    constructor(gameType, numPlayers, size, density, humanPlayers){
         this.boardEl = document.getElementById("board")
         this.displayEl = document.getElementById("display")
+        this.gameType = gameType
+        this.numPlayers = numPlayers
         this.size = size
+        this.humanPlayers = humanPlayers
         this.selectedPlayers = []
         this.density = density
         this.fields = []
@@ -20,84 +24,16 @@ export class Game {
         this.rulesOpen = false
     }    
     
-    // getInput(){
-    //     const openButtonEl = document.getElementById("open-button")
-    //     openButtonEl.addEventListener("click", () => {
-    //         const openButton = document.getElementById("open-button")
-    //         const menuDiv = document.getElementById("menu")
-    //         menuDiv.style.display = this.menuOpen ? "none" : "block"
-    //         openButton.textContent = this.menuOpen ? "Menu" : "Close Menu"
-    //         this.menuOpen = !this.menuOpen
-    //     })
-        
-    //     const startButton = document.getElementById("start")
-    //     startButton.addEventListener("click", () => {
-    //         this.createBoard()
-    //         this.startGame()
-    //     })
-
-    //     const rulesButton = document.getElementById("rules-button")
-    //     rulesButton.addEventListener("click", () => {
-    //         const rules = document.getElementById("rules")
-    //         rules.style.display = this.rulesOpen ? "none" : "block"
-    //         rulesButton.textContent = this.rulesOpen ? "Rules" : "Close Rules"
-    //         this.rulesOpen = !this.rulesOpen
-    //     })
-
-    //     const sizeEl = document.getElementById("size-input")
-    //     this.selectSize(sizeEl)
-    //     sizeEl.addEventListener("input", () => this.selectSize(sizeEl))
-
-    //     const playerEls = document.querySelectorAll(".player input[type='checkbox']")
-    //     playerEls.forEach(playerEl => {
-    //         const player = new Player(playerEl.name)
-    //         this.selectPlayer(playerEl, player)
-    //         playerEl.addEventListener("input", () => this.selectPlayer(playerEl, player))
-    //         const isComputerEls = playerEl.parentNode.querySelectorAll("input[type='radio']")
-    //         isComputerEls.forEach(isComputerEl => {
-    //             isComputerEl.addEventListener("input", () => this.selectIsComputer(playerEl, player))
-    //         })
-    //     })
-
-    //     // selects density when the page is rendered
-    //     const checkedDensityEl = document.querySelector("#density input[name='density']:checked")
-    //     this.selectDensity(checkedDensityEl)
-
-    //     // adds listeners for density
-    //     const densityEls = document.querySelectorAll("#density input[name='density']")
-    //     densityEls.forEach(densityEl => {
-    //         densityEl.addEventListener("input", () => this.selectDensity(densityEl))
-    //     })
-    // }
-
-    // selectSize(domEl){
-    //     this.size = parseInt(domEl.value)
-    //     const sizeDisplay = document.getElementById("size-display")
-    //     sizeDisplay.textContent = this.size
-    // }
-
-    // selectPlayer(playerEl, player){
-    //     const isComputerDiv = playerEl.parentNode.querySelector(".is-computer")
-    //     if(playerEl.checked){
-    //         this.selectIsComputer(playerEl, player)
-    //         this.selectedPlayers.push(player)
-    //         isComputerDiv.style.display = "inline-block"
-    //     } else {
-    //         this.selectedPlayers = this.selectedPlayers.filter(oldPlayer => oldPlayer.color !== playerEl.name)
-    //         isComputerDiv.style.display = "none"
-    //     }
-    // }
-    
-    // selectIsComputer(playerEl, player){
-    //     const checkedIsComputerEl = playerEl.parentNode.querySelector("input[type='radio']:checked")
-    //     player.isComputer = checkedIsComputerEl.value === "yes" ? true : false
-    // }
-
-    // selectDensity(domEl){
-    //     this.density = domEl.value
-    // }
-
     createBoard(){
+        if (this.gameType === "solo") {
+            for (let i=0; i<this.numPlayers; i++) {
+                const player = new Player(playerColors[i])
+                if (this.humanPlayers.includes(playerColors[i])) {
+                    player.isComputer = false
+                }
+                this.selectedPlayers.push(player)
+            }
+        }
         
         // shuffles the selected players by the Fisher-Yates algorithm
         this.selectedPlayers = shuffleArray(this.selectedPlayers)
