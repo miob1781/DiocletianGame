@@ -165,7 +165,7 @@ export class Account {
         
         // adds listener to create new solo game
         soloGameButton.addEventListener("click", () => {
-            this.gameType = "web"
+            this.gameType = "solo"
             createGameContainer.style.display = "block"
             getPlayerContainer.style.display = "none"
             colorsContainer.style.display = "block"
@@ -174,7 +174,7 @@ export class Account {
         
         // adds listener to create new web game
         webGameButton.addEventListener("click", () => {
-            this.gameType = "solo"
+            this.gameType = "web"
             createGameContainer.style.display = "block"
             getPlayerContainer.style.display = "block"
             colorsContainer.style.display = "none"
