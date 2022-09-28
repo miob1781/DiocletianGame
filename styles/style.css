@@ -132,8 +132,7 @@ button {
     display: none;
 }
 
-#error-message {
-    display: none;
+#error-message-account, #error-message-get-player {
     color: red;
     font-size: 1.1rem;
 }

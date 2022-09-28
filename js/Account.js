@@ -9,6 +9,7 @@ const openSignupButton = document.getElementById("open-signup")
 const loginContainer = document.getElementById("login")
 const submitLoginButton = loginContainer.querySelector("button")
 const logoutButton = document.getElementById("logout")
+const errorMessageAccountEl = document.getElementById("error-message-account")
 const soloGameButton = document.getElementById("solo-game-button")
 const webGameButton = document.getElementById("web-game-button")
 const rulesButton = document.getElementById("rules-button")
@@ -29,7 +30,7 @@ const greenCheckboxContainer = document.getElementById("green")
 const orangeCheckboxContainer = document.getElementById("orange")
 const purpleCheckboxContainer = document.getElementById("purple")
 const submitGameButton = document.getElementById("submit-game")
-const errorMessageEl = document.getElementById("error-message")
+const errorMessageCreateGameEl = document.getElementById("error-message-create-game")
 const rulesEl = document.getElementById("rules")
 
 export class Account {
@@ -69,10 +70,6 @@ export class Account {
         }
     }
 
-    storeToken(token){
-        localStorage.setItem("authToken", token)
-    }
-
     getHeaders(storedToken){
         return {Authorization: `Bearer ${storedToken}`}
     }
@@ -80,7 +77,6 @@ export class Account {
     logout(){
         localStorage.removeItem("authToken")
         this.isLoggedIn = false
-        console.log(this);
         this.hideOrOpen()
     }
 
@@ -91,6 +87,7 @@ export class Account {
             axios.get(BASE_URL + "/player/verify", { headers })
                 .then(response => {
                     const {id, username, email, createdGame, invitedGames, oldGames} = response.data
+
                     this.id = id
                     this.username = username
                     this.email = email
@@ -101,7 +98,7 @@ export class Account {
                     
                     // controls display
                     this.hideOrOpen()
-
+                    
                     console.log(this);
                 })
                 .catch(err => {
@@ -110,10 +107,19 @@ export class Account {
                 })
         }
     }
-    
-    displayError(message){
-        errorMessageEl.textContent = message
-        errorMessageEl.style.display = "block"
+
+    handleLoginOrSignupRequest(url, data){
+        axios.post(url, data)
+        .then(response => {
+            localStorage.setItem("authToken", response.data.authToken)
+            this.authenticateUser()
+            errorMessageAccountEl.textContent = ""
+        })
+        .catch(err => {
+            console.log("Error: ", err)
+            const message = err.response.data.errorMessage ? err.response.data.errorMessage : "Something has gone wrong."
+            errorMessageAccountEl.textContent = message
+        })
     }
 
     addListeners(){
@@ -129,14 +135,10 @@ export class Account {
             const email = document.getElementById("signup-email").value
             const password = document.getElementById("signup-password").value
             
+            const url = BASE_URL + "/player/signup"
             const data = {username, email, password}
-            
-            axios.post(BASE_URL + "/player/signup", data)
-            .then(response => {
-                this.storeToken(response.data.authToken)
-                this.authenticateUser()
-            })
-            .catch(err => console.log("Error during signup: ", err))
+
+            this.handleLoginOrSignupRequest(url, data)
         })
 
         // adds listener to login
@@ -144,14 +146,10 @@ export class Account {
             const username = document.getElementById("login-username").value
             const password = document.getElementById("login-password").value
             
+            const url = BASE_URL + "/player/login"
             const data = {username, password}
-            
-            axios.post(BASE_URL + "/player/login", data)
-            .then(response => {
-                this.storeToken(response.data.authToken)
-                this.authenticateUser()
-            })
-            .catch(err => console.log("error during login: ", err))
+
+            this.handleLoginOrSignupRequest(url, data)
         })
 
         // adds listener to logout
@@ -257,8 +255,8 @@ export class Account {
                     }
                 })
                 .catch(err => {
-                    errorMessagePlayerEl.textContent = "The user could not be found."
                     console.log("Error while loading player by username: ", err);
+                    errorMessagePlayerEl.textContent = "The user could not be found."
                 })
         })
 
@@ -277,16 +275,12 @@ export class Account {
             }
             
             // check if provided values are valid
-            let message
-            if (numPlayers <= 1){
-                message = "You need to select at least two players."
-                return this.displayError(message)
-            } else if ((size === 5 && numPlayers >= 5 && (density === "dense" || density === "medium"))
+            if ((size === 5 && numPlayers >= 5 && (density === "dense" || density === "medium"))
                 || (size === 4 && ((numPlayers >= 3 && (density === "dense" || density === "medium")) || numPlayers === 6))) {
-                message = "The selected values are not valid. Try selecting less players, a smaller field, or less density."
-                return this.displayError(message)
+                const errorMessage = "The selected values are not valid. Try selecting less players, a greater size, or less density."
+                return errorMessageCreateGameEl.textContent = errorMessage
             } else {
-                errorMessageEl.style.display = "none"
+                errorMessageCreateGameEl.textContent = ""
             }
 
             if (this.gameType === "solo") {
