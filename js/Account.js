@@ -103,7 +103,7 @@ export class Account {
                     this.hideOrOpen()
 
                     // starts websocket
-                    // this.socket = io(BASE_URL)
+                    this.socket = io(BASE_URL, { withCredentials: true })
                     
                     console.log(this);
                 })
