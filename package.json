@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/miob1781/DiocletianGame/issues"
   },
-  "homepage": "https://github.com/miob1781/DiocletianGame#readme"
+  "homepage": "https://github.com/miob1781/DiocletianGame#readme",
+  "dependencies": {
+    "socket.io-client": "^4.5.2"
+  }
 }

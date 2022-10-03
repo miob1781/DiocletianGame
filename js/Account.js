@@ -1,3 +1,4 @@
+import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 import {Game} from "./Game.js"
 import {WebGame} from "./WebGame.js"
 import {BASE_URL} from "./consts.js"
@@ -44,6 +45,7 @@ export class Account {
         this.oldGames = null
         this.isLoggedIn = localStorage.getItem("authToken") ? true : false
         this.gameType = null
+        this.socket = null
     }
 
     hideOrOpen(){
@@ -77,6 +79,7 @@ export class Account {
     logout(){
         localStorage.removeItem("authToken")
         this.isLoggedIn = false
+        this.socket = null
         this.hideOrOpen()
     }
 
@@ -98,6 +101,9 @@ export class Account {
                     
                     // controls display
                     this.hideOrOpen()
+
+                    // starts websocket
+                    // this.socket = io(BASE_URL)
                     
                     console.log(this);
                 })
@@ -300,13 +306,18 @@ export class Account {
                         humanPlayers.push(checkbox.name)
                     }
                 })
-                
-                const game = new Game("solo", numPlayers, size, density, humanPlayers)
+
+                const username = humanPlayers.length === 1 ? this.username : null
+
+                const game = new Game("solo", numPlayers, size, density, humanPlayers, username)
                 game.createBoard()
                 game.startGame()
             } else {
                 const invitedPlayers = this.invitedPlayers.map(player => player[0])
-                this.createdGame = new WebGame(this.id, numPlayers, size, density, invitedPlayers)
+                const webGame = new WebGame(this.id, numPlayers, size, density, invitedPlayers, socket)
+
+                webGame.postGame()
+
                 // functionality to invite players (websockets, nodemailer)
             }
         })

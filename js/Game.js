@@ -1,17 +1,17 @@
 import {playerColors} from "./consts.js"
-import {styles} from "./styles.js"
 import {Field} from "./Field.js"
 import {Player} from "./Player.js"
 import {selectRandomElement, shuffleArray} from "./helper_functions.js" 
 
 export class Game {
-    constructor(gameType, numPlayers, size, density, humanPlayers){
+    constructor(gameType, numPlayers, size, density, humanPlayers, username){
         this.boardEl = document.getElementById("board")
         this.displayEl = document.getElementById("display")
         this.gameType = gameType
         this.numPlayers = numPlayers
         this.size = size
         this.humanPlayers = humanPlayers
+        this.username = username
         this.selectedPlayers = []
         this.density = density
         this.fields = []
@@ -19,9 +19,6 @@ export class Game {
         this.remainingPlayers = []
         this.playerOn = null
         this.gameOn = false
-        this.error = false
-        this.menuOpen = false
-        this.rulesOpen = false
     }    
     
     createBoard(){
@@ -133,47 +130,36 @@ export class Game {
         displayContainer.appendChild(displayEl)
 
         this.selectedPlayers.forEach(player => {
-            const playerDisplayEl = document.createElement("div")
-            playerDisplayEl.className = "display-player"
-            playerDisplayEl.style.backgroundColor = styles.backgroundColor[player.color]
-            playerDisplayEl.style.color = styles.color[player.color]
+            const username = this.humanPlayers.length === 1 && !player.isComputer ? this.username : null
+            player.setPlayerDisplayEl(username)
+            displayEl.appendChild(player.playerDisplayEl)
 
-            const playerNameEl = document.createElement("p")
-            const playerFieldsNumEl = document.createElement("p")
-            const playerFieldsValueEl = document.createElement("p")
-            playerNameEl.className = "player-name"
-            playerFieldsNumEl.className = "player-num"
-            playerFieldsValueEl.className = "player-value"
-            player.playerDisplayEl = playerDisplayEl
-            playerDisplayEl.appendChild(playerNameEl)
-            playerDisplayEl.appendChild(playerFieldsNumEl)
-            playerDisplayEl.appendChild(playerFieldsValueEl)
             player.getPlayerValues()
-            displayEl.appendChild(playerDisplayEl)
         })
+
         this.displayEl = displayEl
     }
 
     assignPlayerToField(player, value){
         let index, field
+
         do {
             index = Math.floor(this.fields.length * Math.random())
             field = this.fields[index]
         } while(field.player || field.neighbors.length - value < 1)
+
         field.setField(player, value)
     }  
 
     startGame(){
-        if(!this.error){
-            const winnerMessageEl = document.getElementById("winner-message")
-            winnerMessageEl.style.display = "none"
+        const winnerMessageEl = document.getElementById("winner-message")
+        winnerMessageEl.textContent = ""
 
-            this.currentPlayers = this.selectedPlayers
-            this.remainingPlayers = this.currentPlayers
-            this.playerOn = this.remainingPlayers[0]
-            this.gameOn = true
-            this.setIsOn()
-        }
+        this.currentPlayers = this.selectedPlayers
+        this.remainingPlayers = this.currentPlayers
+        this.playerOn = this.remainingPlayers[0]
+        this.gameOn = true
+        this.setIsOn()
     }
 
     setIsOn(){
@@ -205,10 +191,8 @@ export class Game {
 
     endGame(){
         const winnerMessageEl = document.getElementById("winner-message")
-        winnerMessageEl.style.display = "block"
-        const winner = this.remainingPlayers[0].color
-        const winnerString = winner[0].toUpperCase() + winner.slice(1)
-        winnerMessageEl.textContent = winnerString + " has won!"
+        const winner = this.username && !this.remainingPlayers[0].isComputer ? this.username : this.remainingPlayers[0].color
+        winnerMessageEl.textContent = winner + " has won!"
 
         this.playerOn = null
         this.gameOn = false
