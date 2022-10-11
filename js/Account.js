@@ -1,7 +1,7 @@
 import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
-import {Game} from "./Game.js"
-import {WebGame} from "./WebGame.js"
-import {BASE_URL} from "./consts.js"
+import { Game } from "./Game.js"
+import { WebGame } from "./WebGame.js"
+import { BASE_URL } from "./consts.js"
 
 // elements in #account
 const signupContainer = document.getElementById("signup")
@@ -35,7 +35,7 @@ const errorMessageCreateGameEl = document.getElementById("error-message-create-g
 const rulesEl = document.getElementById("rules")
 
 export class Account {
-    constructor(){
+    constructor() {
         this.id = null
         this.username = null
         this.email = null
@@ -48,8 +48,8 @@ export class Account {
         this.socket = null
     }
 
-    hideOrOpen(){
-        if(this.isLoggedIn){
+    hideOrOpen() {
+        if (this.isLoggedIn) {
             loginContainer.style.display = "none"
             signupContainer.style.display = "none"
             logoutButton.style.display = "unset"
@@ -72,24 +72,29 @@ export class Account {
         }
     }
 
-    getHeaders(storedToken){
-        return {Authorization: `Bearer ${storedToken}`}
+    getHeaders(storedToken) {
+        return { Authorization: `Bearer ${storedToken}` }
     }
 
-    logout(){
+    logout() {
         localStorage.removeItem("authToken")
         this.isLoggedIn = false
-        this.socket = null
+
+        if (this.socket) {
+            this.socket.emit("disconnect")
+            this.socket = null
+        }
+
         this.hideOrOpen()
     }
 
-    authenticateUser(){
+    authenticateUser() {
         const storedToken = localStorage.getItem("authToken")
-        if(storedToken){
+        if (storedToken) {
             const headers = this.getHeaders(storedToken)
             axios.get(BASE_URL + "/player/verify", { headers })
                 .then(response => {
-                    const {id, username, email, createdGame, invitedGames, oldGames} = response.data
+                    const { id, username, email, createdGame, invitedGames, oldGames } = response.data
 
                     this.id = id
                     this.username = username
@@ -98,13 +103,14 @@ export class Account {
                     this.invitedGames = invitedGames
                     this.oldGames = oldGames
                     this.isLoggedIn = true
-                    
+
                     // controls display
                     this.hideOrOpen()
 
                     // starts websocket
                     this.socket = io(BASE_URL, { withCredentials: true })
-                    
+                    this.addSocketListeners()
+
                     console.log(this);
                 })
                 .catch(err => {
@@ -114,21 +120,21 @@ export class Account {
         }
     }
 
-    handleLoginOrSignupRequest(url, data){
+    handleLoginOrSignupRequest(url, data) {
         axios.post(url, data)
-        .then(response => {
-            localStorage.setItem("authToken", response.data.authToken)
-            this.authenticateUser()
-            errorMessageAccountEl.textContent = ""
-        })
-        .catch(err => {
-            console.log("Error: ", err)
-            const message = err.response.data.errorMessage ? err.response.data.errorMessage : "Something has gone wrong."
-            errorMessageAccountEl.textContent = message
-        })
+            .then(response => {
+                localStorage.setItem("authToken", response.data.authToken)
+                this.authenticateUser()
+                errorMessageAccountEl.textContent = ""
+            })
+            .catch(err => {
+                console.log("Error: ", err)
+                const message = err.response.data.errorMessage ? err.response.data.errorMessage : "Something has gone wrong."
+                errorMessageAccountEl.textContent = message
+            })
     }
 
-    addListeners(){
+    addListeners() {
 
         // adds listener to open the signup form
         openSignupButton.addEventListener("click", () => {
@@ -140,9 +146,9 @@ export class Account {
             const username = document.getElementById("signup-username").value
             const email = document.getElementById("signup-email").value
             const password = document.getElementById("signup-password").value
-            
+
             const url = BASE_URL + "/player/signup"
-            const data = {username, email, password}
+            const data = { username, email, password }
 
             this.handleLoginOrSignupRequest(url, data)
         })
@@ -151,22 +157,22 @@ export class Account {
         submitLoginButton.addEventListener("click", () => {
             const username = document.getElementById("login-username").value
             const password = document.getElementById("login-password").value
-            
+
             const url = BASE_URL + "/player/login"
-            const data = {username, password}
+            const data = { username, password }
 
             this.handleLoginOrSignupRequest(url, data)
         })
 
         // adds listener to logout
         logoutButton.addEventListener("click", () => this.logout())
-        
+
         // adds listener to open or close rules
         rulesButton.addEventListener("click", () => {
             rulesButton.textContent = rulesEl.style.display === "block" ? "Rules" : "Close Rules"
             rulesEl.style.display = rulesEl.style.display === "block" ? "none" : "block"
         })
-        
+
         // adds listener to create new solo game
         soloGameButton.addEventListener("click", () => {
             this.gameType = "solo"
@@ -175,7 +181,7 @@ export class Account {
             colorsContainer.style.display = "block"
             submitGameButton.textContent = "Start Solo Game"
         })
-        
+
         // adds listener to create new web game
         webGameButton.addEventListener("click", () => {
             this.gameType = "web"
@@ -184,11 +190,11 @@ export class Account {
             colorsContainer.style.display = "none"
             submitGameButton.textContent = "Send Invitation"
         })
-        
+
         // adds listeners to display selected values of range inputs
         numPlayersInput.addEventListener("input", () => {
             document.getElementById("num-players-display").textContent = numPlayersInput.value
-            
+
             if (numPlayersInput.value === "2") {
                 yellowCheckboxContainer.style.display = "none"
                 greenCheckboxContainer.style.display = "none"
@@ -240,7 +246,7 @@ export class Account {
                 return errorMessagePlayerEl.textContent = "Please provide the username of a player."
             }
 
-            axios.get(BASE_URL + "/player", { headers, params: { username: playerToInvite }})
+            axios.get(BASE_URL + "/player", { headers, params: { username: playerToInvite } })
                 .then(response => {
                     if (response.data.id) {
                         this.invitedPlayers.push([response.data.id, playerToInvite])
@@ -279,7 +285,7 @@ export class Account {
             } else {
                 density = "dense"
             }
-            
+
             // check if provided values are valid
             if ((size === 5 && numPlayers >= 5 && (density === "dense" || density === "medium"))
                 || (size === 4 && ((numPlayers >= 3 && (density === "dense" || density === "medium")) || numPlayers === 6))) {
@@ -314,15 +320,30 @@ export class Account {
                 game.startGame()
             } else {
                 const invitedPlayers = this.invitedPlayers.map(player => player[0])
-                const webGame = new WebGame(this.id, numPlayers, size, density, invitedPlayers, socket)
 
+                const webGame = new WebGame(this.id, this.username, this.id, this.username, numPlayers, size, density, invitedPlayers, this.socket)
                 webGame.postGame()
-
-                // functionality to invite players (websockets, nodemailer)
             }
         })
-
-
     }
 
+    addSocketListeners() {
+        this.socket.on("invitation", msg => {
+            const { webGameId, invitedPlayers } = msg
+            const storedToken = localStorage.getItem("authToken")
+
+            if (storedToken && invitedPlayers.includes(this.id)) {
+                const headers = this.getHeaders(storedToken)
+
+                axios.get(BASE_URL + "/game/" + webGameId, { headers })
+                    .then(response => {
+                        const { numPlayers, size, density, players, creator } = response.data.game
+                        const otherPlayers = players.filter(id => id !== this.id)
+                        const webGame = new WebGame(this.id, this.username, creator.id, creator.username, numPlayers, size, density, otherPlayers, this.socket)
+
+                        webGame.display(null)
+                    })
+            }
+        })
+    }
 }
