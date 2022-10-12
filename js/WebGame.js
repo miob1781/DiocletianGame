@@ -24,7 +24,7 @@ export class WebGame {
         const textEl = document.createElement("p")
 
         textEl.innerHTML = `
-            ${creatorName === this.playerName ? "You have" : creatorName + " has"} created a new game.<br>
+            ${creatorName === this.playerName ? "You have created" : creatorName + " has invited you to"} a new game.<br>
             Number of players: ${this.numPlayers}<br>
             Size: ${this.size}<br>
             Density: ${this.density}<br>

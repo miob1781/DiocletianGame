@@ -81,7 +81,7 @@ export class Account {
         this.isLoggedIn = false
 
         if (this.socket) {
-            this.socket.emit("disconnect-player")
+            this.socket.disconnect()
             this.socket = null
         }
 
@@ -253,6 +253,7 @@ export class Account {
                         const invitedPlayersHeading = document.createElement("h3")
                         invitedPlayersHeading.textContent = "Invited Players"
                         humanPlayersContainer.appendChild(invitedPlayersHeading)
+
                         this.invitedPlayers.forEach(player => {
                             const playerToInviteContainer = document.createElement("div")
                             playerToInviteContainer.className = "player-to-invite"
@@ -261,6 +262,7 @@ export class Account {
                             playerToInviteContainer.appendChild(playerNameEl)
                             humanPlayersContainer.appendChild(playerToInviteContainer)
                         })
+
                         errorMessagePlayerEl.textContent = ""
                     } else if (response.data.errorMessage) {
                         errorMessagePlayerEl.textContent = response.data.errorMessage
@@ -327,19 +329,20 @@ export class Account {
 
     addSocketListeners() {
         this.socket.on("invitation", msg => {
+            console.log(msg);
             const { webGameId, invitedPlayers } = msg
             const storedToken = localStorage.getItem("authToken")
+            const invitedPlayersIds = invitedPlayers.map(player => player[0])
 
-            if (storedToken && invitedPlayers.includes(this.id)) {
+            if (storedToken && invitedPlayersIds.includes(this.id)) {
                 const headers = this.getHeaders(storedToken)
 
                 axios.get(BASE_URL + "/game/" + webGameId, { headers })
                     .then(response => {
                         const { numPlayers, size, density, players, creator } = response.data.game
-                        const otherPlayers = players.filter(id => id !== this.id)
+                        const otherPlayers = players.map(player => player._id).filter(id => id !== this.id)
                         const webGame = new WebGame(this.id, this.username, creator.id, creator.username, numPlayers, size, density, otherPlayers, this.socket)
-
-                        webGame.display(null)
+                        webGame.display(creator.username)  
                     })
             }
         })
