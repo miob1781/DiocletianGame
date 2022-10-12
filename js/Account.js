@@ -81,7 +81,7 @@ export class Account {
         this.isLoggedIn = false
 
         if (this.socket) {
-            this.socket.emit("disconnect")
+            this.socket.emit("disconnect-player")
             this.socket = null
         }
 
@@ -319,9 +319,7 @@ export class Account {
                 game.createBoard()
                 game.startGame()
             } else {
-                const invitedPlayers = this.invitedPlayers.map(player => player[0])
-
-                const webGame = new WebGame(this.id, this.username, this.id, this.username, numPlayers, size, density, invitedPlayers, this.socket)
+                const webGame = new WebGame(this.id, this.username, this.id, this.username, numPlayers, size, density, this.invitedPlayers, this.socket)
                 webGame.postGame()
             }
         })

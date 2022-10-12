@@ -10,8 +10,8 @@ export class WebGame {
         this.playerName = playerName
         this.creatorId = creatorId
         this.creatorName = creatorName
-        this.numPlayers = numPlayers
         this.otherPlayers = otherPlayers
+        this.numPlayers = numPlayers
         this.size = size
         this.density = density
         this.moves = null
@@ -23,12 +23,12 @@ export class WebGame {
         const webgameSection = document.createElement("section")
         const textEl = document.createElement("p")
 
-        textEl.textContent = `
+        textEl.innerHTML = `
             ${creatorName === this.playerName ? "You have" : creatorName + " has"} created a new game.<br>
             Number of players: ${this.numPlayers}<br>
             Size: ${this.size}<br>
             Density: ${this.density}<br>
-            Other human players: ${this.otherPlayers}<br>
+            Other human players: ${this.otherPlayers.map(player => player[1])}<br>
             ${creatorName === this.playerName ? "Waiting for other players to join" : "Do you want to join?"}
         `
 
@@ -51,6 +51,9 @@ export class WebGame {
         }
 
         document.getElementById("web-games").appendChild(webgameSection)
+        document.getElementById("create-game").style.display = "none"
+        document.getElementById("display-container").style.display = "none"
+        document.getElementById("board-container").style.display = "none"
     }
 
     getHeaders(storedToken){
@@ -60,12 +63,13 @@ export class WebGame {
     postGame(){
         const storedToken = localStorage.getItem("authToken")
         const headers = this.getHeaders(storedToken)
+        const players = [...this.otherPlayers.map(player => player[0]), this.playerId]
 
         axios.post(BASE_URL + "/game", {
             numPlayers: this.numPlayers,
             size: this.size,
             density: this.density,
-            players: [...this.otherPlayers, this.playerId],
+            players,
             creator: this.playerId
         }, { headers })
             .then(response => {
@@ -79,7 +83,7 @@ export class WebGame {
                 })
 
                 // displays created webGame
-                this.display(this.playerId)
+                this.display(this.playerName)
             })
             .catch(err => {
                 console.log("Error while creating web game: ", err)
