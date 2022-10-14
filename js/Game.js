@@ -4,7 +4,7 @@ import {Player} from "./Player.js"
 import {selectRandomElement, shuffleArray} from "./helper_functions.js" 
 
 export class Game {
-    constructor(numPlayers, size, density, humanPlayers, username=null, socket=null, webGameId=null) {
+    constructor(numPlayers, size, density, humanPlayers, username=null, socket=null, webGameId=null, creatorId=null) {
         this.boardEl = document.getElementById("board")
         this.displayEl = document.getElementById("display")
         this.numPlayers = numPlayers
@@ -12,6 +12,7 @@ export class Game {
         this.humanPlayers = humanPlayers
         this.username = username ? username : "You"
         this.webGameId = webGameId
+        this.creatorId = creatorId
         this.socket = socket
         this.selectedPlayers = []
         this.density = density
@@ -20,17 +21,32 @@ export class Game {
         this.remainingPlayers = []
         this.playerOn = null
         this.gameOn = false
-    }    
+    }
     
-    createBoard(){
-        if (!this.webGameId) {
-            for (let i=0; i<this.numPlayers; i++) {
-                const player = new Player(playerColors[i])
+    createBoard() {
+        for (let i=0; i<this.numPlayers; i++) {
+            const player = new Player(playerColors[i])
+            
+            if (!this.webGameId) {
                 if (this.humanPlayers.includes(playerColors[i])) {
                     player.isComputer = false
+
+                    if (this.humanPlayers.length === 1) {
+                        player.name = this.username
+                    }
                 }
-                this.selectedPlayers.push(player)
+            } else {
+                if (i < this.humanPlayers.length) {
+                    player.name = this.humanPlayers[i]
+                    player.isComputer = false
+
+                    if (player.name !== this.username) {
+                        player.isExternalPlayer = true
+                    }
+                }
             }
+
+            this.selectedPlayers.push(player)
         }
         
         // shuffles the selected players by the Fisher-Yates algorithm
@@ -131,10 +147,8 @@ export class Game {
         displayContainer.appendChild(displayEl)
 
         this.selectedPlayers.forEach(player => {
-            const username = this.humanPlayers.length === 1 && !player.isComputer ? this.username : null
-            player.setPlayerDisplayEl(username)
+            player.setPlayerDisplayEl()
             displayEl.appendChild(player.playerDisplayEl)
-
             player.getPlayerValues()
         })
 
@@ -197,7 +211,8 @@ export class Game {
 
     endGame(){
         const winnerMessageEl = document.getElementById("winner-message")
-        const winner = this.username && !this.remainingPlayers[0].isComputer ? this.username : this.remainingPlayers[0].color
+        const winner = this.remainingPlayers[0].name
+
         winnerMessageEl.textContent = winner === "You" ? winner + " have won!" : winner + " has won!"
 
         this.playerOn = null

@@ -346,7 +346,9 @@ export class Account {
                 game.createBoard()
                 game.startGame()
             } else {
-                const webGame = new WebGame(this.id, this.username, this.id, this.username, numPlayers, size, density, this.invitedPlayers, this.socket)
+                const players = [...this.invitedPlayers, [this.id, this.username]]
+                const webGame = new WebGame(this.id, this.username, this.id, this.username, numPlayers, size, density, players, this.socket)
+
                 webGame.postGame()
             }
         })
@@ -354,7 +356,7 @@ export class Account {
 
     addSocketListeners() {
         this.socket.on("invitation", msg => {
-            const { webGameId, invitedPlayers } = msg
+            const { webGameId, invitedPlayers, board } = msg
             const storedToken = localStorage.getItem("authToken")
             const invitedPlayersIds = invitedPlayers.map(player => player[0])
 
@@ -364,13 +366,16 @@ export class Account {
                 axios.get(BASE_URL + "/game/" + webGameId, { headers })
                     .then(response => {
                         const { numPlayers, size, density, players, creator } = response.data.game
-                        const otherPlayers = players.map(player => player._id).filter(id => id !== this.id)
-                        const webGame = new WebGame(this.id, this.username, creator.id, creator.username, numPlayers, size, density, otherPlayers, this.socket)
+                        const webGame = new WebGame(this.id, this.username, creator.id, creator.username, numPlayers, size, density, players, this.socket)
 
                         webGame.display(creator.username)
 
                         this.socket.on("start game", () => {
                             const game = new Game()
+                        })
+
+                        this.socket.on("move", msg => {
+                            const { move } = msg
                         })
                     })
             }

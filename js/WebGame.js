@@ -1,16 +1,17 @@
 import { BASE_URL } from "./consts.js"
+import { Game } from "./Game.js"
 
 const errorMessageWebGameEl = document.getElementById("web-game-error-message")
 
 export class WebGame {
-    constructor(playerId, playerName, creatorId, creatorName, numPlayers, size, density, otherPlayers, socket){
+    constructor(playerId, playerName, creatorId, creatorName, numPlayers, size, density, humanPlayers, socket){
         this.id = null
         this.status = null
         this.playerId = playerId
         this.playerName = playerName
         this.creatorId = creatorId
         this.creatorName = creatorName
-        this.otherPlayers = otherPlayers
+        this.humanPlayers = humanPlayers
         this.numPlayers = numPlayers
         this.size = size
         this.density = density
@@ -28,7 +29,7 @@ export class WebGame {
             Number of players: ${this.numPlayers}<br>
             Size: ${this.size}<br>
             Density: ${this.density}<br>
-            Other human players: ${this.otherPlayers.map(player => player[1])}<br>
+            Other human players: ${this.humanPlayers.map(player => player[1])}<br>
             ${creatorName === this.playerName ? "Waiting for other players to join" : "Do you want to join?"}
         `
 
@@ -76,23 +77,30 @@ export class WebGame {
     postGame(){
         const storedToken = localStorage.getItem("authToken")
         const headers = this.getHeaders(storedToken)
-        const players = [...this.otherPlayers.map(player => player[0]), this.playerId]
+        const playerIds = this.humanPlayers.map(player => player[0])
+        const playerNames = this.humanPlayers.map(player => player[1])
 
         axios.post(BASE_URL + "/game", {
             numPlayers: this.numPlayers,
             size: this.size,
             density: this.density,
-            players,
-            creator: this.playerId
+            players: playerIds,
+            creator: this.creatorId
         }, { headers })
             .then(response => {
                 this.id = response.data.id
                 this.status = "created"
 
+                // creates new game
+                const game = new Game(this.numPlayers, this.size, this.density, playerNames, this.playerName, this.socket, this.id, this.creatorId)
+
+                game.createBoard()
+
                 // sends the invitation to invited players
                 this.socket.emit("game created", {
                     webGameId: this.id,
-                    invitedPlayers: this.otherPlayers
+                    invitedPlayers: playerIds.filter(player => player.id !== this.creatorId),
+                    board: game.boardEl
                 })
 
                 // displays created webGame

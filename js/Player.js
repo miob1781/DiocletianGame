@@ -1,8 +1,9 @@
 import { styles } from "./styles.js"
 
 export class Player {
-    constructor(color){
+    constructor(color) {
         this.color = color
+        this.name = color
         this.isOn = false
         this.isComputer = true
         this.isExternalPlayer = false
@@ -11,7 +12,7 @@ export class Player {
         this.playerDisplayEl = null
     }    
 
-    setPlayerDisplayEl(username){
+    setPlayerDisplayEl() {
         const playerDisplayEl = document.createElement("div")
         playerDisplayEl.className = "display-player"
         playerDisplayEl.style.backgroundColor = styles.backgroundColor[this.color]
@@ -25,8 +26,8 @@ export class Player {
         playerFieldsNumEl.className = "player-num"
         playerFieldsValueEl.className = "player-value"
 
-        // displays username if username is provided
-        playerNameEl.textContent = username ? username : this.color
+        // displays name
+        playerNameEl.textContent = this.name
 
         playerDisplayEl.appendChild(playerNameEl)
         playerDisplayEl.appendChild(playerFieldsNumEl)
@@ -35,7 +36,7 @@ export class Player {
         this.playerDisplayEl = playerDisplayEl
     }
     
-    getPlayerValues(){
+    getPlayerValues() {
         const playerFieldsNumEl = this.playerDisplayEl.querySelector(".player-num")
         const playerFieldsValueEl = this.playerDisplayEl.querySelector(".player-value")
 
