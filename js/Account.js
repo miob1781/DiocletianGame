@@ -76,6 +76,13 @@ export class Account {
         return { Authorization: `Bearer ${storedToken}` }
     }
 
+    startGame() {
+        // starting a new game
+        const game = new Game(4, 6, "sparse", ["red"], this.username)
+        game.createBoard()
+        game.startGame()
+    }
+
     logout() {
         localStorage.removeItem("authToken")
         this.id = null
@@ -95,11 +102,8 @@ export class Account {
 
         this.hideOrOpen()
 
-        // starting a new game after logout
-        const game = new Game(4, 6, "sparse", ["red"])
-        game.createBoard()
-        game.startGame()
-
+        // starts a new game after logout
+        this.startGame()
     }
 
     authenticateUser() {
@@ -121,10 +125,8 @@ export class Account {
                     // controls display
                     this.hideOrOpen()
 
-                    // starting a new game after authentication
-                    const game = new Game(4, 6, "sparse", ["red"], this.username)
-                    game.createBoard()
-                    game.startGame()
+                    // starts game after authentication
+                    this.startGame()
 
                     // starts websocket
                     this.socket = io(BASE_URL, { withCredentials: true })
@@ -136,6 +138,10 @@ export class Account {
                     console.log("Error during authentication: ", err)
                     this.logout()
                 })
+        }
+        else {
+            // starts game if not logged in
+            this.startGame()
         }
     }
 
