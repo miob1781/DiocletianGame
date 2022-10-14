@@ -78,6 +78,14 @@ export class Account {
 
     logout() {
         localStorage.removeItem("authToken")
+        this.id = null
+        this.username = null
+        this.email = null
+        this.invitedPlayers = []
+        this.createdGame = null
+        this.invitedGames = null
+        this.oldGames = null
+        this.gameType = null
         this.isLoggedIn = false
 
         if (this.socket) {
@@ -86,6 +94,12 @@ export class Account {
         }
 
         this.hideOrOpen()
+
+        // starting a new game after logout
+        const game = new Game(4, 6, "sparse", ["red"])
+        game.createBoard()
+        game.startGame()
+
     }
 
     authenticateUser() {
@@ -106,6 +120,11 @@ export class Account {
 
                     // controls display
                     this.hideOrOpen()
+
+                    // starting a new game after authentication
+                    const game = new Game(4, 6, "sparse", ["red"], this.username)
+                    game.createBoard()
+                    game.startGame()
 
                     // starts websocket
                     this.socket = io(BASE_URL, { withCredentials: true })
@@ -314,10 +333,10 @@ export class Account {
                         humanPlayers.push(checkbox.name)
                     }
                 })
-
                 const username = humanPlayers.length === 1 ? this.username : null
 
-                const game = new Game("solo", numPlayers, size, density, humanPlayers, username)
+                const game = new Game(numPlayers, size, density, humanPlayers, username)
+
                 game.createBoard()
                 game.startGame()
             } else {
@@ -329,7 +348,6 @@ export class Account {
 
     addSocketListeners() {
         this.socket.on("invitation", msg => {
-            console.log(msg);
             const { webGameId, invitedPlayers } = msg
             const storedToken = localStorage.getItem("authToken")
             const invitedPlayersIds = invitedPlayers.map(player => player[0])
@@ -342,7 +360,12 @@ export class Account {
                         const { numPlayers, size, density, players, creator } = response.data.game
                         const otherPlayers = players.map(player => player._id).filter(id => id !== this.id)
                         const webGame = new WebGame(this.id, this.username, creator.id, creator.username, numPlayers, size, density, otherPlayers, this.socket)
-                        webGame.display(creator.username)  
+
+                        webGame.display(creator.username)
+
+                        this.socket.on("start game", () => {
+                            const game = new Game()
+                        })
                     })
             }
         })

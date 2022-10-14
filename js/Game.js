@@ -4,14 +4,15 @@ import {Player} from "./Player.js"
 import {selectRandomElement, shuffleArray} from "./helper_functions.js" 
 
 export class Game {
-    constructor(gameType, numPlayers, size, density, humanPlayers, username){
+    constructor(numPlayers, size, density, humanPlayers, username=null, socket=null, webGameId=null) {
         this.boardEl = document.getElementById("board")
         this.displayEl = document.getElementById("display")
-        this.gameType = gameType
         this.numPlayers = numPlayers
         this.size = size
         this.humanPlayers = humanPlayers
-        this.username = username
+        this.username = username ? username : "You"
+        this.webGameId = webGameId
+        this.socket = socket
         this.selectedPlayers = []
         this.density = density
         this.fields = []
@@ -22,7 +23,7 @@ export class Game {
     }    
     
     createBoard(){
-        if (this.gameType === "solo") {
+        if (!this.webGameId) {
             for (let i=0; i<this.numPlayers; i++) {
                 const player = new Player(playerColors[i])
                 if (this.humanPlayers.includes(playerColors[i])) {
@@ -192,7 +193,7 @@ export class Game {
     endGame(){
         const winnerMessageEl = document.getElementById("winner-message")
         const winner = this.username && !this.remainingPlayers[0].isComputer ? this.username : this.remainingPlayers[0].color
-        winnerMessageEl.textContent = winner + " has won!"
+        winnerMessageEl.textContent = winner === "You" ? winner + " have won!" : winner + " has won!"
 
         this.playerOn = null
         this.gameOn = false

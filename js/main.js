@@ -8,6 +8,6 @@ account.hideOrOpen()
 account.addListeners()
 
 // starting a new game when rendering the page
-const game = new Game("solo", 4, 6, "sparse", ["red"])
+const game = new Game(4, 6, "sparse", ["red"], account.username)
 game.createBoard()
 game.startGame()

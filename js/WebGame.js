@@ -46,6 +46,19 @@ export class WebGame {
             declineButton.type = "button"
             declineButton.textContent = "Decline"
 
+            acceptButton.addEventListener("click", () => {
+                this.socket.emit("accept", {
+                    webGameId: this.id,
+                    playerId: this.playerId
+                })
+            })
+
+            declineButton.addEventListener("click", () => {
+                this.socket.emit("decline", {
+                    webGameId: this.id
+                })
+            })
+
             webgameSection.appendChild(acceptButton)
             webgameSection.appendChild(declineButton)
         }
