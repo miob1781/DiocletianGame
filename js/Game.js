@@ -161,6 +161,11 @@ export class Game {
         this.playerOn = this.remainingPlayers[0]
         this.gameOn = true
         this.setIsOn()
+
+        // closes unnecessary elements
+        for (const id of ["create-game", "web-games", "old-games"]) {
+            document.getElementById(id).style.display = "none"
+        }
     }
 
     setIsOn(){
