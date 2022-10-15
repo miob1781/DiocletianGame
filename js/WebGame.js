@@ -1,10 +1,9 @@
 import { BASE_URL } from "./consts.js"
-import { Game } from "./Game.js"
 
 const errorMessageWebGameEl = document.getElementById("web-game-error-message")
 
 export class WebGame {
-    constructor(playerId, playerName, creatorId, creatorName, numPlayers, size, density, humanPlayers, socket){
+    constructor(playerId, playerName, creatorId, creatorName, numPlayers, size, density, humanPlayers, socket) {
         this.id = null
         this.status = null
         this.playerId = playerId
@@ -20,8 +19,9 @@ export class WebGame {
         this.socket = socket
     }
 
-    display(creatorName){
+    display(creatorName) {
         const webgameSection = document.createElement("section")
+        webgameSection.id = this.id
         const textEl = document.createElement("p")
 
         textEl.innerHTML = `
@@ -34,7 +34,7 @@ export class WebGame {
         `
 
         webgameSection.appendChild(textEl)
-        
+
         if (creatorName !== this.playerName) {
             const acceptButton = document.createElement("button")
             const declineButton = document.createElement("button")
@@ -65,20 +65,20 @@ export class WebGame {
         }
 
         document.getElementById("web-games").appendChild(webgameSection)
+        document.getElementById("web-games").style.display = "block"
         document.getElementById("create-game").style.display = "none"
         document.getElementById("display-container").style.display = "none"
         document.getElementById("board-container").style.display = "none"
     }
 
-    getHeaders(storedToken){
-        return {Authorization: `Bearer ${storedToken}`}
+    getHeaders(storedToken) {
+        return { Authorization: `Bearer ${storedToken}` }
     }
 
-    postGame(){
+    postGame() {
         const storedToken = localStorage.getItem("authToken")
         const headers = this.getHeaders(storedToken)
         const playerIds = this.humanPlayers.map(player => player[0])
-        const playerNames = this.humanPlayers.map(player => player[1])
 
         axios.post(BASE_URL + "/game", {
             numPlayers: this.numPlayers,
@@ -91,16 +91,10 @@ export class WebGame {
                 this.id = response.data.id
                 this.status = "created"
 
-                // creates new game
-                const game = new Game(this.numPlayers, this.size, this.density, playerNames, this.playerName, this.socket, this.id, this.creatorId)
-
-                game.createBoard()
-
                 // sends the invitation to invited players
                 this.socket.emit("game created", {
                     webGameId: this.id,
-                    invitedPlayers: playerIds.filter(player => player.id !== this.creatorId),
-                    board: game.boardEl
+                    invitedPlayers: playerIds.filter(playerId => playerId !== this.creatorId)
                 })
 
                 // displays created webGame
@@ -109,7 +103,7 @@ export class WebGame {
             .catch(err => {
                 console.log("Error while creating web game: ", err)
                 const message = err.response.data.errorMessage ? err.response.data.errorMessage : "Something has gone wrong."
-                errorMessageWebGameEl.textContent = message    
+                errorMessageWebGameEl.textContent = message
             })
     }
 }

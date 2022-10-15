@@ -356,22 +356,44 @@ export class Account {
 
     addSocketListeners() {
         this.socket.on("invitation", msg => {
-            const { webGameId, invitedPlayers, board } = msg
+            const { webGameId, invitedPlayers } = msg
             const storedToken = localStorage.getItem("authToken")
-            const invitedPlayersIds = invitedPlayers.map(player => player[0])
-
+            const invitedPlayersIds = invitedPlayers.map(player => player.playerId)
+            
             if (storedToken && invitedPlayersIds.includes(this.id)) {
                 const headers = this.getHeaders(storedToken)
-
+                
                 axios.get(BASE_URL + "/game/" + webGameId, { headers })
-                    .then(response => {
-                        const { numPlayers, size, density, players, creator } = response.data.game
-                        const webGame = new WebGame(this.id, this.username, creator.id, creator.username, numPlayers, size, density, players, this.socket)
+                .then(response => {
+                    const { numPlayers, size, density, players, creator } = response.data.game
+                    const playerNames = players.map(player => player.username)
+                    const webGame = new WebGame(this.id, this.username, creator.id, creator.username, numPlayers, size, density, players, this.socket)
+                    let game
+                    
+                    webGame.id = webGameId
+                    webGame.display(creator.username)
+                    
+                        this.socket.on("game declined", msg => {
+                            if (msg.webGameId === webGame.id) {
+                                const webGameSection = document.getElementById(webGame.id)
+                                document.getElementById("webGames").removeChild(webGameSection)
+                            }
+                        })
 
-                        webGame.display(creator.username)
+                        this.socket.on("ready", () => {
+                            if (this.id === creator.id) {
+                                game = new Game(numPlayers, size, density, playerNames, this.username, this.socket, webGameId, creator.id)
+                                
+                                game.createBoard()
+                                game.startGame()
+                                
+                                this.socket.emit("start", { webGameId, game })
+                            }
+                        })
 
-                        this.socket.on("start game", () => {
-                            const game = new Game()
+                        this.socket.on("set game", msg => {
+                            game = msg.newGame
+                            game.username = this.username
                         })
 
                         this.socket.on("move", msg => {
