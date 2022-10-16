@@ -46,6 +46,8 @@ export class Account {
         this.isLoggedIn = localStorage.getItem("authToken") ? true : false
         this.gameType = null
         this.socket = null
+        this.webGame = null
+        this.game = null
     }
 
     hideOrOpen() {
@@ -76,10 +78,11 @@ export class Account {
         return { Authorization: `Bearer ${storedToken}` }
     }
 
-    startGame() {
+    startWebGame() {
         // starting a new game
         const game = new Game(4, 6, "sparse", ["red"], this.username)
         game.createBoard()
+        game.createDisplay()
         game.startGame()
     }
 
@@ -103,7 +106,7 @@ export class Account {
         this.hideOrOpen()
 
         // starts a new game after logout
-        this.startGame()
+        this.startWebGame()
     }
 
     authenticateUser() {
@@ -126,13 +129,11 @@ export class Account {
                     this.hideOrOpen()
 
                     // starts game after authentication
-                    this.startGame()
+                    this.startWebGame()
 
                     // starts websocket
                     this.socket = io(BASE_URL, { withCredentials: true })
                     this.addSocketListeners()
-
-                    console.log(this);
                 })
                 .catch(err => {
                     console.log("Error during authentication: ", err)
@@ -141,7 +142,7 @@ export class Account {
         }
         else {
             // starts game if not logged in
-            this.startGame()
+            this.startWebGame()
         }
     }
 
@@ -274,7 +275,13 @@ export class Account {
             axios.get(BASE_URL + "/player", { headers, params: { username: playerToInvite } })
                 .then(response => {
                     if (response.data.id) {
-                        this.invitedPlayers.push([response.data.id, playerToInvite])
+                        const playerData = {
+                            id: response.data.id,
+                            name: playerToInvite
+                        }
+
+                        this.invitedPlayers.push(playerData)
+
                         const invitedPlayersHeading = document.createElement("h3")
                         invitedPlayersHeading.textContent = "Invited Players"
                         humanPlayersContainer.appendChild(invitedPlayersHeading)
@@ -283,7 +290,7 @@ export class Account {
                             const playerToInviteContainer = document.createElement("div")
                             playerToInviteContainer.className = "player-to-invite"
                             const playerNameEl = document.createElement("p")
-                            playerNameEl.textContent = player[1]
+                            playerNameEl.textContent = player.name
                             playerToInviteContainer.appendChild(playerNameEl)
                             humanPlayersContainer.appendChild(playerToInviteContainer)
                         })
@@ -344,63 +351,113 @@ export class Account {
                 const game = new Game(numPlayers, size, density, humanPlayers, username)
 
                 game.createBoard()
+                game.createDisplay()
                 game.startGame()
             } else {
-                const players = [...this.invitedPlayers, [this.id, this.username]]
-                const webGame = new WebGame(this.id, this.username, this.id, this.username, numPlayers, size, density, players, this.socket)
+                const playerData = {
+                    id: this.id,
+                    name: this.username
+                }
 
-                webGame.postGame()
+                const humanPlayers = [...this.invitedPlayers, playerData]
+                this.webGame = new WebGame(this.id, this.username, this.id, this.username, numPlayers, size, density, humanPlayers, this.socket)
+
+                this.webGame.postGame()
             }
         })
     }
 
     addSocketListeners() {
         this.socket.on("invitation", msg => {
-            const { webGameId, invitedPlayers } = msg
-            const storedToken = localStorage.getItem("authToken")
-            const invitedPlayersIds = invitedPlayers.map(player => player.playerId)
-            
-            if (storedToken && invitedPlayersIds.includes(this.id)) {
-                const headers = this.getHeaders(storedToken)
+            const { webGameId, invitedPlayersIds, webGameData } = msg
+
+            if (invitedPlayersIds.includes(this.id)) {
+                const { numPlayers, size, density, players, creator } = webGameData
+
+                this.webGame = new WebGame(this.id, this.username, creator.id, creator.name, numPlayers, size, density, players, this.socket)
+                this.webGame.id = webGameId
+                this.webGame.status = "created"
                 
-                axios.get(BASE_URL + "/game/" + webGameId, { headers })
-                .then(response => {
-                    const { numPlayers, size, density, players, creator } = response.data.game
-                    const playerNames = players.map(player => player.username)
-                    const webGame = new WebGame(this.id, this.username, creator.id, creator.username, numPlayers, size, density, players, this.socket)
-                    let game
-                    
-                    webGame.id = webGameId
-                    webGame.display(creator.username)
-                    
-                        this.socket.on("game declined", msg => {
-                            if (msg.webGameId === webGame.id) {
-                                const webGameSection = document.getElementById(webGame.id)
-                                document.getElementById("webGames").removeChild(webGameSection)
-                            }
-                        })
-
-                        this.socket.on("ready", () => {
-                            if (this.id === creator.id) {
-                                game = new Game(numPlayers, size, density, playerNames, this.username, this.socket, webGameId, creator.id)
-                                
-                                game.createBoard()
-                                game.startGame()
-                                
-                                this.socket.emit("start", { webGameId, game })
-                            }
-                        })
-
-                        this.socket.on("set game", msg => {
-                            game = msg.newGame
-                            game.username = this.username
-                        })
-
-                        this.socket.on("move", msg => {
-                            const { move } = msg
-                        })
-                    })
+                console.log(this.webGame)
+                this.webGame.display(creator.name)
             }
+        })
+
+        this.socket.on("game declined", msg => {
+            if (msg.webGameId === this.webGame.id) {
+                const webGameSection = document.getElementById(this.webGame.id)
+                document.getElementById("webGames").removeChild(webGameSection)
+                this.webGame = null
+            }
+        })
+
+        this.socket.on("ready", () => {
+            const { numPlayers, size, density, humanPlayers, playerName, id, creatorId } = this.webGame
+            if (this.id === creatorId) {
+                const humanPlayersNames = humanPlayers.map(player => player.name)
+
+                this.game = new Game(numPlayers, size, density, humanPlayersNames, playerName, id, this.socket)
+
+                this.game.createBoard()
+                this.game.createDisplay()
+                
+                const selectedPlayersColors = this.game.selectedPlayers.map(player => player.color)
+                const fieldData = this.game.fields.map(field => ({
+                    id: field.id,
+                    color: field.player ? field.player.color : null,
+                    value: field.value
+                }))
+                
+                this.socket.emit("start", {
+                    webGameId: id,
+                    selectedPlayersColors,
+                    fieldData
+                })
+
+                this.game.startGame()
+            }
+        })
+
+        this.socket.on("set game", msg => {
+            const { webGameId, selectedPlayersColors, fieldData } = msg
+            const { numPlayers, size, density, humanPlayers, playerName, id } = this.webGame
+            const humanPlayersNames = humanPlayers.map(player => player.name)
+
+            this.game = new Game(numPlayers, size, density, humanPlayersNames, playerName, id, this.socket)
+            this.game.createBoard()
+
+            const orderedSelectedPlayers = []
+            for (const color of selectedPlayersColors) {
+                const nextPlayer = this.game.selectedPlayers.find(player => player.color === color)
+                orderedSelectedPlayers.push(nextPlayer)
+            }
+            this.game.selectedPlayers = orderedSelectedPlayers
+            
+            this.game.fields.forEach(field => {
+                const fieldDatum = fieldData.find(el => el.id === field.id)
+                field.player = this.game.selectedPlayers.find(player => player.color === fieldDatum.color)
+                field.value = fieldDatum.value
+                field.setField(field.player, field.value)
+            })
+            
+            this.game.selectedPlayers.forEach(player => {
+                player.fields = []
+                this.game.fields.forEach(field => {
+                    if (field.player && field.player.color === player.color) {
+                        player.fields.push(field)
+                    }
+                })
+            })
+            
+            this.game.remainingPlayers = this.game.selectedPlayers
+            this.game.playerIsCreator = false
+            this.game.createDisplay()
+            this.game.startGame()
+        })
+
+        this.socket.on("move", msg => {
+            console.log(msg.move);
+            this.game.setIsOn(msg.move)
         })
     }
 }

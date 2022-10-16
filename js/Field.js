@@ -39,26 +39,47 @@ export class Field {
         }
     }    
     
-    setField(player, value){
-        this.player = player
-        this.player.fields.push(this)
-        this.value = value
-        this.numEl.textContent = this.value
-        this.fieldEl.style.backgroundColor = styles.backgroundColor[this.player.color]
-        this.fieldEl.style.color = styles.color[this.player.color]
-        this.numEl.style.fontSize = styles.fontSize[this.value.toFixed()]
+    setField(player, value) {
+        if (this.player && this.player.color !== player.color) {
+            this.player.filter(field => field.id !== this.id)
+        }
+        
+        this.player = player ? player : null
+
+        if (this.player) {
+            this.player.fields.push(this)
+            this.value = value
+            this.numEl.textContent = this.value
+            this.fieldEl.style.backgroundColor = styles.backgroundColor[this.player.color]
+            this.fieldEl.style.color = styles.color[this.player.color]
+            this.numEl.style.fontSize = styles.fontSize[this.value.toFixed()]
+        } else {
+            this.value = 0
+            this.numEl.textContent = ""
+            this.fieldEl.style.backgroundColor = styles.backgroundColor.free
+            this.fieldEl.style.color = "unset"
+            this.numEl.style.fontSize = "unset"
+        }
     }
     
-    selectField(){
-        if(this.player.isOn){
+    selectField(clicking) {
+        if (!this.player) return
+        if (clicking && (this.player.isComputer || this.player.isExternalPlayer)) return
+
+        if (this.player.isOn) {
             this.player.isOn = false
             this.increaseValue()
-            this.game.currentPlayers.forEach(player => player.getPlayerValues())
+            this.game.selectedPlayers.forEach(player => player.getPlayerValues())
+
+            if (this.game.webGameId) {
+                this.game.socket.emit("move", { webGameId: this.game.webGameId, move: this.id })
+            }
+            
             this.game.getNextPlayer()
         }    
     }    
     
-    increaseValue(){
+    increaseValue() {
         if(!this.game.gameOn){
             return
         }

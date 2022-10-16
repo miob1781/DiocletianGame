@@ -4,23 +4,22 @@ import {Player} from "./Player.js"
 import {selectRandomElement, shuffleArray} from "./helper_functions.js" 
 
 export class Game {
-    constructor(numPlayers, size, density, humanPlayers, username=null, socket=null, webGameId=null, creatorId=null) {
+    constructor(numPlayers, size, density, humanPlayersNames, username=null, webGameId=null, socket=null) {
         this.boardEl = document.getElementById("board")
         this.displayEl = document.getElementById("display")
         this.numPlayers = numPlayers
         this.size = size
-        this.humanPlayers = humanPlayers
+        this.density = density
+        this.humanPlayersNames = humanPlayersNames
         this.username = username ? username : "You"
         this.webGameId = webGameId
-        this.creatorId = creatorId
         this.socket = socket
-        this.selectedPlayers = []
-        this.density = density
         this.fields = []
-        this.currentPlayers = []
+        this.selectedPlayers = []
         this.remainingPlayers = []
         this.playerOn = null
         this.gameOn = false
+        this.playerIsCreator = true
     }
     
     createBoard() {
@@ -28,16 +27,16 @@ export class Game {
             const player = new Player(playerColors[i])
             
             if (!this.webGameId) {
-                if (this.humanPlayers.includes(playerColors[i])) {
+                if (this.humanPlayersNames.includes(playerColors[i])) {
                     player.isComputer = false
 
-                    if (this.humanPlayers.length === 1) {
+                    if (this.humanPlayersNames.length === 1) {
                         player.name = this.username
                     }
                 }
             } else {
-                if (i < this.humanPlayers.length) {
-                    player.name = this.humanPlayers[i]
+                if (i < this.humanPlayersNames.length) {
+                    player.name = this.humanPlayersNames[i]
                     player.isComputer = false
 
                     if (player.name !== this.username) {
@@ -56,17 +55,19 @@ export class Game {
         this.selectedPlayers.forEach(player => player.fields = [])
         
         this.boardEl.remove()
-        const boardContainer = document.getElementById("board-container")
         const boardEl = document.createElement("div")
         boardEl.id = "board"
-        boardContainer.appendChild(boardEl)
         this.boardEl = boardEl
-
+        
         boardEl.style.width = `min(${this.size * 50}px, 90vw)`
         boardEl.style.height = `min(${this.size * 50}px, 90vw)`
         boardEl.style.gridTemplateColumns = `repeat(${this.size}, 1fr)`
         boardEl.style.gridTemplateRows = `repeat(${this.size}, 1fr)`
-
+        
+        const boardContainer = document.getElementById("board-container")
+        boardContainer.style.display = "block"
+        boardContainer.appendChild(boardEl)
+        
         let k = 0
         for (let i = 1; i <= this.size; i++){
             for (let j = 1; j <= this.size; j++){
@@ -80,13 +81,13 @@ export class Game {
                 fieldEl.className = `field row${row} col${col}`
                 fieldEl.id = "field" + id
                 fieldEl.style.gridArea = `${row} / ${col} / span 1 / span 1`
-                                
+                
                 fieldEl.addEventListener("click", () => {
-                    field.selectField()
+                    field.selectField("clicking")
                 })
                 
                 this.boardEl.appendChild(fieldEl)
-
+                
                 const numEl = document.createElement("span")
                 numEl.className = "num"
                 fieldEl.appendChild(numEl)
@@ -100,7 +101,6 @@ export class Game {
 
         this.fields.forEach(field => field.getNeighbors())
         this.addPlayers()
-        this.createDisplay()
     }
 
     addPlayers(){
@@ -142,6 +142,7 @@ export class Game {
     createDisplay(){
         this.displayEl.remove()
         const displayContainer = document.getElementById("display-container")
+        displayContainer.style.display = "block"
         const displayEl = document.createElement("display")
         displayEl.id = "display"
         displayContainer.appendChild(displayEl)
@@ -170,11 +171,14 @@ export class Game {
         const winnerMessageEl = document.getElementById("winner-message")
         winnerMessageEl.textContent = ""
 
-        this.currentPlayers = this.selectedPlayers
-        this.remainingPlayers = this.currentPlayers
+        this.remainingPlayers = this.selectedPlayers
         this.playerOn = this.remainingPlayers[0]
         this.gameOn = true
         this.setIsOn()
+
+        // opens display and board
+        document.getElementById("display").style.display = "flex"
+        document.getElementById("board").style.display = "grid"
 
         // closes unnecessary elements
         for (const id of ["create-game", "web-games", "old-games"]) {
@@ -182,17 +186,25 @@ export class Game {
         }
     }
 
-    setIsOn(){
+    setIsOn(move){
         this.playerOn.isOn = true
         this.playerOn.playerDisplayEl.style.border = "4px dashed gold"
-        if(this.playerOn.isComputer){
-            this.computerMoves()
-        }    
-    }    
+        
+        console.log(this.playerOn.color, move);
+
+        if (move) {
+            const selectedField = this.fields.find(field => field.id === move)
+            selectedField.selectField()
+        } else if (this.playerOn.isComputer && this.playerIsCreator) {
+            const selectedField = selectRandomElement(this.playerOn.fields)
+            selectedField.selectField()
+        }
+    }
 
     checkRemainingPlayers(player){
         if(player.fields.length === 0){
             this.remainingPlayers = this.remainingPlayers.filter(playerRemaining => playerRemaining.color !== player.color)
+
             if(this.remainingPlayers.length === 1){
                 this.endGame()
             }    
@@ -213,14 +225,13 @@ export class Game {
         const winnerMessageEl = document.getElementById("winner-message")
         const winner = this.remainingPlayers[0].name
 
+        if (this.webGameId) {
+            this.socket.emit("game ended", { webGameId: this.webGameId, winner })
+        }    
+
         winnerMessageEl.textContent = winner === "You" ? winner + " have won!" : winner + " has won!"
 
         this.playerOn = null
         this.gameOn = false
-    }    
-
-    computerMoves(){
-        const selectedField = selectRandomElement(this.playerOn.fields)
-        selectedField.selectField()
-    }    
+    }
 }

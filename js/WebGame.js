@@ -29,7 +29,9 @@ export class WebGame {
             Number of players: ${this.numPlayers}<br>
             Size: ${this.size}<br>
             Density: ${this.density}<br>
-            Other human players: ${this.humanPlayers.map(player => player[1])}<br>
+            Other human players: ${this.humanPlayers.reduce((string, player) => {
+                return string + player.name + ", "
+            }, "").slice(0, -2)}<br>
             ${creatorName === this.playerName ? "Waiting for other players to join" : "Do you want to join?"}
         `
 
@@ -78,25 +80,34 @@ export class WebGame {
     postGame() {
         const storedToken = localStorage.getItem("authToken")
         const headers = this.getHeaders(storedToken)
-        const playerIds = this.humanPlayers.map(player => player[0])
+        const playerIds = this.humanPlayers.map(player => player.id)
 
-        axios.post(BASE_URL + "/game", {
+        const webGameData = {
             numPlayers: this.numPlayers,
             size: this.size,
             density: this.density,
             players: playerIds,
             creator: this.creatorId
-        }, { headers })
-            .then(response => {
-                this.id = response.data.id
-                this.status = "created"
+        }
 
-                // sends the invitation to invited players
-                this.socket.emit("game created", {
-                    webGameId: this.id,
-                    invitedPlayers: playerIds.filter(playerId => playerId !== this.creatorId)
-                })
-
+        axios.post(BASE_URL + "/game", webGameData, { headers })
+        .then(response => {
+            this.id = response.data.id
+            this.status = "created"
+            
+            webGameData.players = this.humanPlayers
+            webGameData.creator = {
+                id: this.creatorId,
+                name: this.creatorName
+            }
+    
+            // sends the invitation to invited players
+            this.socket.emit("game created", {
+                webGameId: this.id,
+                invitedPlayersIds: playerIds.filter(playerId => playerId !== this.creatorId),
+                webGameData
+            })
+            
                 // displays created webGame
                 this.display(this.playerName)
             })
