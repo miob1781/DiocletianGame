@@ -38,7 +38,6 @@ export class Account {
     constructor() {
         this.id = null
         this.username = null
-        this.email = null
         this.invitedPlayers = []
         this.createdGame = null
         this.invitedGames = null
@@ -90,12 +89,12 @@ export class Account {
         localStorage.removeItem("authToken")
         this.id = null
         this.username = null
-        this.email = null
         this.invitedPlayers = []
         this.createdGame = null
         this.invitedGames = null
         this.oldGames = null
         this.gameType = null
+        this.game = null
         this.isLoggedIn = false
 
         if (this.socket) {
@@ -115,11 +114,10 @@ export class Account {
             const headers = this.getHeaders(storedToken)
             axios.get(BASE_URL + "/player/verify", { headers })
                 .then(response => {
-                    const { id, username, email, createdGame, invitedGames, oldGames } = response.data
+                    const { id, username, createdGame, invitedGames, oldGames } = response.data
 
                     this.id = id
                     this.username = username
-                    this.email = email
                     this.createdGame = createdGame
                     this.invitedGames = invitedGames
                     this.oldGames = oldGames
@@ -170,11 +168,10 @@ export class Account {
         // adds listener to signup
         submitSignupButton.addEventListener("click", () => {
             const username = document.getElementById("signup-username").value
-            const email = document.getElementById("signup-email").value
             const password = document.getElementById("signup-password").value
 
             const url = BASE_URL + "/player/signup"
-            const data = { username, email, password }
+            const data = { username, password }
 
             this.handleLoginOrSignupRequest(url, data)
         })
@@ -377,7 +374,7 @@ export class Account {
                 this.webGame = new WebGame(this.id, this.username, creator.id, creator.name, numPlayers, size, density, players, this.socket)
                 this.webGame.id = webGameId
                 this.webGame.status = "created"
-                
+
                 console.log(this.webGame)
                 this.webGame.display(creator.name)
             }
@@ -400,14 +397,14 @@ export class Account {
 
                 this.game.createBoard()
                 this.game.createDisplay()
-                
+
                 const selectedPlayersColors = this.game.selectedPlayers.map(player => player.color)
                 const fieldData = this.game.fields.map(field => ({
                     id: field.id,
                     color: field.player ? field.player.color : null,
                     value: field.value
                 }))
-                
+
                 this.socket.emit("start", {
                     webGameId: id,
                     selectedPlayersColors,
@@ -432,14 +429,14 @@ export class Account {
                 orderedSelectedPlayers.push(nextPlayer)
             }
             this.game.selectedPlayers = orderedSelectedPlayers
-            
+
             this.game.fields.forEach(field => {
                 const fieldDatum = fieldData.find(el => el.id === field.id)
                 field.player = this.game.selectedPlayers.find(player => player.color === fieldDatum.color)
                 field.value = fieldDatum.value
                 field.setField(field.player, field.value)
             })
-            
+
             this.game.selectedPlayers.forEach(player => {
                 player.fields = []
                 this.game.fields.forEach(field => {
@@ -448,7 +445,7 @@ export class Account {
                     }
                 })
             })
-            
+
             this.game.remainingPlayers = this.game.selectedPlayers
             this.game.playerIsCreator = false
             this.game.createDisplay()
@@ -456,7 +453,6 @@ export class Account {
         })
 
         this.socket.on("move", msg => {
-            console.log(msg.move);
             this.game.setIsOn(msg.move)
         })
     }

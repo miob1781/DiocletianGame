@@ -181,18 +181,16 @@ export class Game {
         document.getElementById("board").style.display = "grid"
 
         // closes unnecessary elements
-        for (const id of ["create-game", "web-games", "old-games"]) {
+        for (const id of ["create-game", "web-games"]) {
             document.getElementById(id).style.display = "none"
         }
     }
 
-    setIsOn(move){
+    setIsOn(move) {
         this.playerOn.isOn = true
         this.playerOn.playerDisplayEl.style.border = "4px dashed gold"
         
-        console.log(this.playerOn.color, move);
-
-        if (move) {
+        if (typeof move === "number") {
             const selectedField = this.fields.find(field => field.id === move)
             selectedField.selectField()
         } else if (this.playerOn.isComputer && this.playerIsCreator) {
@@ -225,13 +223,12 @@ export class Game {
         const winnerMessageEl = document.getElementById("winner-message")
         const winner = this.remainingPlayers[0].name
 
-        if (this.webGameId) {
+        if (this.webGameId && !this.gameOn) {
             this.socket.emit("game ended", { webGameId: this.webGameId, winner })
         }    
 
         winnerMessageEl.textContent = winner === "You" ? winner + " have won!" : winner + " has won!"
 
-        this.playerOn = null
         this.gameOn = false
     }
 }
