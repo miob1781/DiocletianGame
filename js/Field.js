@@ -71,8 +71,8 @@ export class Field {
             this.increaseValue()
             this.game.selectedPlayers.forEach(player => player.getPlayerValues())
 
-            if (this.game.webGameId) {
-                this.game.socket.emit("move", { webGameId: this.game.webGameId, move: this.id })
+            if (this.game.webGameId && ((!this.game.playerOn.isComputer && !this.game.playerOn.isExternalPlayer) || (this.game.playerIsCreator && this.player.isComputer))) {
+                this.game.socket.emit("move", { webGameId: this.game.webGameId, move: this.id, playerOnColor: this.player.color })
             }
             
             this.game.getNextPlayer()
