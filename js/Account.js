@@ -375,7 +375,6 @@ export class Account {
                 this.webGame.id = webGameId
                 this.webGame.status = "created"
 
-                console.log(this.webGame)
                 this.webGame.display(creator.name)
             }
         })
@@ -384,7 +383,7 @@ export class Account {
             const { playerName } = msg
             const webGameSection = document.getElementById(this.webGame.id)
             webGameSection.querySelector("p").textContent = `${playerName} has declined to participate in the game.`
-            
+
             this.webGame = null
         })
 
