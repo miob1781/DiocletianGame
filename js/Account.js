@@ -77,12 +77,12 @@ export class Account {
         return { Authorization: `Bearer ${storedToken}` }
     }
 
-    startWebGame() {
+    startGame() {
         // starting a new game
         const game = new Game(4, 6, "sparse", ["red"], this.username)
         game.createBoard()
         game.createDisplay()
-        game.startGame()
+        game.start()
     }
 
     logout() {
@@ -105,7 +105,7 @@ export class Account {
         this.hideOrOpen()
 
         // starts a new game after logout
-        this.startWebGame()
+        this.startGame()
     }
 
     authenticateUser() {
@@ -127,7 +127,7 @@ export class Account {
                     this.hideOrOpen()
 
                     // starts game after authentication
-                    this.startWebGame()
+                    this.startGame()
 
                     // starts websocket
                     this.socket = io(BASE_URL, { withCredentials: true })
@@ -140,7 +140,7 @@ export class Account {
         }
         else {
             // starts game if not logged in
-            this.startWebGame()
+            this.startGame()
         }
     }
 
@@ -349,7 +349,7 @@ export class Account {
 
                 game.createBoard()
                 game.createDisplay()
-                game.startGame()
+                game.start()
             } else {
                 const playerData = {
                     id: this.id,
@@ -381,11 +381,11 @@ export class Account {
         })
 
         this.socket.on("game declined", msg => {
-            if (msg.webGameId === this.webGame.id) {
-                const webGameSection = document.getElementById(this.webGame.id)
-                document.getElementById("webGames").removeChild(webGameSection)
-                this.webGame = null
-            }
+            const { playerName } = msg
+            const webGameSection = document.getElementById(this.webGame.id)
+            webGameSection.querySelector("p").textContent = `${playerName} has declined to participate in the game.`
+            
+            this.webGame = null
         })
 
         this.socket.on("ready", () => {
@@ -411,12 +411,12 @@ export class Account {
                     fieldData
                 })
 
-                this.game.startGame()
+                this.game.start()
             }
         })
 
         this.socket.on("set game", msg => {
-            const { webGameId, selectedPlayersColors, fieldData } = msg
+            const { selectedPlayersColors, fieldData } = msg
             const { numPlayers, size, density, humanPlayers, playerName, id } = this.webGame
             const humanPlayersNames = humanPlayers.map(player => player.name)
 
@@ -449,11 +449,12 @@ export class Account {
             this.game.remainingPlayers = this.game.selectedPlayers
             this.game.playerIsCreator = false
             this.game.createDisplay()
-            this.game.startGame()
+            this.game.start()
         })
 
         this.socket.on("move", msg => {
-            this.game.setIsOn(msg.move)
+            const { move } = msg
+            this.game.setIsOn(move)
         })
     }
 }

@@ -167,7 +167,7 @@ export class Game {
         field.setField(player, value)
     }  
 
-    startGame(){
+    start(){
         const winnerMessageEl = document.getElementById("winner-message")
         winnerMessageEl.textContent = ""
 
@@ -204,7 +204,7 @@ export class Game {
             this.remainingPlayers = this.remainingPlayers.filter(playerRemaining => playerRemaining.color !== player.color)
 
             if(this.remainingPlayers.length === 1){
-                this.endGame()
+                this.end()
             }    
         }    
     }    
@@ -219,7 +219,7 @@ export class Game {
         }    
     }    
 
-    endGame(){
+    end(){
         const winnerMessageEl = document.getElementById("winner-message")
         const winner = this.remainingPlayers[0].name
 

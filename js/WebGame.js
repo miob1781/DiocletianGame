@@ -58,8 +58,11 @@ export class WebGame {
 
             declineButton.addEventListener("click", () => {
                 this.socket.emit("decline", {
-                    webGameId: this.id
+                    webGameId: this.id,
+                    playerName: this.playerName
                 })
+
+                webgameSection.remove()
             })
 
             webgameSection.appendChild(acceptButton)
@@ -69,8 +72,11 @@ export class WebGame {
         document.getElementById("web-games").appendChild(webgameSection)
         document.getElementById("web-games").style.display = "block"
         document.getElementById("create-game").style.display = "none"
-        document.getElementById("display-container").style.display = "none"
-        document.getElementById("board-container").style.display = "none"
+
+        if (this.playerId === this.creatorId) {
+            document.getElementById("display-container").style.display = "none"
+            document.getElementById("board-container").style.display = "none"
+        }
     }
 
     getHeaders(storedToken) {
