@@ -42,11 +42,11 @@ export class Account {
         this.createdGame = null
         this.invitedGames = null
         this.oldGames = null
-        this.isLoggedIn = localStorage.getItem("authToken") ? true : false
         this.gameType = null
         this.socket = null
         this.webGame = null
         this.game = null
+        this.isLoggedIn = localStorage.getItem("authToken") ? true : false
     }
 
     hideOrOpen() {
@@ -75,6 +75,26 @@ export class Account {
 
     getHeaders(storedToken) {
         return { Authorization: `Bearer ${storedToken}` }
+    }
+
+    loadGames() {
+        const storedToken = localStorage.getItem("authToken")
+        const headers = this.getHeaders(storedToken)
+        axios.get(BASE_URL + "/game/", { headers, params: { playerId: this.id } })
+            .then(response => {
+                console.log(response.data);
+                const { gamesCreated, numGamesFinished, numGamesWon } = response.data
+
+                gamesCreated.forEach(gameLoaded => {
+                    const { numPlayers, size, density, players, creator } = gameLoaded
+
+                    this.webGame = new WebGame(this.id, this.username, creator.id, creator.name, numPlayers, size, density, players, this.socket)
+                    console.log(this.webGame);
+                })
+            })
+            .catch(err => {
+                console.log("error while loading games: ", err);
+            })
     }
 
     startGame() {
@@ -132,6 +152,9 @@ export class Account {
                     // starts websocket
                     this.socket = io(BASE_URL, { withCredentials: true })
                     this.addSocketListeners()
+
+                    // loads web games
+                    this.loadGames()
                 })
                 .catch(err => {
                     console.log("Error during authentication: ", err)
@@ -327,7 +350,7 @@ export class Account {
             }
 
             if (this.gameType === "solo") {
-                const humanPlayers = []
+                const humanPlayersNames = []
                 const checkboxContainers = [
                     redCheckboxContainer,
                     blueCheckboxContainer,
@@ -340,16 +363,17 @@ export class Account {
                 checkboxContainers.forEach(cont => {
                     const checkbox = cont.querySelector("input")
                     if (checkbox.checked) {
-                        humanPlayers.push(checkbox.name)
+                        humanPlayersNames.push(checkbox.name)
                     }
                 })
-                const username = humanPlayers.length === 1 ? this.username : null
+                const username = humanPlayersNames.length === 1 ? this.username : null
 
-                const game = new Game(numPlayers, size, density, humanPlayers, username)
+                const game = new Game(numPlayers, size, density, humanPlayersNames, username)
 
                 game.createBoard()
                 game.createDisplay()
                 game.start()
+
             } else {
                 const playerData = {
                     id: this.id,

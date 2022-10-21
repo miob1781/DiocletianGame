@@ -4,8 +4,6 @@ const errorMessageWebGameEl = document.getElementById("web-game-error-message")
 
 export class WebGame {
     constructor(playerId, playerName, creatorId, creatorName, numPlayers, size, density, humanPlayers, socket) {
-        this.id = null
-        this.status = null
         this.playerId = playerId
         this.playerName = playerName
         this.creatorId = creatorId
@@ -14,11 +12,12 @@ export class WebGame {
         this.numPlayers = numPlayers
         this.size = size
         this.density = density
-        this.moves = null
+        this.id = null
+        this.status = null
         this.winner = null
         this.socket = socket
     }
-    
+
     display(creatorName) {
         const webGamesContainer = document.getElementById("web-games")
 
@@ -31,41 +30,41 @@ export class WebGame {
         const webGameSection = document.createElement("section")
         webGameSection.id = this.id
         const textEl = document.createElement("p")
-        
+
         textEl.innerHTML = `
             ${creatorName === this.playerName ? "You have created" : creatorName + " has invited you to"} a new game.<br>
             Number of players: ${this.numPlayers}<br>
             Size: ${this.size}<br>
             Density: ${this.density}<br>
             Other human players: ${this.humanPlayers.reduce((string, player) => {
-                return string + player.name + ", "
-            }, "").slice(0, -2)}<br>
+            return string + player.name + ", "
+        }, "").slice(0, -2)}<br>
             ${creatorName === this.playerName ? "Waiting for other players to join" : "Do you want to join?"}
             `
         webGameSection.appendChild(textEl)
-        
+
         if (creatorName !== this.playerName) {
             const acceptButton = document.createElement("button")
             acceptButton.className = "accept-invitation"
             acceptButton.type = "button"
             acceptButton.textContent = "Join!"
-            
+
             const declineButton = document.createElement("button")
             declineButton.className = "decline-invitation"
             declineButton.type = "button"
             declineButton.textContent = "Decline"
-            
+
             acceptButton.addEventListener("click", () => {
                 this.socket.emit("accept", {
                     webGameId: this.id,
                     playerId: this.playerId
                 })
-                
+
                 textEl.textContent = "The game will start soon."
                 acceptButton.remove()
                 declineButton.remove()
             })
-            
+
             declineButton.addEventListener("click", () => {
                 this.socket.emit("decline", {
                     webGameId: this.id,
@@ -78,7 +77,7 @@ export class WebGame {
 
                 this.deleteGame()
             })
-            
+
             webGameSection.appendChild(acceptButton)
             webGameSection.appendChild(declineButton)
 
@@ -87,7 +86,7 @@ export class WebGame {
             revokeButton.className = "revoke-invitation"
             revokeButton.type = "button"
             revokeButton.textContent = "Revoke invitation"
-            
+
             revokeButton.addEventListener("click", () => {
                 this.socket.emit("revoke", {
                     webGameId: this.id
@@ -98,13 +97,13 @@ export class WebGame {
                 textEl.textContent = "You have revoked the invitation."
                 revokeButton.remove()
             })
-            
+
             webGameSection.appendChild(revokeButton)
-            
+
             document.getElementById("display-container").style.display = "none"
             document.getElementById("board-container").style.display = "none"
         }
-        
+
         webGamesContainer.appendChild(webGameSection)
         webGamesContainer.style.display = "block"
         document.getElementById("create-game").style.display = "none"
@@ -128,23 +127,23 @@ export class WebGame {
         }
 
         axios.post(BASE_URL + "/game", webGameData, { headers })
-        .then(response => {
-            this.id = response.data.id
-            this.status = "created"
-            
-            webGameData.players = this.humanPlayers
-            webGameData.creator = {
-                id: this.creatorId,
-                name: this.creatorName
-            }
-    
-            // sends the invitation to invited players
-            this.socket.emit("game created", {
-                webGameId: this.id,
-                invitedPlayersIds: playerIds.filter(playerId => playerId !== this.creatorId),
-                webGameData
-            })
-            
+            .then(response => {
+                this.id = response.data.id
+                this.status = "created"
+
+                webGameData.players = this.humanPlayers
+                webGameData.creator = {
+                    id: this.creatorId,
+                    name: this.creatorName
+                }
+
+                // sends the invitation to invited players
+                this.socket.emit("game created", {
+                    webGameId: this.id,
+                    invitedPlayersIds: playerIds.filter(playerId => playerId !== this.creatorId),
+                    webGameData
+                })
+
                 // displays created webGame
                 this.display(this.playerName)
             })
