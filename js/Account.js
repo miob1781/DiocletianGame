@@ -445,6 +445,14 @@ export class Account {
                 })
 
                 this.game.start()
+
+                const storedToken = localStorage.getItem("authToken")
+                const headers = this.getHeaders(storedToken)
+
+                axios.put(BASE_URL + "/game/" + id, { status: "playing" }, { headers })
+                    .catch(err => {
+                        console.log("Error while updating game: ", err);
+                    })
             }
         })
 
