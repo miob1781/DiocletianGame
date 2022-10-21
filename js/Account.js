@@ -91,6 +91,8 @@ export class Account {
                     this.webGame = new WebGame(this.id, this.username, creator.id, creator.name, numPlayers, size, density, players, this.socket)
                     this.webGame.id = id
                     this.webGame.display()
+
+                    this.socket.emit("join room", { webGameId: id })
                 })
             })
             .catch(err => {
@@ -401,6 +403,8 @@ export class Account {
                 this.webGame.status = "created"
 
                 this.webGame.display(creator.name)
+
+                this.socket.emit("join room", { webGameId })
             }
         })
 
