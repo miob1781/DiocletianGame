@@ -16,6 +16,8 @@ const webGameButton = document.getElementById("web-game-button")
 const rulesButton = document.getElementById("rules-button")
 const playerNameHeading = document.getElementById("player-name")
 const createGameContainer = document.getElementById("create-game")
+const soloIntroEl = document.getElementById("intro-solo")
+const webIntroEl = document.getElementById("intro-web")
 const numPlayersInput = document.getElementById("num-players-input")
 const sizeInput = document.getElementById("size-input")
 const densityInput = document.getElementById("density-input")
@@ -84,6 +86,8 @@ export class Account {
             .then(response => {
                 console.log(response.data);
                 const { connectedPlayers, gamesCreated, numGamesFinished, numGamesWon } = response.data
+
+                webIntroEl.textContent = `You have played ${numGamesFinished} game${numGamesFinished === 1 ? "" : "s"} on the web and won ${numGamesWon} of them. Try another one?`
 
                 gamesCreated.forEach(gameLoaded => {
                     const { id, numPlayers, size, density, players, creator } = gameLoaded
@@ -229,6 +233,8 @@ export class Account {
             getPlayerContainer.style.display = "none"
             colorsContainer.style.display = "block"
             submitGameButton.textContent = "Start Solo Game"
+            soloIntroEl.style.display = "block"
+            webIntroEl.style.display = "none"
         })
 
         // adds listener to create new web game
@@ -238,6 +244,8 @@ export class Account {
             getPlayerContainer.style.display = "block"
             colorsContainer.style.display = "none"
             submitGameButton.textContent = "Send Invitation"
+            webIntroEl.style.display = "block"
+            soloIntroEl.style.display = "none"
         })
 
         // adds listeners to display selected values of range inputs

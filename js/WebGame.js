@@ -30,16 +30,17 @@ export class WebGame {
         const webGameSection = document.createElement("section")
         webGameSection.id = this.id
         const textEl = document.createElement("p")
+        const humanPlayersString = this.humanPlayers.reduce((string, player) => {
+            return string + player.name + ", "
+        }, "").slice(0, -2)
 
         textEl.innerHTML = `
             ${this.creatorName === this.playerName ? "You have created" : this.creatorName + " has invited you to"} a new game.<br>
             Number of players: ${this.numPlayers}<br>
             Size: ${this.size}<br>
             Density: ${this.density}<br>
-            Other human players: ${this.humanPlayers.reduce((string, player) => {
-            return string + player.name + ", "
-        }, "").slice(0, -2)}<br>
-            ${this.creatorName === this.playerName ? "Waiting for other players to join" : "Do you want to join?"}
+            Human players: ${humanPlayersString}<br>
+            ${this.creatorName === this.playerName ? "Waiting for players to join" : "Do you want to join?"}
             `
         webGameSection.appendChild(textEl)
 
