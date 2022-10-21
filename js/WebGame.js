@@ -30,6 +30,7 @@ export class WebGame {
         const webGameSection = document.createElement("section")
         webGameSection.id = this.id
         const textEl = document.createElement("p")
+        textEl.className = "dark"
         const humanPlayersString = this.humanPlayers.reduce((string, player) => {
             return string + player.name + ", "
         }, "").slice(0, -2)
