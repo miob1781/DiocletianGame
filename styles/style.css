@@ -53,7 +53,7 @@ button {
     color: black;
 }
 
-#submit-game, #signup-form button, #accept-invitation {
+#submit-game, #signup-form button, .accept-invitation {
     background-color: rgb(24, 172, 24);
 }
 
@@ -65,7 +65,7 @@ button {
     background-color: chocolate;
 }
 
-#solo-game-button, #web-game-button, #decline-invitation {
+#solo-game-button, #web-game-button, .decline-invitation, .revoke-invitation {
     background-color: cyan;
     color: black;
 }

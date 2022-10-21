@@ -383,8 +383,18 @@ export class Account {
             const { playerName } = msg
             const webGameSection = document.getElementById(this.webGame.id)
             webGameSection.querySelector("p").textContent = `${playerName} has declined to participate in the game.`
+            webGameSection.querySelector("button").remove()
+        })
 
-            this.webGame = null
+        this.socket.on("invitation revoked", msg => {
+            const { webGameId } = msg
+
+            if (this.webGame.id === webGameId) {
+                const webGameSection = document.getElementById(this.webGame.id)
+                webGameSection.querySelector("p").textContent = `${this.webGame.creatorName} has revoked the invitation for the game.`
+                webGameSection.querySelector(".accept-invitation").remove()
+                webGameSection.querySelector(".decline-invitation").remove()
+            }
         })
 
         this.socket.on("ready", () => {

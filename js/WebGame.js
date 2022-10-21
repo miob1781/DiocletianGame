@@ -18,12 +18,21 @@ export class WebGame {
         this.winner = null
         this.socket = socket
     }
-
+    
     display(creatorName) {
-        const webgameSection = document.createElement("section")
-        webgameSection.id = this.id
-        const textEl = document.createElement("p")
+        const webGamesContainer = document.getElementById("web-games")
 
+        console.log(webGamesContainer.children.length);
+        for (const child of webGamesContainer.children) {
+            if (!child.querySelector(".accept-invitation")) {
+                child.remove()
+            }
+        }
+
+        const webGameSection = document.createElement("section")
+        webGameSection.id = this.id
+        const textEl = document.createElement("p")
+        
         textEl.innerHTML = `
             ${creatorName === this.playerName ? "You have created" : creatorName + " has invited you to"} a new game.<br>
             Number of players: ${this.numPlayers}<br>
@@ -33,50 +42,73 @@ export class WebGame {
                 return string + player.name + ", "
             }, "").slice(0, -2)}<br>
             ${creatorName === this.playerName ? "Waiting for other players to join" : "Do you want to join?"}
-        `
-
-        webgameSection.appendChild(textEl)
-
+            `
+        webGameSection.appendChild(textEl)
+        
         if (creatorName !== this.playerName) {
             const acceptButton = document.createElement("button")
-            const declineButton = document.createElement("button")
-
-            acceptButton.id = "accept-invitation"
+            acceptButton.className = "accept-invitation"
             acceptButton.type = "button"
             acceptButton.textContent = "Join!"
-
-            declineButton.id = "decline-invitation"
+            
+            const declineButton = document.createElement("button")
+            declineButton.className = "decline-invitation"
             declineButton.type = "button"
             declineButton.textContent = "Decline"
-
+            
             acceptButton.addEventListener("click", () => {
                 this.socket.emit("accept", {
                     webGameId: this.id,
                     playerId: this.playerId
                 })
+                
+                textEl.textContent = "The game will start soon."
+                acceptButton.remove()
+                declineButton.remove()
             })
-
+            
             declineButton.addEventListener("click", () => {
                 this.socket.emit("decline", {
                     webGameId: this.id,
                     playerName: this.playerName
                 })
 
-                webgameSection.remove()
+                textEl.textContent = "You have declined to participate in the game."
+                acceptButton.remove()
+                declineButton.remove()
+
+                this.deleteGame()
             })
+            
+            webGameSection.appendChild(acceptButton)
+            webGameSection.appendChild(declineButton)
 
-            webgameSection.appendChild(acceptButton)
-            webgameSection.appendChild(declineButton)
-        }
+        } else {
+            const revokeButton = document.createElement("button")
+            revokeButton.className = "revoke-invitation"
+            revokeButton.type = "button"
+            revokeButton.textContent = "Revoke invitation"
+            
+            revokeButton.addEventListener("click", () => {
+                this.socket.emit("revoke", {
+                    webGameId: this.id
+                })
 
-        document.getElementById("web-games").appendChild(webgameSection)
-        document.getElementById("web-games").style.display = "block"
-        document.getElementById("create-game").style.display = "none"
+                this.deleteGame()
 
-        if (this.playerId === this.creatorId) {
+                textEl.textContent = "You have revoked the invitation."
+                revokeButton.remove()
+            })
+            
+            webGameSection.appendChild(revokeButton)
+            
             document.getElementById("display-container").style.display = "none"
             document.getElementById("board-container").style.display = "none"
         }
+        
+        webGamesContainer.appendChild(webGameSection)
+        webGamesContainer.style.display = "block"
+        document.getElementById("create-game").style.display = "none"
     }
 
     getHeaders(storedToken) {
@@ -119,6 +151,20 @@ export class WebGame {
             })
             .catch(err => {
                 console.log("Error while creating web game: ", err)
+                const message = err.response.data.errorMessage ? err.response.data.errorMessage : "Something has gone wrong."
+                errorMessageWebGameEl.textContent = message
+            })
+    }
+
+    deleteGame() {
+        const storedToken = localStorage.getItem("storedToken")
+        const headers = this.getHeaders(storedToken)
+
+        axios.delete(BASE_URL + "/game/" + this.id, { headers })
+            .then(() => {
+                document.getElementById(this.webGameId).remove()
+            })
+            .catch(err => {
                 const message = err.response.data.errorMessage ? err.response.data.errorMessage : "Something has gone wrong."
                 errorMessageWebGameEl.textContent = message
             })
