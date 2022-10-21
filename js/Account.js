@@ -153,7 +153,7 @@ export class Account {
             })
             .catch(err => {
                 console.log("Error: ", err)
-                const message = err.response.data.errorMessage ? err.response.data.errorMessage : "Something has gone wrong."
+                const message = err.response?.data?.errorMessage ? err.response?.data?.errorMessage : "Something has gone wrong."
                 errorMessageAccountEl.textContent = message
             })
     }
@@ -293,8 +293,8 @@ export class Account {
                         })
 
                         errorMessagePlayerEl.textContent = ""
-                    } else if (response.data.errorMessage) {
-                        errorMessagePlayerEl.textContent = response.data.errorMessage
+                    } else if (response.data?.errorMessage) {
+                        errorMessagePlayerEl.textContent = response.data?.errorMessage
                     }
                 })
                 .catch(err => {
@@ -389,7 +389,7 @@ export class Account {
         this.socket.on("invitation revoked", msg => {
             const { webGameId } = msg
 
-            if (this.webGame.id === webGameId) {
+            if (this.webGame?.id === webGameId) {
                 const webGameSection = document.getElementById(this.webGame.id)
                 webGameSection.querySelector("p").textContent = `${this.webGame.creatorName} has revoked the invitation for the game.`
                 webGameSection.querySelector(".accept-invitation").remove()

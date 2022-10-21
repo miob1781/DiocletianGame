@@ -22,7 +22,6 @@ export class WebGame {
     display(creatorName) {
         const webGamesContainer = document.getElementById("web-games")
 
-        console.log(webGamesContainer.children.length);
         for (const child of webGamesContainer.children) {
             if (!child.querySelector(".accept-invitation")) {
                 child.remove()
@@ -151,7 +150,7 @@ export class WebGame {
             })
             .catch(err => {
                 console.log("Error while creating web game: ", err)
-                const message = err.response.data.errorMessage ? err.response.data.errorMessage : "Something has gone wrong."
+                const message = err.response?.data?.errorMessage ? err.response?.data?.errorMessage : "Something has gone wrong."
                 errorMessageWebGameEl.textContent = message
             })
     }
@@ -161,11 +160,9 @@ export class WebGame {
         const headers = this.getHeaders(storedToken)
 
         axios.delete(BASE_URL + "/game/" + this.id, { headers })
-            .then(() => {
-                document.getElementById(this.webGameId).remove()
-            })
             .catch(err => {
-                const message = err.response.data.errorMessage ? err.response.data.errorMessage : "Something has gone wrong."
+                console.log("Error while deleting web game: ", err)
+                const message = err.response?.data?.errorMessage ? err.response?.data?.errorMessage : "Something has gone wrong."
                 errorMessageWebGameEl.textContent = message
             })
     }
