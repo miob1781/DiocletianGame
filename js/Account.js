@@ -83,13 +83,14 @@ export class Account {
         axios.get(BASE_URL + "/game/", { headers, params: { playerId: this.id } })
             .then(response => {
                 console.log(response.data);
-                const { gamesCreated, numGamesFinished, numGamesWon } = response.data
+                const { connectedPlayers, gamesCreated, numGamesFinished, numGamesWon } = response.data
 
                 gamesCreated.forEach(gameLoaded => {
-                    const { numPlayers, size, density, players, creator } = gameLoaded
+                    const { id, numPlayers, size, density, players, creator } = gameLoaded
 
                     this.webGame = new WebGame(this.id, this.username, creator.id, creator.name, numPlayers, size, density, players, this.socket)
-                    console.log(this.webGame);
+                    this.webGame.id = id
+                    this.webGame.display()
                 })
             })
             .catch(err => {

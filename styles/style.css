@@ -132,7 +132,7 @@ button {
     display: none;
 }
 
-#error-message-account, #error-message-get-player {
+#error-message-account, #error-message-get-player, #error-message-create-game, #web-game-error-message {
     color: red;
     font-size: 1.1rem;
 }

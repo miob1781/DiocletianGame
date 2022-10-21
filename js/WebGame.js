@@ -18,7 +18,7 @@ export class WebGame {
         this.socket = socket
     }
 
-    display(creatorName) {
+    display() {
         const webGamesContainer = document.getElementById("web-games")
 
         for (const child of webGamesContainer.children) {
@@ -32,18 +32,18 @@ export class WebGame {
         const textEl = document.createElement("p")
 
         textEl.innerHTML = `
-            ${creatorName === this.playerName ? "You have created" : creatorName + " has invited you to"} a new game.<br>
+            ${this.creatorName === this.playerName ? "You have created" : this.creatorName + " has invited you to"} a new game.<br>
             Number of players: ${this.numPlayers}<br>
             Size: ${this.size}<br>
             Density: ${this.density}<br>
             Other human players: ${this.humanPlayers.reduce((string, player) => {
             return string + player.name + ", "
         }, "").slice(0, -2)}<br>
-            ${creatorName === this.playerName ? "Waiting for other players to join" : "Do you want to join?"}
+            ${this.creatorName === this.playerName ? "Waiting for other players to join" : "Do you want to join?"}
             `
         webGameSection.appendChild(textEl)
 
-        if (creatorName !== this.playerName) {
+        if (this.creatorName !== this.playerName) {
             const acceptButton = document.createElement("button")
             acceptButton.className = "accept-invitation"
             acceptButton.type = "button"
@@ -107,6 +107,7 @@ export class WebGame {
         webGamesContainer.appendChild(webGameSection)
         webGamesContainer.style.display = "block"
         document.getElementById("create-game").style.display = "none"
+        errorMessageWebGameEl.textContent = ""
     }
 
     getHeaders(storedToken) {
@@ -145,7 +146,7 @@ export class WebGame {
                 })
 
                 // displays created webGame
-                this.display(this.playerName)
+                this.display()
             })
             .catch(err => {
                 console.log("Error while creating web game: ", err)
@@ -161,8 +162,6 @@ export class WebGame {
         axios.delete(BASE_URL + "/game/" + this.id, { headers })
             .catch(err => {
                 console.log("Error while deleting web game: ", err)
-                const message = err.response?.data?.errorMessage ? err.response?.data?.errorMessage : "Something has gone wrong."
-                errorMessageWebGameEl.textContent = message
             })
     }
 }
