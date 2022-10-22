@@ -159,6 +159,7 @@ export class Account {
                     // starts websocket
                     this.socket = io(BASE_URL, { withCredentials: true })
                     this.addSocketListeners()
+                    this.socket.emit("register", { playerId: id })
 
                     // loads web games
                     this.loadGames()
@@ -296,7 +297,9 @@ export class Account {
 
         // adds listener to get input for names of players and load them from DB
         submitPlayerButton.addEventListener("click", () => {
-            const playerToInvite = document.getElementById("player-input").value
+            const playerToInviteInput = document.getElementById("player-input")
+            const playerToInvite = playerToInviteInput.value
+            playerToInviteInput.value = ""
             const headers = this.getHeaders(localStorage.getItem("authToken"))
 
             if (!playerToInvite) {
@@ -310,23 +313,20 @@ export class Account {
                             id: response.data.id,
                             name: playerToInvite
                         }
-
+                        
                         this.invitedPlayers.push(playerData)
-
-                        const invitedPlayersHeading = document.createElement("h3")
-                        invitedPlayersHeading.textContent = "Invited Players"
-                        humanPlayersContainer.appendChild(invitedPlayersHeading)
-
-                        this.invitedPlayers.forEach(player => {
-                            const playerToInviteContainer = document.createElement("div")
-                            playerToInviteContainer.className = "player-to-invite"
-                            const playerNameEl = document.createElement("p")
-                            playerNameEl.textContent = player.name
-                            playerToInviteContainer.appendChild(playerNameEl)
-                            humanPlayersContainer.appendChild(playerToInviteContainer)
-                        })
+                        
+                        const playersString = this.invitedPlayers.reduce((currString, player) => {
+                            return currString + player.name + ", "
+                        }, "Invited players: ").slice(0, -2)
+                        console.log(this.invitedPlayers, playersString);
+                        const playerNamesEl = document.createElement("p")
+                        playerNamesEl.className = "dark"
+                        playerNamesEl.textContent = playersString
+                        humanPlayersContainer.replaceChildren(playerNamesEl)
 
                         errorMessagePlayerEl.textContent = ""
+
                     } else if (response.data?.errorMessage) {
                         errorMessagePlayerEl.textContent = response.data?.errorMessage
                     }
@@ -401,37 +401,35 @@ export class Account {
 
     addSocketListeners() {
         this.socket.on("invitation", msg => {
-            const { webGameId, invitedPlayersIds, webGameData } = msg
+            const { webGameId, webGameData } = msg
+            const { numPlayers, size, density, players, creator } = webGameData
 
-            if (invitedPlayersIds.includes(this.id)) {
-                const { numPlayers, size, density, players, creator } = webGameData
+            this.webGame = new WebGame(this.id, this.username, creator.id, creator.name, numPlayers, size, density, players, this.socket)
+            this.webGame.id = webGameId
+            this.webGame.display()
 
-                this.webGame = new WebGame(this.id, this.username, creator.id, creator.name, numPlayers, size, density, players, this.socket)
-                this.webGame.id = webGameId
-                this.webGame.status = "created"
-
-                this.webGame.display(creator.name)
-
-                this.socket.emit("join room", { webGameId })
-            }
+            this.socket.emit("join room", { webGameId })
         })
 
         this.socket.on("game declined", msg => {
             const { playerName } = msg
+
             const webGameSection = document.getElementById(this.webGame.id)
             webGameSection.querySelector("p").textContent = `${playerName} has declined to participate in the game.`
-            webGameSection.querySelector("button").remove()
-        })
 
-        this.socket.on("invitation revoked", msg => {
-            const { webGameId } = msg
-
-            if (this.webGame?.id === webGameId) {
-                const webGameSection = document.getElementById(this.webGame.id)
-                webGameSection.querySelector("p").textContent = `${this.webGame.creatorName} has revoked the invitation for the game.`
+            if (this.webGame.creatorId === this.id) {
+                webGameSection.querySelector(".revoke-invitation").remove()
+            } else {
                 webGameSection.querySelector(".accept-invitation").remove()
                 webGameSection.querySelector(".decline-invitation").remove()
             }
+        })
+
+        this.socket.on("invitation revoked", () => {
+            const webGameSection = document.getElementById(this.webGame.id)
+            webGameSection.querySelector("p").textContent = `${this.webGame.creatorName} has revoked the invitation for the game.`
+            webGameSection.querySelector(".accept-invitation").remove()
+            webGameSection.querySelector(".decline-invitation").remove()
         })
 
         this.socket.on("ready", () => {

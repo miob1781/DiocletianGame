@@ -13,8 +13,6 @@ export class WebGame {
         this.size = size
         this.density = density
         this.id = null
-        this.status = null
-        this.winner = null
         this.socket = socket
     }
 
@@ -132,7 +130,6 @@ export class WebGame {
         axios.post(BASE_URL + "/game", webGameData, { headers })
             .then(response => {
                 this.id = response.data.id
-                this.status = "created"
 
                 webGameData.players = this.humanPlayers
                 webGameData.creator = {

@@ -14,8 +14,7 @@ h1 {
 }
 
 .dark {
-    color: white;
-    background-color: darkblue;
+    background-color: linen;
     width: fit-content;
     padding: min(3vw, 20px);
     border-radius: 3%;
@@ -49,7 +48,7 @@ header, #rules {
 
 button {
     color: white;
-    font-size: 1.1rem;
+    font-size: 1.0rem;
     padding: min(2vw, 10px);
     margin: 20px 20px 20px 0;
     border-radius: 7%;
