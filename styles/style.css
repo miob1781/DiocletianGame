@@ -3,7 +3,7 @@ html {
     box-sizing: border-box;
     padding: 0;
     margin: auto;
-    width: max(300px, 90vw);
+    width: max(300px, 40vw);
     font-size: min(4vw, 18px);
 }
 

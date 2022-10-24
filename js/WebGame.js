@@ -113,6 +113,14 @@ export class WebGame {
         const headers = this.getHeaders(storedToken)
         const playerIds = this.humanPlayers.map(player => player.id)
 
+        if (playerIds.length < 2) {
+            return errorMessageWebGameEl.textContent = "You must invite a player."
+        }
+
+        if (playerIds.length > this.numPlayers) {
+            return errorMessageWebGameEl.textContent = "You have invited too many players."
+        }
+
         const webGameData = {
             numPlayers: this.numPlayers,
             size: this.size,

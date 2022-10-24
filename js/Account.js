@@ -326,10 +326,15 @@ export class Account {
                 return errorMessagePlayerEl.textContent = "Please provide the username of a player."
             }
 
+            if (this.invitedPlayers.map(player => player.name).includes(playerToInvite)) {
+                return errorMessagePlayerEl.textContent = `You have already invited ${playerToInvite}.`
+            }
+
             if (this.connectedPlayers.map(player => player.name).includes(playerToInvite)) {
                 const playerData = this.connectedPlayers.find(player => player.name === playerToInvite)
                 this.invitedPlayers.push(playerData)
                 this.displayInvitedPlayers()
+                
             } else {
                 axios.get(BASE_URL + "/player", { headers, params: { username: playerToInvite } })
                     .then(response => {
