@@ -87,7 +87,7 @@ export class Account {
                 console.log(response.data);
                 const { connectedPlayers, gamesCreated, numGamesFinished, numGamesWon } = response.data
 
-                webIntroEl.textContent = `You have played ${numGamesFinished} game${numGamesFinished === 1 ? "" : "s"} on the web and won ${numGamesWon} of them. Try another one?`
+                webIntroEl.textContent = `You have played ${numGamesFinished} game${numGamesFinished === 1 ? "" : "s"} on the web and have won ${numGamesWon} of them. Try another one?`
 
                 gamesCreated.forEach(gameLoaded => {
                     const { id, numPlayers, size, density, players, creator } = gameLoaded
@@ -97,6 +97,12 @@ export class Account {
                     this.webGame.display()
 
                     this.socket.emit("join room", { webGameId: id })
+                })
+
+                connectedPlayers.forEach(player => {
+                    const optionEl = document.createElement("option")
+                    optionEl.value = player.name
+                    document.getElementById("players-list").appendChild(optionEl)
                 })
             })
             .catch(err => {
