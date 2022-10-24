@@ -22,7 +22,6 @@ const numPlayersInput = document.getElementById("num-players-input")
 const sizeInput = document.getElementById("size-input")
 const densityInput = document.getElementById("density-input")
 const getPlayerContainer = document.getElementById("get-player")
-const submitPlayerButton = getPlayerContainer.querySelector("button")
 const errorMessagePlayerEl = document.getElementById("error-message-get-player")
 const humanPlayersContainer = document.getElementById("human-players")
 const colorsContainer = document.getElementById("colors")
@@ -316,7 +315,7 @@ export class Account {
         })
 
         // adds listener to get input for names of players and load them from DB
-        submitPlayerButton.addEventListener("click", () => {
+        document.getElementById("add-player").addEventListener("click", () => {
             const playerToInviteInput = document.getElementById("player-input")
             const playerToInvite = playerToInviteInput.value
             playerToInviteInput.value = ""
@@ -354,6 +353,12 @@ export class Account {
                         errorMessagePlayerEl.textContent = "The user could not be found."
                     })
             }
+        })
+
+        // resets list of invited players
+        document.getElementById("reset-players").addEventListener("click", () => {
+            this.invitedPlayers = []
+            humanPlayersContainer.querySelector("p").remove()
         })
 
         // adds listener to create game
