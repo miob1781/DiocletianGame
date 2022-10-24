@@ -41,6 +41,7 @@ export class Account {
         this.id = null
         this.username = null
         this.invitedPlayers = []
+        this.connectedPlayers = null
         this.createdGame = null
         this.invitedGames = null
         this.oldGames = null
@@ -104,6 +105,7 @@ export class Account {
                     optionEl.value = player.name
                     document.getElementById("players-list").appendChild(optionEl)
                 })
+                this.connectedPlayers = connectedPlayers
             })
             .catch(err => {
                 console.log("error while loading games: ", err);
@@ -193,6 +195,18 @@ export class Account {
                 const message = err.response?.data?.errorMessage ? err.response?.data?.errorMessage : "Something has gone wrong."
                 errorMessageAccountEl.textContent = message
             })
+    }
+
+    displayInvitedPlayers() {
+        const playersString = this.invitedPlayers.reduce((currString, player) => {
+            return currString + player.name + ", "
+        }, "Invited players: ").slice(0, -2)
+        
+        const playerNamesEl = document.createElement("p")
+        playerNamesEl.className = "dark"
+        playerNamesEl.textContent = playersString
+        humanPlayersContainer.replaceChildren(playerNamesEl)
+        errorMessagePlayerEl.textContent = ""
     }
 
     addListeners() {
@@ -312,35 +326,29 @@ export class Account {
                 return errorMessagePlayerEl.textContent = "Please provide the username of a player."
             }
 
-            axios.get(BASE_URL + "/player", { headers, params: { username: playerToInvite } })
-                .then(response => {
-                    if (response.data.id) {
-                        const playerData = {
-                            id: response.data.id,
-                            name: playerToInvite
+            if (this.connectedPlayers.map(player => player.name).includes(playerToInvite)) {
+                const playerData = this.connectedPlayers.find(player => player.name === playerToInvite)
+                this.invitedPlayers.push(playerData)
+                this.displayInvitedPlayers()
+            } else {
+                axios.get(BASE_URL + "/player", { headers, params: { username: playerToInvite } })
+                    .then(response => {
+                        if (response.data.id) {
+                            const playerData = {
+                                id: response.data.id,
+                                name: playerToInvite
+                            }
+                            this.invitedPlayers.push(playerData)
+                            this.displayInvitedPlayers()
+                        } else if (response.data?.errorMessage) {
+                            errorMessagePlayerEl.textContent = response.data?.errorMessage
                         }
-                        
-                        this.invitedPlayers.push(playerData)
-                        
-                        const playersString = this.invitedPlayers.reduce((currString, player) => {
-                            return currString + player.name + ", "
-                        }, "Invited players: ").slice(0, -2)
-                        console.log(this.invitedPlayers, playersString);
-                        const playerNamesEl = document.createElement("p")
-                        playerNamesEl.className = "dark"
-                        playerNamesEl.textContent = playersString
-                        humanPlayersContainer.replaceChildren(playerNamesEl)
-
-                        errorMessagePlayerEl.textContent = ""
-
-                    } else if (response.data?.errorMessage) {
-                        errorMessagePlayerEl.textContent = response.data?.errorMessage
-                    }
-                })
-                .catch(err => {
-                    console.log("Error while loading player by username: ", err);
-                    errorMessagePlayerEl.textContent = "The user could not be found."
-                })
+                    })
+                    .catch(err => {
+                        console.log("Error while loading player by username: ", err);
+                        errorMessagePlayerEl.textContent = "The user could not be found."
+                    })
+            }
         })
 
         // adds listener to create game
