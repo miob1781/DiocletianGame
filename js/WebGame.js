@@ -19,12 +19,6 @@ export class WebGame {
     display() {
         const webGamesContainer = document.getElementById("web-games")
 
-        for (const child of webGamesContainer.children) {
-            if (!child.querySelector(".accept-invitation")) {
-                child.remove()
-            }
-        }
-
         const webGameSection = document.createElement("section")
         webGameSection.id = this.id
         const textEl = document.createElement("p")
@@ -41,7 +35,7 @@ export class WebGame {
             Human players: ${humanPlayersString}<br>
             ${this.creatorName === this.playerName ? "Waiting for players to join" : "Do you want to join?"}
             `
-        webGameSection.appendChild(textEl)
+        webGameSection.replaceChildren(textEl)
 
         if (this.creatorName !== this.playerName) {
             const acceptButton = document.createElement("button")
@@ -104,7 +98,7 @@ export class WebGame {
             document.getElementById("board-container").style.display = "none"
         }
 
-        webGamesContainer.appendChild(webGameSection)
+        webGamesContainer.replaceChildren(webGameSection)
         webGamesContainer.style.display = "block"
         document.getElementById("create-game").style.display = "none"
         errorMessageWebGameEl.textContent = ""

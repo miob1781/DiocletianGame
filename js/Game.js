@@ -54,7 +54,6 @@ export class Game {
         this.fields = []
         this.selectedPlayers.forEach(player => player.fields = [])
 
-        this.boardEl.remove()
         const boardEl = document.createElement("div")
         boardEl.id = "board"
         this.boardEl = boardEl
@@ -66,7 +65,7 @@ export class Game {
 
         const boardContainer = document.getElementById("board-container")
         boardContainer.style.display = "block"
-        boardContainer.appendChild(boardEl)
+        boardContainer.replaceChildren(boardEl)
 
         let k = 0
         for (let i = 1; i <= this.size; i++) {
@@ -140,12 +139,11 @@ export class Game {
     }
 
     createDisplay() {
-        this.displayEl.remove()
         const displayContainer = document.getElementById("display-container")
         displayContainer.style.display = "block"
         const displayEl = document.createElement("display")
         displayEl.id = "display"
-        displayContainer.appendChild(displayEl)
+        displayContainer.replaceChildren(displayEl)
 
         this.selectedPlayers.forEach(player => {
             player.setPlayerDisplayEl()
@@ -223,7 +221,7 @@ export class Game {
         const winnerMessageEl = document.getElementById("winner-message")
         const winnerName = this.remainingPlayers[0].name
 
-        if (this.playerIsCreator) {
+        if (this.webGameId && this.playerIsCreator) {
             const storedToken = localStorage.getItem("authToken")
             const headers = { Authorization: `Bearer ${storedToken}` }
             const winner = this.remainingPlayers[0].isComputer ? "computer" : winnerName
