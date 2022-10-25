@@ -386,9 +386,11 @@ export class Account {
                 density = "dense"
             }
 
-            // check if provided values are valid
-            if ((size === 5 && numPlayers >= 5 && (density === "dense" || density === "medium"))
-                || (size === 4 && ((numPlayers >= 3 && (density === "dense" || density === "medium")) || numPlayers === 6))) {
+            // checks if provided values are valid
+            if (
+                (size === 5 && numPlayers >= 5 && (density === "dense" || density === "medium")) ||
+                (size === 4 && ((numPlayers >= 3 && (density === "dense" || density === "medium")) || numPlayers === 6))
+            ) {
                 const errorMessage = "The selected values are not valid. Try selecting less players, a greater size, or less density."
                 return errorMessageCreateGameEl.textContent = errorMessage
             } else {

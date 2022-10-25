@@ -76,7 +76,7 @@ export class WebGame {
             webGameSection.appendChild(acceptButton)
             webGameSection.appendChild(declineButton)
 
-        // displays button specific to the invited players
+            // displays button specific to the invited players
         } else {
             const revokeButton = document.createElement("button")
             revokeButton.className = "revoke-invitation"

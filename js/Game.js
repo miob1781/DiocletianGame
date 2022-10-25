@@ -112,15 +112,19 @@ export class Game {
                 this.assignPlayerToField(player, 1)
                 this.assignPlayerToField(player, 1)
 
-            } else if ((this.size <= 7 && this.density === "medium")
-                || (this.size > 7 && this.density === "sparse")) {
+            } else if (
+                (this.size <= 7 && this.density === "medium") ||
+                (this.size > 7 && this.density === "sparse")
+            ) {
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 2)
                 this.assignPlayerToField(player, 1)
                 this.assignPlayerToField(player, 1)
 
-            } else if ((this.size <= 7 && this.density === "dense")
-                || (this.size > 7 && this.density === "medium")) {
+            } else if (
+                (this.size <= 7 && this.density === "dense") ||
+                (this.size > 7 && this.density === "medium")
+            ) {
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 2)
                 this.assignPlayerToField(player, 2)
