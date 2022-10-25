@@ -12,6 +12,7 @@ export class Player {
         this.playerDisplayEl = null
     }    
 
+    // adds display for participating players and their values
     setPlayerDisplayEl() {
         const playerDisplayEl = document.createElement("div")
         playerDisplayEl.className = "display-player"
@@ -26,7 +27,6 @@ export class Player {
         playerFieldsNumEl.className = "player-num"
         playerFieldsValueEl.className = "player-value"
 
-        // displays name
         playerNameEl.textContent = this.name
 
         playerDisplayEl.appendChild(playerNameEl)
@@ -36,6 +36,7 @@ export class Player {
         this.playerDisplayEl = playerDisplayEl
     }
     
+    // calculates the number of fields and the total number of field values of a player
     getPlayerValues() {
         const playerFieldsNumEl = this.playerDisplayEl.querySelector(".player-num")
         const playerFieldsValueEl = this.playerDisplayEl.querySelector(".player-value")
@@ -45,7 +46,7 @@ export class Player {
         const totalValue = this.fields.reduce((acc, curr) => {
             return acc + curr.value
         }, 0)
-        
+
         playerFieldsValueEl.textContent = "Value: " + totalValue
         this.totalValue = totalValue
     }

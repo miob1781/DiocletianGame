@@ -13,6 +13,7 @@ h1 {
     text-transform: uppercase;
 }
 
+/* class for (mostly) dynamic text fields */
 .dark {
     background-color: linen;
     width: fit-content;
@@ -36,10 +37,6 @@ header, #rules {
     display: none;
 }
 
-#error-message-get-player {
-    color: red;
-}
-
 #button-container {
     display: flex;
     max-width: 450px;
@@ -48,7 +45,6 @@ header, #rules {
 
 button {
     color: white;
-    font-size: 1.0rem;
     padding: min(2vw, 10px);
     margin: 20px 20px 20px 0;
     border-radius: 7%;

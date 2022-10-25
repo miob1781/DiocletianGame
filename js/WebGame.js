@@ -17,6 +17,7 @@ export class WebGame {
         this.socket = socket
     }
 
+    // displays the messages and buttons to start a new game on the web
     display() {
         const webGameSection = document.createElement("section")
         webGameSection.id = this.id
@@ -36,6 +37,7 @@ export class WebGame {
             `
         webGameSection.replaceChildren(textEl)
 
+        // displays buttons specific to the creator of a game
         if (this.creatorName !== this.playerName) {
             const acceptButton = document.createElement("button")
             acceptButton.className = "accept-invitation"
@@ -74,6 +76,7 @@ export class WebGame {
             webGameSection.appendChild(acceptButton)
             webGameSection.appendChild(declineButton)
 
+        // displays button specific to the invited players
         } else {
             const revokeButton = document.createElement("button")
             revokeButton.className = "revoke-invitation"
@@ -97,25 +100,30 @@ export class WebGame {
             document.getElementById("board-container").style.display = "none"
         }
 
+        // final actions for all players
         webGamesContainer.replaceChildren(webGameSection)
         webGamesContainer.style.display = "block"
         document.getElementById("create-game").style.display = "none"
         errorMessageWebGameEl.textContent = ""
     }
 
+    // gets the header values for authentication
     getHeaders(storedToken) {
         return { Authorization: `Bearer ${storedToken}` }
     }
 
+    // posts a new web game
     postGame() {
         const storedToken = localStorage.getItem("authToken")
         const headers = this.getHeaders(storedToken)
         const playerIds = this.humanPlayers.map(player => player.id)
 
+        // error handler if no players is invited
         if (playerIds.length < 2) {
             return errorMessageWebGameEl.textContent = "You must invite a player."
         }
 
+        // error handler if too many players are invited
         if (playerIds.length > this.numPlayers) {
             return errorMessageWebGameEl.textContent = "You have invited too many players."
         }
@@ -145,7 +153,6 @@ export class WebGame {
                     webGameData
                 })
 
-                // displays created webGame
                 this.display()
             })
             .catch(err => {
@@ -155,6 +162,7 @@ export class WebGame {
             })
     }
 
+    // deletes a web game when a player declined to participate or the creator revoked the invitation
     deleteGame() {
         const storedToken = localStorage.getItem("storedToken")
         const headers = this.getHeaders(storedToken)

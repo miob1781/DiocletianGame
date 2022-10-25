@@ -47,6 +47,7 @@ export class Account {
         this.isLoggedIn = localStorage.getItem("authToken") ? true : false
     }
 
+    // hides or opens elements during authentication depending on whether the player is logged in
     hideOrOpen() {
         if (this.isLoggedIn) {
             loginContainer.style.display = "none"
@@ -59,6 +60,7 @@ export class Account {
             colorsContainer.style.display = "none"
             submitGameButton.textContent = "Send Invitation"
             this.gameType = "web"
+
         } else {
             loginContainer.style.display = "block"
             logoutButton.style.display = "none"
@@ -71,13 +73,16 @@ export class Account {
         }
     }
 
+    // gets header values for authentication
     getHeaders(storedToken) {
         return { Authorization: `Bearer ${storedToken}` }
     }
 
+    // loads the values of old games to get the connected players, the games open for partipation and the number of games played and won
     loadGames() {
         const storedToken = localStorage.getItem("authToken")
         const headers = this.getHeaders(storedToken)
+
         axios.get(BASE_URL + "/game/", { headers, params: { playerId: this.id } })
             .then(response => {
                 const { connectedPlayers, gamesCreated, numGamesFinished, numGamesWon } = response.data
@@ -99,6 +104,7 @@ export class Account {
                     optionEl.value = player.name
                     document.getElementById("players-list").appendChild(optionEl)
                 })
+
                 this.connectedPlayers = connectedPlayers
             })
             .catch(err => {
@@ -106,14 +112,15 @@ export class Account {
             })
     }
 
+    // starts a new game with default values after authentication
     startGame() {
-        // starting a new game
         const game = new Game(4, 6, "sparse", ["red"], this.username)
         game.createBoard()
         game.createDisplay()
         game.start()
     }
 
+    // handles logout
     logout() {
         localStorage.removeItem("authToken")
         this.id = null
@@ -132,15 +139,15 @@ export class Account {
         }
 
         this.hideOrOpen()
-
-        // starts a new game after logout
         this.startGame()
     }
 
+    // authenticates a user and performs actions after authentication
     authenticateUser() {
         const storedToken = localStorage.getItem("authToken")
         if (storedToken) {
             const headers = this.getHeaders(storedToken)
+
             axios.get(BASE_URL + "/player/verify", { headers })
                 .then(response => {
                     const { id, username, createdGame, invitedGames, oldGames } = response.data
@@ -177,6 +184,7 @@ export class Account {
         }
     }
 
+    // function used during authentication for either login or signup
     handleLoginOrSignupRequest(url, data) {
         axios.post(url, data)
             .then(response => {
@@ -191,6 +199,7 @@ export class Account {
             })
     }
 
+    // displays invited players for a web game
     displayInvitedPlayers() {
         const playersString = this.invitedPlayers.reduce((currString, player) => {
             return currString + player.name + ", "
@@ -233,7 +242,9 @@ export class Account {
         })
 
         // adds listener to logout
-        logoutButton.addEventListener("click", () => this.logout())
+        logoutButton.addEventListener("click", () => {
+            this.logout()
+        })
 
         // adds listener to open or close rules
         rulesButton.addEventListener("click", () => {
@@ -263,7 +274,7 @@ export class Account {
             soloIntroEl.style.display = "none"
         })
 
-        // adds listeners to display selected values of range inputs
+        // adds listener to display selected number of players
         numPlayersInput.addEventListener("input", () => {
             document.getElementById("num-players-display").textContent = numPlayersInput.value
 
@@ -272,21 +283,25 @@ export class Account {
                 greenCheckboxContainer.style.display = "none"
                 orangeCheckboxContainer.style.display = "none"
                 purpleCheckboxContainer.style.display = "none"
+
             } else if (numPlayersInput.value === "3") {
                 yellowCheckboxContainer.style.display = "block"
                 greenCheckboxContainer.style.display = "none"
                 orangeCheckboxContainer.style.display = "none"
                 purpleCheckboxContainer.style.display = "none"
+
             } else if (numPlayersInput.value === "4") {
                 yellowCheckboxContainer.style.display = "block"
                 greenCheckboxContainer.style.display = "block"
                 orangeCheckboxContainer.style.display = "none"
                 purpleCheckboxContainer.style.display = "none"
+
             } else if (numPlayersInput.value === "5") {
                 yellowCheckboxContainer.style.display = "block"
                 greenCheckboxContainer.style.display = "block"
                 orangeCheckboxContainer.style.display = "block"
                 purpleCheckboxContainer.style.display = "none"
+
             } else {
                 yellowCheckboxContainer.style.display = "block"
                 greenCheckboxContainer.style.display = "block"
@@ -295,10 +310,12 @@ export class Account {
             }
         })
 
+        // adds listener to display selected size of board
         sizeInput.addEventListener("input", () => {
             document.getElementById("size-display").textContent = sizeInput.value
         })
 
+        // adds listener to display selected density
         densityInput.addEventListener("input", () => {
             if (densityInput.value === "1") {
                 document.getElementById("density-display").textContent = "Sparse"
@@ -360,7 +377,6 @@ export class Account {
         submitGameButton.addEventListener("click", () => {
             const numPlayers = Number(numPlayersInput.value)
             const size = Number(sizeInput.value)
-
             let density
             if (densityInput.value === "1") {
                 density = "sparse"
@@ -379,6 +395,7 @@ export class Account {
                 errorMessageCreateGameEl.textContent = ""
             }
 
+            // creates a new solo game
             if (this.gameType === "solo") {
                 const humanPlayersNames = []
                 const checkboxContainers = [
@@ -404,6 +421,7 @@ export class Account {
                 game.createDisplay()
                 game.start()
 
+            // creates a new web game
             } else {
                 const playerData = {
                     id: this.id,
@@ -412,13 +430,15 @@ export class Account {
 
                 const humanPlayers = [...this.invitedPlayers, playerData]
                 this.webGame = new WebGame(this.id, this.username, this.id, this.username, numPlayers, size, density, humanPlayers, this.socket)
-
+                
                 this.webGame.postGame()
             }
         })
     }
 
     addSocketListeners() {
+
+        // socket listener for invited players if player is invited to a new web game
         this.socket.on("invitation", msg => {
             const { webGameId, webGameData } = msg
             const { numPlayers, size, density, players, creator } = webGameData
@@ -430,6 +450,7 @@ export class Account {
             this.socket.emit("join room", { webGameId })
         })
 
+        // socket listener for the creator if a player has declined the invitation
         this.socket.on("game declined", msg => {
             const { playerName } = msg
 
@@ -444,6 +465,7 @@ export class Account {
             }
         })
 
+        // socket listener for invited players if the creator has revoked the invitation
         this.socket.on("invitation revoked", () => {
             const webGameSection = document.getElementById(this.webGame.id)
             webGameSection.querySelector("p").textContent = `${this.webGame.creatorName} has revoked the invitation for the game.`
@@ -451,13 +473,13 @@ export class Account {
             webGameSection.querySelector(".decline-invitation").remove()
         })
 
+        // socket listener for the creator if all players are ready to start
         this.socket.on("ready", () => {
             const { numPlayers, size, density, humanPlayers, playerName, id, creatorId } = this.webGame
             if (this.id === creatorId) {
                 const humanPlayersNames = humanPlayers.map(player => player.name)
 
                 this.game = new Game(numPlayers, size, density, humanPlayersNames, playerName, id, this.socket)
-
                 this.game.createBoard()
                 this.game.createDisplay()
 
@@ -486,6 +508,7 @@ export class Account {
             }
         })
 
+        // socket listener for invited players if the creator has sent the initial values of the board
         this.socket.on("set game", msg => {
             const { selectedPlayersColors, fieldData } = msg
             const { numPlayers, size, density, humanPlayers, playerName, id } = this.webGame
@@ -523,6 +546,7 @@ export class Account {
             this.game.start()
         })
 
+        // socket listener for all players if a move has been done
         this.socket.on("move", msg => {
             const { move } = msg
             this.game.setIsOn(move)

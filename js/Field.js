@@ -14,6 +14,7 @@ export class Field {
         this.game = null
     }    
     
+    // gets the neighboring fields of a field
     getNeighbors(){
         const row = this.row
         const col = this.col
@@ -39,6 +40,7 @@ export class Field {
         }
     }    
     
+    // sets player, value and style of a field
     setField(player, value) {
         if (this.player && this.player.color !== player.color) {
             this.player.filter(field => field.id !== this.id)
@@ -63,6 +65,7 @@ export class Field {
         }
     }
     
+    // selects the field of a move
     selectField(clicking) {
         if (!this.player) return
         if (clicking && (this.player.isComputer || this.player.isExternalPlayer)) return
@@ -80,11 +83,12 @@ export class Field {
         }    
     }    
     
+    // increases the value of a field
     increaseValue() {
         if(!this.game.gameOn){
             return
         }
-        
+
         this.value++
         this.numEl.textContent = this.value
         this.numEl.style.fontSize = styles.fontSize[this.value.toFixed()]
@@ -94,6 +98,7 @@ export class Field {
         }    
     }    
     
+    // selects the neighboring fields if the increased value of a field is greater than the number of neighbors
     overflow(){
         this.value = 1
         this.numEl.textContent = 1
