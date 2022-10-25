@@ -3,10 +3,12 @@ import { Field } from "./Field.js"
 import { Player } from "./Player.js"
 import { selectRandomElement, shuffleArray } from "./helper_functions.js"
 
+const displayContainer = document.getElementById("display-container")
+const boardContainer = document.getElementById("board-container")
+const winnerMessageEl = document.getElementById("winner-message")
+
 export class Game {
     constructor(numPlayers, size, density, humanPlayersNames, username = null, webGameId = null, socket = null) {
-        this.boardEl = document.getElementById("board")
-        this.displayEl = document.getElementById("display")
         this.numPlayers = numPlayers
         this.size = size
         this.density = density
@@ -34,6 +36,7 @@ export class Game {
                         player.name = this.username
                     }
                 }
+
             } else {
                 if (i < this.humanPlayersNames.length) {
                     player.name = this.humanPlayersNames[i]
@@ -56,16 +59,9 @@ export class Game {
 
         const boardEl = document.createElement("div")
         boardEl.id = "board"
-        this.boardEl = boardEl
-
         boardEl.style.width = `min(${this.size * 50}px, 90vw)`
-        boardEl.style.height = `min(${this.size * 50}px, 90vw)`
         boardEl.style.gridTemplateColumns = `repeat(${this.size}, 1fr)`
         boardEl.style.gridTemplateRows = `repeat(${this.size}, 1fr)`
-
-        const boardContainer = document.getElementById("board-container")
-        boardContainer.style.display = "block"
-        boardContainer.replaceChildren(boardEl)
 
         let k = 0
         for (let i = 1; i <= this.size; i++) {
@@ -85,7 +81,7 @@ export class Game {
                     field.selectField("clicking")
                 })
 
-                this.boardEl.appendChild(fieldEl)
+                boardEl.appendChild(fieldEl)
 
                 const numEl = document.createElement("span")
                 numEl.className = "num"
@@ -100,32 +96,31 @@ export class Game {
 
         this.fields.forEach(field => field.getNeighbors())
         this.addPlayers()
+
+        boardContainer.replaceChildren(boardEl)
+        boardContainer.style.display = "block"
     }
 
     addPlayers() {
-        const size = this.size
-        const players = this.selectedPlayers
-        const density = this.density
-
-        players.forEach(player => {
-            if (size <= 7 && density === "sparse") {
+        this.selectedPlayers.forEach(player => {
+            if (this.size <= 7 && this.density === "sparse") {
                 this.assignPlayerToField(player, 2)
                 this.assignPlayerToField(player, 1)
                 this.assignPlayerToField(player, 1)
-            } else if ((size <= 7 && density === "medium")
-                || (size > 7 && density === "sparse")) {
+            } else if ((this.size <= 7 && this.density === "medium")
+                || (this.size > 7 && this.density === "sparse")) {
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 2)
                 this.assignPlayerToField(player, 1)
                 this.assignPlayerToField(player, 1)
-            } else if ((size <= 7 && density === "dense")
-                || (size > 7 && density === "medium")) {
+            } else if ((this.size <= 7 && this.density === "dense")
+                || (this.size > 7 && this.density === "medium")) {
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 2)
                 this.assignPlayerToField(player, 2)
                 this.assignPlayerToField(player, 1)
                 this.assignPlayerToField(player, 1)
-            } else if (size > 7 && density === "dense") {
+            } else if (this.size > 7 && this.density === "dense") {
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 2)
@@ -139,19 +134,17 @@ export class Game {
     }
 
     createDisplay() {
-        const displayContainer = document.getElementById("display-container")
-        displayContainer.style.display = "block"
         const displayEl = document.createElement("display")
         displayEl.id = "display"
         displayContainer.replaceChildren(displayEl)
-
+        
         this.selectedPlayers.forEach(player => {
             player.setPlayerDisplayEl()
             displayEl.appendChild(player.playerDisplayEl)
             player.getPlayerValues()
         })
 
-        this.displayEl = displayEl
+        displayContainer.style.display = "block"
     }
 
     assignPlayerToField(player, value) {
@@ -166,7 +159,6 @@ export class Game {
     }
 
     start() {
-        const winnerMessageEl = document.getElementById("winner-message")
         winnerMessageEl.textContent = ""
 
         this.remainingPlayers = this.selectedPlayers
@@ -174,7 +166,7 @@ export class Game {
         this.gameOn = true
         this.setIsOn()
 
-        // opens display and board
+        // opens display and board if closed
         document.getElementById("display").style.display = "flex"
         document.getElementById("board").style.display = "grid"
 
@@ -218,7 +210,6 @@ export class Game {
     }
 
     end() {
-        const winnerMessageEl = document.getElementById("winner-message")
         const winnerName = this.remainingPlayers[0].name
 
         if (this.webGameId && this.playerIsCreator) {

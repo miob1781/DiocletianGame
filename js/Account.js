@@ -5,13 +5,9 @@ import { BASE_URL } from "./consts.js"
 
 // elements in #account
 const signupContainer = document.getElementById("signup")
-const submitSignupButton = signupContainer.querySelector("button")
-const openSignupButton = document.getElementById("open-signup")
 const loginContainer = document.getElementById("login")
-const submitLoginButton = loginContainer.querySelector("button")
 const logoutButton = document.getElementById("logout")
 const errorMessageAccountEl = document.getElementById("error-message-account")
-const soloGameButton = document.getElementById("solo-game-button")
 const webGameButton = document.getElementById("web-game-button")
 const rulesButton = document.getElementById("rules-button")
 const playerNameHeading = document.getElementById("player-name")
@@ -84,7 +80,6 @@ export class Account {
         const headers = this.getHeaders(storedToken)
         axios.get(BASE_URL + "/game/", { headers, params: { playerId: this.id } })
             .then(response => {
-                console.log(response.data);
                 const { connectedPlayers, gamesCreated, numGamesFinished, numGamesWon } = response.data
 
                 webIntroEl.textContent = `You have played ${numGamesFinished} game${numGamesFinished === 1 ? "" : "s"} on the web and have won ${numGamesWon} of them. Try another one?`
@@ -200,7 +195,7 @@ export class Account {
         const playersString = this.invitedPlayers.reduce((currString, player) => {
             return currString + player.name + ", "
         }, "Invited players: ").slice(0, -2)
-        
+
         const playerNamesEl = document.createElement("p")
         playerNamesEl.className = "dark"
         playerNamesEl.textContent = playersString
@@ -211,12 +206,12 @@ export class Account {
     addListeners() {
 
         // adds listener to open the signup form
-        openSignupButton.addEventListener("click", () => {
+        document.getElementById("open-signup").addEventListener("click", () => {
             signupContainer.style.display = "block"
         })
 
         // adds listener to signup
-        submitSignupButton.addEventListener("click", () => {
+        signupContainer.querySelector("button").addEventListener("click", () => {
             const username = document.getElementById("signup-username").value
             const password = document.getElementById("signup-password").value
 
@@ -227,7 +222,7 @@ export class Account {
         })
 
         // adds listener to login
-        submitLoginButton.addEventListener("click", () => {
+        loginContainer.querySelector("button").addEventListener("click", () => {
             const username = document.getElementById("login-username").value
             const password = document.getElementById("login-password").value
 
@@ -247,7 +242,7 @@ export class Account {
         })
 
         // adds listener to create new solo game
-        soloGameButton.addEventListener("click", () => {
+        document.getElementById("solo-game-button").addEventListener("click", () => {
             this.gameType = "solo"
             createGameContainer.style.display = "block"
             getPlayerContainer.style.display = "none"
@@ -333,7 +328,7 @@ export class Account {
                 const playerData = this.connectedPlayers.find(player => player.name === playerToInvite)
                 this.invitedPlayers.push(playerData)
                 this.displayInvitedPlayers()
-                
+
             } else {
                 axios.get(BASE_URL + "/player", { headers, params: { username: playerToInvite } })
                     .then(response => {
@@ -401,8 +396,8 @@ export class Account {
                         humanPlayersNames.push(checkbox.name)
                     }
                 })
-                const username = humanPlayersNames.length === 1 ? this.username : null
 
+                const username = humanPlayersNames.length === 1 ? this.username : null
                 const game = new Game(numPlayers, size, density, humanPlayersNames, username)
 
                 game.createBoard()

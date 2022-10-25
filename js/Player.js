@@ -45,6 +45,7 @@ export class Player {
         const totalValue = this.fields.reduce((acc, curr) => {
             return acc + curr.value
         }, 0)
+        
         playerFieldsValueEl.textContent = "Value: " + totalValue
         this.totalValue = totalValue
     }

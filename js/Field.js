@@ -53,6 +53,7 @@ export class Field {
             this.fieldEl.style.backgroundColor = styles.backgroundColor[this.player.color]
             this.fieldEl.style.color = styles.color[this.player.color]
             this.numEl.style.fontSize = styles.fontSize[this.value.toFixed()]
+
         } else {
             this.value = 0
             this.numEl.textContent = ""
@@ -83,9 +84,11 @@ export class Field {
         if(!this.game.gameOn){
             return
         }
+        
         this.value++
         this.numEl.textContent = this.value
         this.numEl.style.fontSize = styles.fontSize[this.value.toFixed()]
+
         if(this.value > this.neighbors.length){
             this.overflow()
         }    
@@ -98,6 +101,7 @@ export class Field {
         this.neighbors.forEach(neighbor => {
             if(!neighbor.player || neighbor.player.color !== this.player.color){
                 let oldOwner
+
                 if(neighbor.player){
                     oldOwner = neighbor.player
                     neighbor.player.fields = neighbor.player.fields.filter(field => field.id !== neighbor.id)
@@ -106,6 +110,7 @@ export class Field {
                 neighbor.player.fields.push(neighbor)
                 neighbor.fieldEl.style.backgroundColor = styles.backgroundColor[this.player.color]
                 neighbor.fieldEl.style.color = styles.color[this.player.color]
+
                 if(oldOwner){
                     this.game.checkRemainingPlayers(oldOwner)
                 }    

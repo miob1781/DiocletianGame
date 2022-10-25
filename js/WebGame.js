@@ -1,5 +1,6 @@
 import { BASE_URL } from "./consts.js"
 
+const webGamesContainer = document.getElementById("web-games")
 const errorMessageWebGameEl = document.getElementById("web-game-error-message")
 
 export class WebGame {
@@ -17,8 +18,6 @@ export class WebGame {
     }
 
     display() {
-        const webGamesContainer = document.getElementById("web-games")
-
         const webGameSection = document.createElement("section")
         webGameSection.id = this.id
         const textEl = document.createElement("p")
