@@ -164,7 +164,7 @@ export class WebGame {
 
     // deletes a web game when a player declined to participate or the creator revoked the invitation
     deleteGame() {
-        const storedToken = localStorage.getItem("storedToken")
+        const storedToken = localStorage.getItem("authToken")
         const headers = this.getHeaders(storedToken)
 
         axios.delete(BASE_URL + "/game/" + this.id, { headers })
