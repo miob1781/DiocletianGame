@@ -81,7 +81,12 @@ export class Field {
                     (this.game.playerIsCreator && this.player.isComputer)
                 )
             ) {
-                this.game.socket.emit("move", { webGameId: this.game.webGameId, move: this.id, playerOnColor: this.player.color })
+                const move = {
+                    fieldId: this.id,
+                    moveNum: this.game.moveNum
+                }
+
+                this.game.socket.emit("move", { webGameId: this.game.webGameId, move })
             }
 
             this.game.getNextPlayer()

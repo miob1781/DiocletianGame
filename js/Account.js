@@ -551,7 +551,23 @@ export class Account {
         // socket listener for all players if a move has been done
         this.socket.on("move", msg => {
             const { move } = msg
-            this.game.setIsOn(move)
+            
+            move.moveNum === this.game.moveNum - 1
+                ? this.game.setIsOn(move.fieldId)
+                : this.addSocketListeners.emit("request missing moves", { webGameId: this.game.webGameId, lastMoveNum: this.game.moveNum })
+        })
+
+        // socket listener for player who has requested missing moves
+        this.socket.on("send missing moves", msg => {
+            let { missingMoves } = msg
+
+            while (missingMoves.length > 0) {
+                const smallestMoveNum = Math.min(...missingMoves.map(move => move.moveNum))
+                const fieldId = missingMoves.find(move => move.moveNum === smallestMoveNum).fieldId
+                this.game.setIsOn(fieldId)
+                missingMoves = missingMoves.filter(move => move.moveNum === smallestMoveNum)
+            }
+
         })
     }
 }

@@ -20,6 +20,7 @@ export class Game {
         this.selectedPlayers = []
         this.remainingPlayers = []
         this.playerOn = null
+        this.moveNum = 0
         this.gameOn = false
         this.playerIsCreator = true
     }
@@ -189,12 +190,13 @@ export class Game {
     }
 
     // sets a player on so that the player can move
-    setIsOn(move) {
+    setIsOn(fieldId) {
         this.playerOn.isOn = true
         this.playerOn.playerDisplayEl.style.border = "4px dashed gold"
+        this.moveNum++
 
-        if (typeof move === "number") {
-            const selectedField = this.fields.find(field => field.id === move)
+        if (typeof fieldId === "number") {
+            const selectedField = this.fields.find(field => field.id === fieldId)
             selectedField.selectField()
         } else if (this.playerOn.isComputer && this.playerIsCreator) {
             const selectedField = selectRandomElement(this.playerOn.fields)
@@ -236,6 +238,8 @@ export class Game {
             axios.put(BASE_URL + "/game/" + this.webGameId, { winner }, { headers })
                 .then(() => console.log("game has ended"))
                 .catch(err => console.log("error while updating game: ", err))
+
+            this.socket.emit("end", { webGameId: this.webGameId })
         }
 
         winnerMessageEl.textContent = winnerName === "You" ? winnerName + " have won!" : winnerName + " has won!"
