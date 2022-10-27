@@ -552,7 +552,7 @@ export class Account {
         this.socket.on("move", msg => {
             const { move } = msg
             
-            move.moveNum === this.game.moveNum - 1
+            move.moveNum === this.game.moveNum + 1
                 ? this.game.setIsOn(move.fieldId)
                 : this.addSocketListeners.emit("request missing moves", { webGameId: this.game.webGameId, lastMoveNum: this.game.moveNum })
         })
