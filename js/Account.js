@@ -556,9 +556,13 @@ export class Account {
             console.log("submitted moveNum: ", move.moveNum);
             console.log("own moveNum: ", this.game.moveNum);
             
-            move.moveNum === this.game.moveNum + 1
+            move.moveNum === this.game.moveNum
                 ? this.game.setIsOn(move.fieldId)
-                : this.socket.emit("request missing moves", { webGameId: this.game.webGameId, lastMoveNum: this.game.moveNum })
+                : this.socket.emit("request missing moves", {
+                    webGameId: this.game.webGameId,
+                    playerId: this.id,
+                    lastMoveNum: this.game.moveNum
+                })
         })
 
         // socket listener for player who has requested missing moves
