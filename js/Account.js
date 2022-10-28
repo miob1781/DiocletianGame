@@ -551,6 +551,10 @@ export class Account {
         // socket listener for all players if a move has been done
         this.socket.on("move", msg => {
             const { move } = msg
+
+            console.log("got move");
+            console.log("submitted moveNum: ", move.moveNum);
+            console.log("own moveNum: ", this.game.moveNum);
             
             move.moveNum === this.game.moveNum + 1
                 ? this.game.setIsOn(move.fieldId)
@@ -561,11 +565,14 @@ export class Account {
         this.socket.on("send missing moves", msg => {
             let { missingMoves } = msg
 
+            console.log("got missing moves: ", missingMoves);
+
             while (missingMoves.length > 0) {
                 const smallestMoveNum = Math.min(...missingMoves.map(move => move.moveNum))
                 const fieldId = missingMoves.find(move => move.moveNum === smallestMoveNum).fieldId
                 this.game.setIsOn(fieldId)
                 missingMoves = missingMoves.filter(move => move.moveNum === smallestMoveNum)
+                console.log("missing moves after one loop iteration: ", missingMoves);
             }
 
         })
