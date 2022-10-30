@@ -573,7 +573,7 @@ export class Account {
             this.game.moves.push(move)
 
             // plays stored moves in correct order
-            playMoves(this)
+            playMoves(this, move.moveNum)
         })
     }
 }
