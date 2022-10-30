@@ -87,6 +87,7 @@ export class Field {
                 }
 
                 this.game.socket.emit("move", { webGameId: this.game.webGameId, move })
+                this.game.moveNum++
             }
 
             this.game.getNextPlayer()

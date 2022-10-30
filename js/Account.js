@@ -568,7 +568,7 @@ export class Account {
             console.log("submitted moveNum: ", move.moveNum);
             console.log("own moveNum: ", this.game.moveNum);
             
-            move.moveNum === this.game.moveNum
+            move.moveNum === this.game.moveNum - 1
                 ? this.game.setIsOn(move.fieldId)
                 : this.socket.emit("request missing moves", {
                     webGameId: this.game.webGameId,

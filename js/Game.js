@@ -193,7 +193,6 @@ export class Game {
     setIsOn(fieldId) {
         this.playerOn.isOn = true
         this.playerOn.playerDisplayEl.style.border = "4px dashed gold"
-        this.moveNum++
 
         if (typeof fieldId === "number") {
             const selectedField = this.fields.find(field => field.id === fieldId)
