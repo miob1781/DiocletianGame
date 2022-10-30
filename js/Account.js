@@ -443,7 +443,7 @@ export class Account {
         this.socket.on("request player id", () => {
             this.socket.emit("register", { playerId: this.id })
 
-            if (this.webGame.id) {
+            if (this.webGame?.id) {
                 this.socket.emit("join room", { webGameId: this.webGame.id })
             }
         })
