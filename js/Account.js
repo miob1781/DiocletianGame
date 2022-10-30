@@ -442,9 +442,12 @@ export class Account {
         // socket listener for player who has just established a connection
         this.socket.on("request player id", () => {
             this.socket.emit("register", { playerId: this.id })
+            console.log("message to register sent");
 
             if (this.webGame?.id) {
                 this.socket.emit("join room", { webGameId: this.webGame.id })
+                console.log("message to join room sent");
+
             }
         })
 
@@ -458,6 +461,7 @@ export class Account {
             this.webGame.display()
 
             this.socket.emit("join room", { webGameId })
+            console.log("message to join room sent");
         })
 
         // socket listener for the creator if a player has declined the invitation
