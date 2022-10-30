@@ -20,27 +20,25 @@ export function shuffleArray(arr) {
         arr[i] = arr[j];
         arr[j] = temp;
     }
-    
+
     return arr
 }
 
 // plays moves recursively
 export function playMoves(account, moveNum) {
-    while (account.game.moveNum < move.moveNum) {
-        const nextMove = account.game.moves.find(m => m.moveNum === moveNum - 1)
-    
-        if (nextMove) {
-            account.game.setIsOn(nextMove.fieldId)
-            console.log("move number of game after one loop iteration: ", account.game.moveNum);
-            playMoves(account, moveNum + 1)
+    const nextMove = account.game.moves.find(m => m.moveNum === moveNum - 1)
 
-        } else {
-            account.socket.emit("request missing move", {
-                webGameId: account.game.webGameId,
-                playerId: account.id,
-                moveNum: moveNum + 1
-            })
-            console.log("requesting missing move, move number" + moveNum);
-        }
+    if (nextMove) {
+        account.game.setIsOn(nextMove.fieldId)
+        console.log("move number of game after one loop iteration: ", account.game.moveNum);
+        playMoves(account, moveNum + 1)
+
+    } else {
+        account.socket.emit("request missing move", {
+            webGameId: account.game.webGameId,
+            playerId: account.id,
+            moveNum: moveNum + 1
+        })
+        console.log("requesting missing move, move number" + moveNum);
     }
 }
