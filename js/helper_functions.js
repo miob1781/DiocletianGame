@@ -26,7 +26,7 @@ export function shuffleArray(arr) {
 
 // plays moves recursively
 export function playMoves(account, moveNum) {
-    const nextMove = account.game.moves.find(m => m.moveNum === moveNum - 1)
+    const nextMove = account.game.moves.find(m => m.moveNum === moveNum + 1)
 
     if (nextMove) {
         account.game.setIsOn(nextMove.fieldId)
@@ -39,6 +39,6 @@ export function playMoves(account, moveNum) {
             playerId: account.id,
             moveNum: moveNum + 1
         })
-        console.log("requesting missing move, move number" + moveNum);
+        console.log("requesting missing move, move number" + moveNum + 1);
     }
 }
