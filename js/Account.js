@@ -572,8 +572,10 @@ export class Account {
             // adds incoming move to array of moves
             this.game.moves.push(move)
 
+            console.log("stored moves after pushing incoming move: ", this.game.moves);
+
             // plays stored moves in correct order
-            playMoves(this, move.moveNum)
+            playMoves(this, this.game.moveNum)
         })
     }
 }
