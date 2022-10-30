@@ -76,6 +76,10 @@ export class Field {
 
             if (this.game.webGameId) {
                 this.game.moveNum++
+                console.log("moveNum increased");
+                console.log("player: ", this.player.color);
+                console.log("fieldId: ", this.id);
+                console.log("new moveNum: ", this.game.moveNum);
 
                 if (
                     (!this.game.playerOn.isComputer && !this.game.playerOn.isExternalPlayer) ||
