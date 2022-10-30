@@ -587,7 +587,7 @@ export class Account {
                 const smallestMoveNum = Math.min(...missingMoves.map(move => move.moveNum))
                 const fieldId = missingMoves.find(move => move.moveNum === smallestMoveNum).fieldId
                 this.game.setIsOn(fieldId)
-                missingMoves = missingMoves.filter(move => move.moveNum === smallestMoveNum)
+                missingMoves = missingMoves.filter(move => move.moveNum !== smallestMoveNum)
                 console.log("missing moves after one loop iteration: ", missingMoves);
             }
 
