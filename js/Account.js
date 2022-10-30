@@ -568,29 +568,20 @@ export class Account {
             console.log("submitted moveNum: ", move.moveNum);
             console.log("own moveNum: ", this.game.moveNum);
             
-            move.moveNum === this.game.moveNum - 1
-                ? this.game.setIsOn(move.fieldId)
-                : this.socket.emit("request missing moves", {
-                    webGameId: this.game.webGameId,
-                    playerId: this.id,
-                    lastMoveNum: this.game.moveNum
-                })
-        })
+            this.game.moves.push(move)
+            
+            while (this.game.moveNum < move.moveNum) {
+                const nextMove = this.game.moves.find(m => m.moveNum === this.game.moveNum - 1)
+                nextMove
+                    ? this.game.setIsOn(nextMove.fieldId)
+                    : this.socket.emit("request missing move", {
+                        webGameId: this.game.webGameId,
+                        playerId: this.id,
+                        moveNum: this.game.moveNum + 1
+                    })
 
-        // socket listener for player who has requested missing moves
-        this.socket.on("send missing moves", msg => {
-            let { missingMoves } = msg
-
-            console.log("got missing moves: ", missingMoves);
-
-            while (missingMoves.length > 0) {
-                const smallestMoveNum = Math.min(...missingMoves.map(move => move.moveNum))
-                const fieldId = missingMoves.find(move => move.moveNum === smallestMoveNum).fieldId
-                this.game.setIsOn(fieldId)
-                missingMoves = missingMoves.filter(move => move.moveNum !== smallestMoveNum)
                 console.log("missing moves after one loop iteration: ", missingMoves);
             }
-
         })
     }
 }

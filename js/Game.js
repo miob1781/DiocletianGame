@@ -19,6 +19,7 @@ export class Game {
         this.fields = []
         this.selectedPlayers = []
         this.remainingPlayers = []
+        this.moves = []
         this.playerOn = null
         this.moveNum = 0
         this.gameOn = false
