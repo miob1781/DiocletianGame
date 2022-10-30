@@ -168,7 +168,6 @@ export class Account {
                     // starts websocket
                     this.socket = io(BASE_URL, { withCredentials: true })
                     this.addSocketListeners()
-                    this.socket.emit("register", { playerId: id })
 
                     // loads web games
                     this.loadGames()
@@ -439,6 +438,15 @@ export class Account {
     }
 
     addSocketListeners() {
+
+        // socket listener for player who has just established a connection
+        this.socket.on("request player id", () => {
+            this.socket.emit("register", { playerId: this.id })
+
+            if (this.webGame.id) {
+                this.socket.emit("join room", { webGameId: this.webGame.id })
+            }
+        })
 
         // socket listener for invited players if player is invited to a new web game
         this.socket.on("invitation", msg => {
