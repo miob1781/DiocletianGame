@@ -1,7 +1,8 @@
-import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
+import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js"
 import { Game } from "./Game.js"
 import { WebGame } from "./WebGame.js"
 import { BASE_URL } from "./consts.js"
+import { playMoves } from "./helper_functions.js"
 
 // elements in #account
 const signupContainer = document.getElementById("signup")
@@ -422,7 +423,7 @@ export class Account {
                 game.createDisplay()
                 game.start()
 
-            // creates a new web game
+                // creates a new web game
             } else {
                 const playerData = {
                     id: this.id,
@@ -431,7 +432,7 @@ export class Account {
 
                 const humanPlayers = [...this.invitedPlayers, playerData]
                 this.webGame = new WebGame(this.id, this.username, this.id, this.username, numPlayers, size, density, humanPlayers, this.socket)
-                
+
                 this.webGame.postGame()
             }
         })
@@ -567,21 +568,12 @@ export class Account {
             console.log("got move");
             console.log("submitted moveNum: ", move.moveNum);
             console.log("own moveNum: ", this.game.moveNum);
-            
-            this.game.moves.push(move)
-            
-            while (this.game.moveNum < move.moveNum) {
-                const nextMove = this.game.moves.find(m => m.moveNum === this.game.moveNum - 1)
-                nextMove
-                    ? this.game.setIsOn(nextMove.fieldId)
-                    : this.socket.emit("request missing move", {
-                        webGameId: this.game.webGameId,
-                        playerId: this.id,
-                        moveNum: this.game.moveNum + 1
-                    })
 
-                console.log("missing moves after one loop iteration: ", missingMoves);
-            }
+            // adds incoming move to array of moves
+            this.game.moves.push(move)
+
+            // plays stored moves in correct order
+            playMoves(this)
         })
     }
 }
