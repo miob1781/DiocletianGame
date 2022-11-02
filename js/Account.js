@@ -109,7 +109,7 @@ export class Account {
                 this.connectedPlayers = connectedPlayers
             })
             .catch(err => {
-                console.log("error while loading games: ", err);
+                console.log("Error while loading games: ", err);
             })
     }
 
@@ -443,12 +443,13 @@ export class Account {
         // socket listener for player who has just established a connection
         this.socket.on("request player id", () => {
             this.socket.emit("register", { playerId: this.id })
-            console.log("message to register sent");
 
             if (this.webGame?.id) {
                 this.socket.emit("join room", { webGameId: this.webGame.id })
-                console.log("message to join room sent");
-
+                this.socket.emit("request missing moves", {
+                    webGameId: this.webGameId,
+                    moveNum: this.game.moveNum + 1
+                })
             }
         })
 
@@ -462,7 +463,6 @@ export class Account {
             this.webGame.display()
 
             this.socket.emit("join room", { webGameId })
-            console.log("message to join room sent");
         })
 
         // socket listener for the creator when a player has declined the invitation
@@ -565,14 +565,8 @@ export class Account {
         this.socket.on("move", msg => {
             const { move } = msg
 
-            console.log("got move");
-            console.log("submitted moveNum: ", move.moveNum);
-            console.log("own moveNum: ", this.game.moveNum);
-
             // adds incoming move to array of moves
             this.game.moves.push(move)
-
-            console.log("stored moves after pushing incoming move: ", this.game.moves);
 
             // plays stored moves in correct order
             playMoves(this, this.game.moveNum)

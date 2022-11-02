@@ -1,5 +1,3 @@
-// helper functions
-
 // selects a random element from an array
 export function selectRandomElement(arr) {
     const index = Math.floor(arr.length * Math.random())
@@ -30,15 +28,11 @@ export function playMoves(account, moveNum) {
 
     if (nextMove) {
         account.game.setIsOn(nextMove.fieldId)
-        console.log("move number of game after one loop iteration: ", account.game.moveNum);
         playMoves(account, moveNum + 1)
-
     } else {
         account.socket.emit("request missing move", {
             webGameId: account.game.webGameId,
-            playerId: account.id,
             moveNum: moveNum + 1
         })
-        console.log("requesting missing move, move number" + (moveNum + 1));
     }
 }
