@@ -39,6 +39,6 @@ export function playMoves(account, moveNum) {
             playerId: account.id,
             moveNum: moveNum + 1
         })
-        console.log("requesting missing move, move number" + moveNum + 1);
+        console.log("requesting missing move, move number" + (moveNum + 1));
     }
 }

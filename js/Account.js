@@ -452,7 +452,7 @@ export class Account {
             }
         })
 
-        // socket listener for invited players if player is invited to a new web game
+        // socket listener for invited players when player is invited to a new web game
         this.socket.on("invitation", msg => {
             const { webGameId, webGameData } = msg
             const { numPlayers, size, density, players, creator } = webGameData
@@ -465,7 +465,7 @@ export class Account {
             console.log("message to join room sent");
         })
 
-        // socket listener for the creator if a player has declined the invitation
+        // socket listener for the creator when a player has declined the invitation
         this.socket.on("game declined", msg => {
             const { playerName } = msg
 
@@ -480,7 +480,7 @@ export class Account {
             }
         })
 
-        // socket listener for invited players if the creator has revoked the invitation
+        // socket listener for invited players when the creator has revoked the invitation
         this.socket.on("invitation revoked", () => {
             const webGameSection = document.getElementById(this.webGame.id)
             webGameSection.querySelector("p").textContent = `${this.webGame.creatorName} has revoked the invitation for the game.`
@@ -488,7 +488,7 @@ export class Account {
             webGameSection.querySelector(".decline-invitation").remove()
         })
 
-        // socket listener for the creator if all players are ready to start
+        // socket listener for the creator when all players are ready to start
         this.socket.on("ready", () => {
             const { numPlayers, size, density, humanPlayers, playerName, id, creatorId } = this.webGame
             if (this.id === creatorId) {
@@ -523,7 +523,7 @@ export class Account {
             }
         })
 
-        // socket listener for invited players if the creator has sent the initial values of the board
+        // socket listener for invited players when the creator has sent the initial values of the board
         this.socket.on("set game", msg => {
             const { selectedPlayersColors, fieldData } = msg
             const { numPlayers, size, density, humanPlayers, playerName, id } = this.webGame
@@ -561,7 +561,7 @@ export class Account {
             this.game.start()
         })
 
-        // socket listener for all players if a move has been done
+        // socket listener when a move has been sent
         this.socket.on("move", msg => {
             const { move } = msg
 
