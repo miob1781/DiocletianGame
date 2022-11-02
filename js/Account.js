@@ -444,9 +444,9 @@ export class Account {
         this.socket.on("request player id", () => {
             this.socket.emit("register", { playerId: this.id })
 
-            if (this.webGame?.id) {
+            if (this.webGame) {
                 this.socket.emit("join room", { webGameId: this.webGame.id })
-                this.socket.emit("request missing moves", {
+                this.socket.emit("request missing move", {
                     webGameId: this.webGameId,
                     moveNum: this.game.moveNum + 1
                 })
