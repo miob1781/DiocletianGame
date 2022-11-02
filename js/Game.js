@@ -236,8 +236,8 @@ export class Game {
             const winner = this.remainingPlayers[0].isComputer ? "computer" : winnerName
 
             axios.put(BASE_URL + "/game/" + this.webGameId, { winner }, { headers })
-                .then(() => console.log("game has ended, winner is " + winner))
-                .catch(err => console.log("error while updating game: ", err))
+                .then(() => console.log("Game has ended, winner is " + winner))
+                .catch(err => console.log("Error while updating game: ", err))
         }
 
         winnerMessageEl.textContent = winnerName === "You" ? winnerName + " have won!" : winnerName + " has won!"
