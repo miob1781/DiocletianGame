@@ -1,7 +1,17 @@
-import { styles } from "./styles.js"
+import { backgroundColor, color } from "./styles"
+import { Color, FieldT, PlayerT } from "./types"
 
-export class Player {
-    constructor(color) {
+export class Player implements PlayerT {
+    color: Color
+    name: Color
+    isOn: boolean
+    isComputer: boolean
+    isExternalPlayer: boolean
+    fields: FieldT[]
+    totalValue: number
+    playerDisplayEl: HTMLElement | null
+
+    constructor(color: Color) {
         this.color = color
         this.name = color
         this.isOn = false
@@ -16,8 +26,8 @@ export class Player {
     setPlayerDisplayEl() {
         const playerDisplayEl = document.createElement("div")
         playerDisplayEl.className = "display-player"
-        playerDisplayEl.style.backgroundColor = styles.backgroundColor[this.color]
-        playerDisplayEl.style.color = styles.color[this.color]
+        playerDisplayEl.style.backgroundColor = backgroundColor[this.color]
+        playerDisplayEl.style.color = color[this.color]
 
         const playerNameEl = document.createElement("p")
         const playerFieldsNumEl = document.createElement("p")
@@ -38,12 +48,12 @@ export class Player {
 
     // calculates the number of fields and the total number of field values of a player
     getPlayerValues() {
-        const playerFieldsNumEl = this.playerDisplayEl.querySelector(".player-num")
-        const playerFieldsValueEl = this.playerDisplayEl.querySelector(".player-value")
+        const playerFieldsNumEl = this.playerDisplayEl!.querySelector(".player-num")!
+        const playerFieldsValueEl = this.playerDisplayEl!.querySelector(".player-value")!
 
         playerFieldsNumEl.textContent = "Fields: " + this.fields.length
 
-        const totalValue = this.fields.reduce((acc, curr) => {
+        const totalValue: number = this.fields.reduce((acc: number, curr: FieldT): number => {
             return acc + curr.value
         }, 0)
 

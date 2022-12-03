@@ -1,14 +1,41 @@
-import { BASE_URL, playerColors } from "./consts.js"
-import { Field } from "./Field.js"
-import { Player } from "./Player.js"
-import { selectRandomElement, shuffleArray } from "./helper_functions.js"
+import axios from "axios";
+import { Socket } from "socket.io-client"
+import { BASE_URL } from "./consts"
+import { Field } from "./Field"
+import { Player } from "./Player"
+import { selectRandomElement, shuffleArray } from "./helper_functions"
+import { Color, Density, FieldT, GameT, HeadersT, Move, PlayerT } from "./types"
 
-const displayContainer = document.getElementById("display-container")
-const boardContainer = document.getElementById("board-container")
-const winnerMessageEl = document.getElementById("winner-message")
+const displayContainer = document.getElementById("display-container")!
+const boardContainer = document.getElementById("board-container")!
+const winnerMessageEl = document.getElementById("winner-message")!
 
-export class Game {
-    constructor(numPlayers, size, density, humanPlayersNames, username = null, webGameId = null, socket = null) {
+export class Game implements GameT {
+    numPlayers: number
+    size: number
+    density: Density
+    humanPlayersNames: string[]
+    username: string
+    webGameId: string | null
+    socket: Socket | null
+    fields: FieldT[]
+    selectedPlayers: PlayerT[]
+    remainingPlayers: PlayerT[]
+    moves: Move[]
+    playerOn: PlayerT | null
+    moveNum: number
+    gameOn: boolean
+    playerIsCreator: boolean
+
+    constructor(
+        numPlayers: number,
+        size: number,
+        density: Density,
+        humanPlayersNames: string[],
+        username: string | null = null,
+        webGameId: string | null = null,
+        socket: Socket | null = null
+    ) {
         this.numPlayers = numPlayers
         this.size = size
         this.density = density
@@ -30,11 +57,12 @@ export class Game {
     createBoard() {
 
         // sets the participating players
-        for (let i = 0; i < this.numPlayers; i++) {
-            const player = new Player(playerColors[i])
+        const colors: Color[] = Object.values(Color)
+        for (let i: number = 0; i < this.numPlayers; i++) {
+            const player: PlayerT = new Player(colors[i])
 
             if (!this.webGameId) {
-                if (this.humanPlayersNames.includes(playerColors[i])) {
+                if (this.humanPlayersNames.includes(colors[i])) {
                     player.isComputer = false
 
                     if (this.humanPlayersNames.length === 1) {
@@ -67,15 +95,15 @@ export class Game {
         boardEl.style.gridTemplateRows = `repeat(${this.size}, 1fr)`
 
         // creates the fields of the board
-        let k = 0
-        for (let i = 1; i <= this.size; i++) {
-            for (let j = 1; j <= this.size; j++) {
-                const col = i
-                const row = j
-                const id = k
+        let k: number = 0
+        for (let i: number = 1; i <= this.size; i++) {
+            for (let j: number = 1; j <= this.size; j++) {
+                const col: number = i
+                const row: number = j
+                const id: number = k
                 k++
 
-                const field = new Field(id, row, col)
+                const field: FieldT = new Field(id, row, col)
                 const fieldEl = document.createElement("div")
                 fieldEl.className = `field row${row} col${col}`
                 fieldEl.id = "field" + id
@@ -109,14 +137,14 @@ export class Game {
     // adds players and values to fields
     addPlayers() {
         this.selectedPlayers.forEach(player => {
-            if (this.size <= 7 && this.density === "sparse") {
+            if (this.size <= 7 && this.density === Density.Sparse) {
                 this.assignPlayerToField(player, 2)
                 this.assignPlayerToField(player, 1)
                 this.assignPlayerToField(player, 1)
 
             } else if (
-                (this.size <= 7 && this.density === "medium") ||
-                (this.size > 7 && this.density === "sparse")
+                (this.size <= 7 && this.density === Density.Medium) ||
+                (this.size > 7 && this.density === Density.Sparse)
             ) {
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 2)
@@ -124,8 +152,8 @@ export class Game {
                 this.assignPlayerToField(player, 1)
 
             } else if (
-                (this.size <= 7 && this.density === "dense") ||
-                (this.size > 7 && this.density === "medium")
+                (this.size <= 7 && this.density === Density.Sparse) ||
+                (this.size > 7 && this.density === Density.Medium)
             ) {
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 2)
@@ -133,7 +161,7 @@ export class Game {
                 this.assignPlayerToField(player, 1)
                 this.assignPlayerToField(player, 1)
 
-            } else if (this.size > 7 && this.density === "dense") {
+            } else if (this.size > 7 && this.density === Density.Dense) {
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 3)
                 this.assignPlayerToField(player, 2)
@@ -147,8 +175,8 @@ export class Game {
     }
 
     // assigns player to a field
-    assignPlayerToField(player, value) {
-        let index, field
+    assignPlayerToField(player: PlayerT, value: number) {
+        let index: number, field: FieldT
 
         do {
             index = Math.floor(this.fields.length * Math.random())
@@ -166,14 +194,14 @@ export class Game {
 
         this.selectedPlayers.forEach(player => {
             player.setPlayerDisplayEl()
-            displayEl.appendChild(player.playerDisplayEl)
+            displayEl.appendChild(player.playerDisplayEl!)
             player.getPlayerValues()
         })
 
         displayContainer.style.display = "block"
     }
 
-    // starts a game
+    // starts a new game
     start() {
         winnerMessageEl.textContent = ""
 
@@ -182,24 +210,25 @@ export class Game {
         this.gameOn = true
         this.setIsOn()
 
-        document.getElementById("display").style.display = "flex"
-        document.getElementById("board").style.display = "grid"
+        document.getElementById("display")!.style.display = "flex"
+        document.getElementById("board")!.style.display = "grid"
 
         for (const id of ["create-game", "web-games"]) {
-            document.getElementById(id).style.display = "none"
+            document.getElementById(id)!.style.display = "none"
         }
     }
 
     // sets a player on so that the player can move
-    setIsOn(fieldId) {
-        this.playerOn.isOn = true
-        this.playerOn.playerDisplayEl.style.border = "4px dashed gold"
+    setIsOn(move?: number) {
+        this.playerOn!.isOn = true
+        this.playerOn!.playerDisplayEl!.style.border = "4px dashed gold"
 
-        if (typeof fieldId === "number") {
-            const selectedField = this.fields.find(field => field.id === fieldId)
+        let selectedField: FieldT
+        if (typeof move === "number") {
+            selectedField = this.fields.find(field => field.id === move)!
             selectedField.selectField()
-        } else if (this.playerOn.isComputer && this.playerIsCreator) {
-            const selectedField = selectRandomElement(this.playerOn.fields)
+        } else if (this.playerOn!.isComputer && this.playerIsCreator) {
+            selectedField = selectRandomElement(this.playerOn!.fields)
             selectedField.selectField()
         }
     }
@@ -207,16 +236,16 @@ export class Game {
     // moves on to the next player
     getNextPlayer() {
         if (this.gameOn) {
-            this.playerOn.playerDisplayEl.style.border = "none"
-            const currentIndex = this.remainingPlayers.indexOf(this.playerOn)
-            const nextIndex = (currentIndex + 1) % this.remainingPlayers.length
+            this.playerOn!.playerDisplayEl!.style.border = "none"
+            const currentIndex: number = this.remainingPlayers.indexOf(this.playerOn!)
+            const nextIndex: number = (currentIndex + 1) % this.remainingPlayers.length
             this.playerOn = this.remainingPlayers[nextIndex]
             this.setIsOn()
         }
     }
 
     // checks if a player has run out of fields and has thus left the game and if the game has ended
-    checkRemainingPlayers(player) {
+    checkRemainingPlayers(player: PlayerT) {
         if (player.fields.length === 0) {
             this.remainingPlayers = this.remainingPlayers.filter(playerRemaining => playerRemaining.color !== player.color)
 
@@ -228,16 +257,16 @@ export class Game {
 
     // performs final actions when a game has ended
     end() {
-        const winnerName = this.remainingPlayers[0].name
+        const winnerName: string = this.remainingPlayers[0].name
 
         if (this.webGameId && this.playerIsCreator) {
-            const storedToken = localStorage.getItem("authToken")
-            const headers = { Authorization: `Bearer ${storedToken}` }
-            const winner = this.remainingPlayers[0].isComputer ? "computer" : winnerName
+            const storedToken: string = localStorage.getItem("authToken")!
+            const headers: HeadersT = { Authorization: `Bearer ${storedToken}` }
+            const winner: string = this.remainingPlayers[0].isComputer ? "computer" : winnerName
 
             axios.put(BASE_URL + "/game/" + this.webGameId, { winner }, { headers })
-                .then(() => console.log("Game has ended, winner is " + winner))
-                .catch(err => console.log("Error while updating game: ", err))
+                .then(() => console.log("game has ended"))
+                .catch((err: unknown) => console.log("error while updating game: ", err))
         }
 
         winnerMessageEl.textContent = winnerName === "You" ? winnerName + " have won!" : winnerName + " has won!"
