@@ -1,10 +1,10 @@
-import { Game } from "./Game.js"
-import { WebGame } from "./WebGame.js"
-import { BASE_URL } from "./consts.js"
-import { playMoves } from "./helper_functions.js"
-import { AccountT, AuthData, Color, Density, FieldData, GameCreated, GameT, GameType, HeadersT, Move, PlayerData, PlayerT, WebGameData, WebGameT } from "./types.js"
 import axios from "axios"
 import { io, Socket } from "socket.io-client"
+import { Game } from "./Game"
+import { WebGame } from "./WebGame"
+import { BASE_URL } from "./consts"
+import { playMoves } from "./helper_functions"
+import { AccountT, AuthData, Color, Density, FieldData, GameCreated, GameT, GameType, HeadersT, Move, PlayerData, PlayerT, WebGameData, WebGameT } from "./types"
 
 // elements in #account
 const signupContainer = document.getElementById("signup")!
@@ -17,9 +17,9 @@ const playerNameHeading = document.getElementById("player-name")!
 const createGameContainer = document.getElementById("create-game")!
 const soloIntroEl = document.getElementById("intro-solo")!
 const webIntroEl = document.getElementById("intro-web")!
-const numPlayersInput = document.getElementById("num-players-input")!
-const sizeInput = document.getElementById("size-input")!
-const densityInput = document.getElementById("density-input")!
+const numPlayersInput = document.getElementById("num-players-input") as HTMLInputElement
+const sizeInput = document.getElementById("size-input") as HTMLInputElement
+const densityInput = document.getElementById("density-input") as HTMLInputElement
 const getPlayerContainer = document.getElementById("get-player")!
 const errorMessagePlayerEl = document.getElementById("error-message-get-player")!
 const humanPlayersContainer = document.getElementById("human-players")!
@@ -89,13 +89,15 @@ export class Account implements AccountT {
         const headers: HeadersT = { Authorization: `Bearer ${storedToken}` }
 
         axios.get(BASE_URL + "/game/", { headers, params: { playerId: this.id } })
-            .then(response => {
-                const data: {
+            .then((response: {
+                data: {
                     connectedPlayers: PlayerData[],
                     gamesCreated: GameCreated[],
                     numGamesFinished: number,
                     numGamesWon: number
-                } = response.data
+                }
+            }) => {
+                const data = response.data
                 const { connectedPlayers, gamesCreated, numGamesFinished, numGamesWon } = data
 
                 webIntroEl.textContent = `You have played ${numGamesFinished} game${numGamesFinished === 1 ? "" : "s"} on the web and have won ${numGamesWon} of them. Try another one?`
@@ -118,7 +120,7 @@ export class Account implements AccountT {
 
                 this.connectedPlayers = connectedPlayers
             })
-            .catch(err => {
+            .catch((err: unknown) => {
                 console.log("Error while loading games: ", err);
             })
     }
@@ -157,11 +159,13 @@ export class Account implements AccountT {
             const headers: HeadersT = { Authorization: `Bearer ${storedToken}` }
 
             axios.get(BASE_URL + "/player/verify", { headers })
-                .then(response => {
-                    const data: {
+                .then((response: {
+                    data: {
                         id: string,
                         username: string
-                    } = response.data
+                    }
+                }) => {
+                    const data = response.data
                     const { id, username } = data
 
                     this.id = id
@@ -181,7 +185,7 @@ export class Account implements AccountT {
                     // loads web games
                     this.loadGames()
                 })
-                .catch(err => {
+                .catch((err: unknown) => {
                     console.log("Error during authentication: ", err)
                     this.logout()
                 })
@@ -195,12 +199,12 @@ export class Account implements AccountT {
     // function used during authentication for either login or signup
     handleLoginOrSignupRequest(url: string, data: AuthData) {
         axios.post(url, data)
-            .then(response => {
+            .then((response: { data: { authToken: string } }) => {
                 localStorage.setItem("authToken", response.data.authToken)
                 this.authenticateUser()
                 errorMessageAccountEl.textContent = ""
             })
-            .catch(err => {
+            .catch((err: { response: { data: { errorMessage: string } } }) => {
                 console.log("Error: ", err)
                 const message: string = err.response?.data?.errorMessage ? err.response?.data?.errorMessage : "Something has gone wrong."
                 errorMessageAccountEl.textContent = message
@@ -229,10 +233,11 @@ export class Account implements AccountT {
 
         // adds listener to signup
         signupContainer.querySelector("button")!.addEventListener("click", () => {
-            // @ts-ignore
-            const username: string = document.getElementById("signup-username").value
-            // @ts-ignore
-            const password: string = document.getElementById("signup-password").value
+            const usernameInputEl = document.getElementById("signup-username") as HTMLInputElement
+            const passwordInputEl = document.getElementById("signup-password") as HTMLInputElement
+
+            const username: string = usernameInputEl.value
+            const password: string = passwordInputEl.value
 
             const url: string = BASE_URL + "/player/signup"
             const data: AuthData = { username, password }
@@ -242,10 +247,11 @@ export class Account implements AccountT {
 
         // adds listener to login
         loginContainer.querySelector("button")!.addEventListener("click", () => {
-            // @ts-ignore
-            const username: string = document.getElementById("login-username").value
-            // @ts-ignore
-            const password: string = document.getElementById("login-password").value
+            const usernameInputEl = document.getElementById("login-username") as HTMLInputElement
+            const passwordInputEl = document.getElementById("login-password") as HTMLInputElement
+
+            const username: string = usernameInputEl.value
+            const password: string = passwordInputEl.value
 
             const url: string = BASE_URL + "/player/login"
             const data: AuthData = { username, password }
@@ -288,31 +294,26 @@ export class Account implements AccountT {
 
         // adds listener to display selected number of players
         numPlayersInput.addEventListener("input", () => {
-            // @ts-ignore
-            document.getElementById("num-players-display").textContent = numPlayersInput.value
+            document.getElementById("num-players-display")!.textContent = numPlayersInput.value
 
-            // @ts-ignore
             if (numPlayersInput.value === "2") {
                 yellowCheckboxContainer.style.display = "none"
                 greenCheckboxContainer.style.display = "none"
                 orangeCheckboxContainer.style.display = "none"
                 purpleCheckboxContainer.style.display = "none"
 
-                // @ts-ignore
             } else if (numPlayersInput.value === "3") {
                 yellowCheckboxContainer.style.display = "block"
                 greenCheckboxContainer.style.display = "none"
                 orangeCheckboxContainer.style.display = "none"
                 purpleCheckboxContainer.style.display = "none"
 
-                // @ts-ignore
             } else if (numPlayersInput.value === "4") {
                 yellowCheckboxContainer.style.display = "block"
                 greenCheckboxContainer.style.display = "block"
                 orangeCheckboxContainer.style.display = "none"
                 purpleCheckboxContainer.style.display = "none"
 
-                // @ts-ignore
             } else if (numPlayersInput.value === "5") {
                 yellowCheckboxContainer.style.display = "block"
                 greenCheckboxContainer.style.display = "block"
@@ -329,16 +330,13 @@ export class Account implements AccountT {
 
         // adds listener to display selected size of board
         sizeInput.addEventListener("input", () => {
-            // @ts-ignore
-            document.getElementById("size-display").textContent = sizeInput.value
+            document.getElementById("size-display")!.textContent = sizeInput.value
         })
 
         // adds listener to display selected density
         densityInput.addEventListener("input", () => {
-            // @ts-ignore
             if (densityInput.value === "1") {
                 document.getElementById("density-display")!.textContent = Density.Sparse
-                // @ts-ignore
             } else if (densityInput.value === "2") {
                 document.getElementById("density-display")!.textContent = Density.Medium
             } else {
@@ -348,10 +346,8 @@ export class Account implements AccountT {
 
         // adds listener to get input for names of players and load them from DB
         document.getElementById("add-player")!.addEventListener("click", () => {
-            const playerToInviteInput = document.getElementById("player-input")
-            // @ts-ignore
+            const playerToInviteInput = document.getElementById("player-input") as HTMLInputElement
             const playerToInvite = playerToInviteInput.value
-            // @ts-ignore
             playerToInviteInput.value = ""
 
             if (!playerToInvite) {
@@ -372,7 +368,7 @@ export class Account implements AccountT {
                 const headers: HeadersT = { Authorization: `Bearer ${storedToken}` }
 
                 axios.get(BASE_URL + "/player", { headers, params: { username: playerToInvite } })
-                    .then(response => {
+                    .then((response: { data: { id: string, errorMessage: string } }) => {
                         const id: string | undefined = response.data.id
 
                         if (id) {
@@ -388,7 +384,7 @@ export class Account implements AccountT {
                             errorMessagePlayerEl.textContent = response.data?.errorMessage
                         }
                     })
-                    .catch(err => {
+                    .catch((err: unknown) => {
                         console.log("Error while loading player by username: ", err);
                         errorMessagePlayerEl.textContent = "The user could not be found."
                     })
@@ -403,15 +399,11 @@ export class Account implements AccountT {
 
         // adds listener to create game
         submitGameButton.addEventListener("click", () => {
-            // @ts-ignore
             const numPlayers: number = Number(numPlayersInput.value)
-            // @ts-ignore
             const size: number = Number(sizeInput.value)
             let density: Density
-            // @ts-ignore
             if (densityInput.value === "1") {
                 density = Density.Sparse
-                // @ts-ignore
             } else if (densityInput.value === "2") {
                 density = Density.Medium
             } else {
@@ -549,7 +541,7 @@ export class Account implements AccountT {
                 const headers: HeadersT = { Authorization: `Bearer ${storedToken}` }
 
                 axios.put(BASE_URL + "/game/" + id, { status: "playing" }, { headers })
-                    .catch(err => {
+                    .catch((err: unknown) => {
                         console.log("Error while updating game: ", err);
                     })
             }

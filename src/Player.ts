@@ -1,5 +1,5 @@
 import { backgroundColor, color } from "./styles"
-import { Color, FieldT, PlayerT } from "./types.js"
+import { Color, FieldT, PlayerT } from "./types"
 
 export class Player implements PlayerT {
     color: Color

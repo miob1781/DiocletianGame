@@ -1,10 +1,10 @@
-import { BASE_URL } from "./consts.js"
-import { Field } from "./Field.js"
-import { Player } from "./Player.js"
-import { selectRandomElement, shuffleArray } from "./helper_functions.js"
-import { Color, Density, FieldT, GameT, HeadersT, Move, PlayerT } from "./types"
 import axios from "axios";
 import { Socket } from "socket.io-client"
+import { BASE_URL } from "./consts"
+import { Field } from "./Field"
+import { Player } from "./Player"
+import { selectRandomElement, shuffleArray } from "./helper_functions"
+import { Color, Density, FieldT, GameT, HeadersT, Move, PlayerT } from "./types"
 
 const displayContainer = document.getElementById("display-container")!
 const boardContainer = document.getElementById("board-container")!
@@ -266,7 +266,7 @@ export class Game implements GameT {
 
             axios.put(BASE_URL + "/game/" + this.webGameId, { winner }, { headers })
                 .then(() => console.log("game has ended"))
-                .catch(err => console.log("error while updating game: ", err))
+                .catch((err: unknown) => console.log("error while updating game: ", err))
         }
 
         winnerMessageEl.textContent = winnerName === "You" ? winnerName + " have won!" : winnerName + " has won!"

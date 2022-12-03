@@ -3,17 +3,17 @@ import { Socket } from "socket.io-client";
 /** color of the player */
 export enum Color {
     /** player is red */
-    Red = "RED",
+    Red = "red",
     /** player is blue */
-    Blue = "BLUE",
+    Blue = "blue",
     /** player is yellow */
-    Yellow = "YELLOW",
+    Yellow = "yellow",
     /** player is green */
-    Green = "GREEN",
+    Green = "green",
     /** player is orange */
-    Orange = "ORANGE",
+    Orange = "orange",
     /** player is purple */
-    Purple = "PURPLE"
+    Purple = "purple"
 }
 
 /** initial density of the board */

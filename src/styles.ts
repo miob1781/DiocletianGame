@@ -1,10 +1,10 @@
 type ColorT = {
-    RED: string
-    GREEN: string
-    BLUE: string
-    YELLOW: string
-    ORANGE: string
-    PURPLE: string
+    red: string
+    green: string
+    blue: string
+    yellow: string
+    orange: string
+    purple: string
     free?: string
 }
 
@@ -17,23 +17,23 @@ export type FontSizeT = {
 
 // background colors of fields and display elements
 export const backgroundColor: ColorT = {
-    RED: "red",
-    GREEN: "green",
-    BLUE: "blue",
-    YELLOW: "yellow",
-    ORANGE: "orange",
-    PURPLE: "purple",
+    red: "red",
+    green: "green",
+    blue: "blue",
+    yellow: "yellow",
+    orange: "orange",
+    purple: "purple",
     free: "lightgrey"
 }
 
 // text colors of fields and display elements
 export const color: ColorT = {
-    RED: "white",
-    GREEN: "white",
-    BLUE: "white",
-    YELLOW: "black",
-    ORANGE: "black",
-    PURPLE: "white"
+    red: "white",
+    green: "white",
+    blue: "white",
+    yellow: "black",
+    orange: "black",
+    purple: "white"
 }
 
 // font size of field values

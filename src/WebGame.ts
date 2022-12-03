@@ -1,7 +1,7 @@
 import axios from "axios"
 import { Socket } from "socket.io-client"
-import { BASE_URL } from "./consts.js"
-import { Density, HeadersT, PlayerData, WebGameData, WebGameT } from "./types.js"
+import { BASE_URL } from "./consts"
+import { Density, HeadersT, PlayerData, WebGameData, WebGameT } from "./types"
 
 const webGamesContainer = document.getElementById("web-games")!
 const errorMessageWebGameEl = document.getElementById("web-game-error-message")!
@@ -156,7 +156,7 @@ export class WebGame implements WebGameT {
         }
 
         axios.post(BASE_URL + "/game", webGameData, { headers })
-            .then(response => {
+            .then((response: {data: {id: string}}) => {
                 this.id = response.data.id
 
                 const webGameDataForInvitation: WebGameData = {
@@ -179,7 +179,7 @@ export class WebGame implements WebGameT {
 
                 this.display()
             })
-            .catch(err => {
+            .catch((err: {response: {data: {errorMessage: string}}}) => {
                 console.log("Error while creating web game: ", err)
                 const message: string = err.response?.data?.errorMessage ? err.response?.data?.errorMessage : "Something has gone wrong."
                 errorMessageWebGameEl.textContent = message
@@ -192,7 +192,7 @@ export class WebGame implements WebGameT {
         const headers: HeadersT = { Authorization: `Bearer ${storedToken}` }
 
         axios.delete(BASE_URL + "/game/" + this.id, { headers })
-            .catch(err => {
+            .catch((err: unknown) => {
                 console.log("Error while deleting web game: ", err)
             })
     }
