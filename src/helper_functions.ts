@@ -39,3 +39,8 @@ export function playMoves(account: AccountT, moveNum: number): void {
         })
     }
 }
+
+// decapitalizes string in all caps
+export function decapitalize(string: string): string {
+    return string[0] + string.toLowerCase().slice(1)
+  }

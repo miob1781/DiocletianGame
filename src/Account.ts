@@ -3,7 +3,7 @@ import { io, Socket } from "socket.io-client"
 import { Game } from "./Game"
 import { WebGame } from "./WebGame"
 import { BASE_URL } from "./consts"
-import { playMoves } from "./helper_functions"
+import { decapitalize, playMoves } from "./helper_functions"
 import { AccountT, AuthData, Color, Density, FieldData, GameCreated, GameT, GameType, HeadersT, Move, PlayerData, PlayerT, WebGameData, WebGameT } from "./types"
 
 // elements in #account
@@ -336,11 +336,11 @@ export class Account implements AccountT {
         // adds listener to display selected density
         densityInput.addEventListener("input", () => {
             if (densityInput.value === "1") {
-                document.getElementById("density-display")!.textContent = Density.Sparse
+                document.getElementById("density-display")!.textContent = decapitalize(Density.Sparse)
             } else if (densityInput.value === "2") {
-                document.getElementById("density-display")!.textContent = Density.Medium
+                document.getElementById("density-display")!.textContent = decapitalize(Density.Medium)
             } else {
-                document.getElementById("density-display")!.textContent = Density.Dense
+                document.getElementById("density-display")!.textContent = decapitalize(Density.Dense)
             }
         })
 
