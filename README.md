@@ -4,7 +4,7 @@ Diocletian is a tactical game for 2-6 players. When its their turn, the player c
 
 The game can be played against other players at the same computer or on the web. For the latter option, players need to sign up for an account. The person who invites other players can choose the number of players, the size of the board and its initial density.
 
-Diocletian has been built with vanilla JavaScript, axios and websockets (socket.io). The repository for the server can be found [here](https://github.com/miob1781/diocletian-server).
+Diocletian has been built with TypeScript, axios, websockets (socket.io), and webpack. The repository for the server can be found [here](https://github.com/miob1781/diocletian-server).
 
 ## Demo
 Go to the demo [here](https://miob1781.github.io/diocletian).
