@@ -4,7 +4,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin")
 
 module.exports = {
     entry: {
-        main: path.resolve(__dirname, "./src/index.ts")
+        main: path.resolve(__dirname, "./src/js/index.ts")
     },
     output: {
         path: path.resolve(__dirname, "./docs"),
@@ -20,6 +20,10 @@ module.exports = {
                 test: /\.ts$/,
                 use: ["ts-loader"],
                 exclude: /node_modules/
+            },
+            {
+                test: /\.(woff|woff2)$/,
+                use: ["url-loader"]
             }
         ],
     },
@@ -28,7 +32,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            favicon: path.resolve(__dirname, "./src/favicon-diocletian.png"),
+            favicon: path.resolve(__dirname, "./src/assets/images/favicon-diocletian.png"),
             filename: "index.html",
             template: path.resolve(__dirname, "./src/template.html"),
         }),

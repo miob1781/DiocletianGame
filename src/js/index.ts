@@ -1,4 +1,4 @@
-import "./style.css"
+import "../styles/style.css"
 import { Account } from "./Account"
 
 // initial scripts when the page is rendered: authentication, controlling display and running event listeners
